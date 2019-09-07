@@ -11,7 +11,7 @@ rm(list = ls()) ; gc()
 ## To employ the Vecchia approximation 
 library(GPvecchia) ; library(fields)
 ## To visualize results
-library(tidyr) ; library(ggplot2) ; library(RColorBrewer)
+library(tidyr) ; library(ggplot2) ; library(gridExtra) ; library(RColorBrewer)
 
 ## Call the vecchia_specify_adjusted function
 source("1_Pilot_Study/2_vecchia_specify_adjusted.R")
@@ -19,6 +19,9 @@ source("1_Pilot_Study/2_vecchia_specify_adjusted.R")
 source("1_Pilot_Study/3_kldiv.R") 
 ## Call the simulation function
 source("1_Pilot_Study/4_simulation.R") 
+## Call the visualization function
+source("1_Pilot_Study/4_visualization.R") 
+
 
 set.seed(20190814)
 
@@ -229,7 +232,7 @@ sim.ycoord.nongrid  <- repeated_simulation_nongrid(ordering = "coord", which.coo
 
 # sim.xycoord.nongrid <- repeated_simulation_nongrid(ordering = "coord", which.coord = c(1, 2), conditioning = "NN", ms = cand.m, scales = cand.scale, n = 30^2, range = 0.1, covparms = c(1, 0.1, 0.5), nugget = 0)
 
-##### KL divergence against m #####
+##### KL divergence #####
 
 kls.maxmin.euclidean.nongrid    <- sim.maxmin.nongrid$kls[[1]][,3]
 kls.maxmin.corr.nongrid         <- sim.maxmin.nongrid$kls[[2]][,3]
@@ -238,35 +241,11 @@ kls.xcoord.euclidean.nongrid    <- sim.xcoord.nongrid$kls[[1]][,3]
 kls.ycoord.euclidean.nongrid    <- sim.ycoord.nongrid$kls[[1]][,3]
 # kls.ycoord.corr.nongrid         <- sim.ycoord.nongrid$kls[[2]][,3] # non-sense
 
-vis.dat <- data.frame(kls.maxmin.euclidean.nongrid, kls.maxmin.corr.nongrid, kls.xcoord.euclidean.nongrid, kls.ycoord.euclidean.nongrid)
-vis.dat <- vis.dat[, order(colnames(vis.dat))]
-vis.dat <- cbind(rep(cand.m, times = 4), gather(vis.dat))
-colnames(vis.dat) <- c("m", "method", "KL")
-head(vis.dat)
-
-unique(vis.dat[,"method"])
-# unique(vis.dat[,"method"])[order(unique(vis.dat[,"method"]))]
-
-kls.legend <- c("Correlation + Maxmin         ", "Euclidean + Maxmin", "Euclidean + x-coord", "Euclidean + y-coord")
-
-size <- 28
-p <- ggplot(vis.dat, aes(x=m, y = log10(KL), col = method)) + 
-     geom_point(aes(shape = method), size = 5) + geom_line(size = 2, alpha = 0.7) +
-     ylab('log10(KL)') + scale_x_discrete(name = 'm', limits=cand.m, labels=as.character(cand.m)) +
-     scale_color_manual(values = brewer.pal(4, "Set1"), labels = kls.legend) +
-     scale_shape_manual(values = c(15, 16, 17, 18), labels = kls.legend) +
-     theme(axis.title.x = element_text(size = size), 
-           axis.text.x = element_text(size = size-4),
-           axis.title.y = element_text(size = size), 
-           axis.text.y = element_text(size = size-4),
-           legend.position = 'top',
-           legend.title = element_blank(),
-           legend.direction = 'horizontal',
-           legend.text=element_text(size = size)) +
-     guides(color=guide_legend(nrow=2,byrow=FALSE))
-print(p)
-
-##### KL divergence against scale.aniso when m = 30 #####
+vis.dat1 <- data.frame(kls.maxmin.euclidean.nongrid, kls.maxmin.corr.nongrid, kls.xcoord.euclidean.nongrid, kls.ycoord.euclidean.nongrid)
+vis.dat1 <- vis.dat1[, order(colnames(vis.dat1))]
+vis.dat1 <- cbind(rep(cand.m, times = 4), gather(vis.dat1))
+colnames(vis.dat1) <- c("m", "method", "KL")
+head(vis.dat1)
 
 kls.maxmin.euclidean.nongrid    <- sim.maxmin.nongrid$kls[[1]][7,]
 kls.maxmin.corr.nongrid         <- sim.maxmin.nongrid$kls[[2]][7,]
@@ -274,30 +253,14 @@ kls.xcoord.euclidean.nongrid    <- sim.xcoord.nongrid$kls[[1]][7,]
 # kls.xcoord.corr.nongrid         <- sim.xcoord.nongrid$kls[[2]][7,] # non-sense
 kls.ycoord.euclidean.nongrid    <- sim.ycoord.nongrid$kls[[1]][7,]
 # kls.ycoord.corr.nongrid         <- sim.ycoord.nongrid$kls[[2]][7,] # non-sense
-kls.xycoord.euclidean.nongrid   <- sim.xycoord.nongrid$kls[[1]][7,]
-# kls.xycoord.corr.nongrid        <- sim.xycoord.nongrid$kls[[2]][7,] # non-sense
 
-vis.dat <- data.frame(kls.maxmin.euclidean.nongrid, kls.maxmin.corr.nongrid, kls.xcoord.euclidean.nongrid, kls.ycoord.euclidean.nongrid)
-vis.dat <- vis.dat[, order(colnames(vis.dat))]
-vis.dat <- cbind(rep(cand.scale, times = 4), gather(vis.dat))
-colnames(vis.dat) <- c("scale", "method", "KL")
-head(vis.dat)
+vis.dat2 <- data.frame(kls.maxmin.euclidean.nongrid, kls.maxmin.corr.nongrid, kls.xcoord.euclidean.nongrid, kls.ycoord.euclidean.nongrid)
+vis.dat2 <- vis.dat2[, order(colnames(vis.dat2))]
+vis.dat2 <- cbind(rep(cand.scale, times = 4), gather(vis.dat2))
+colnames(vis.dat2) <- c("scale", "method", "KL")
+head(vis.dat2)
 
-kls.legend <- c("Correlation + Maxmin         ", "Euclidean + Maxmin", "Euclidean + x-coord", "Euclidean + y-coord")
+kls.legend <- c("Correlation + Maxmin     ", "Euclidean + Maxmin     ", "Euclidean + x-coord     ", "Euclidean + y-coord")
 
-size <- 28
-p <- ggplot(vis.dat, aes(x=scale, y = log10(KL), col = method)) + 
-  geom_point(aes(shape = method), size = 5) + geom_line(size = 2, alpha = 0.7) +
-  ylab('log10(KL)') + scale_x_discrete(name = 'a', limits=cand.scale, labels=as.character(cand.scale)) +
-  scale_color_manual(values = brewer.pal(4, "Set1"), labels = kls.legend) +
-  scale_shape_manual(values = c(15, 16, 17, 18), labels = kls.legend) +
-  theme(axis.title.x = element_text(size = size), 
-        axis.text.x = element_text(size = size-4),
-        axis.title.y = element_text(size = size), 
-        axis.text.y = element_text(size = size-4),
-        legend.position = 'top',
-        legend.title = element_blank(),
-        legend.direction = 'horizontal',
-        legend.text=element_text(size = size)) +
-  guides(color=guide_legend(nrow=2,byrow=FALSE))
-print(p)
+vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, 
+            color.pal = brewer.pal(4, "Set1"), alpha.value = 0.7, size.legend = 16, size.lab = 16, size.text = 12)
