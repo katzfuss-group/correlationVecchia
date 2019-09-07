@@ -65,6 +65,10 @@ simulation    <- function(ordering = "maxmin", which.coord = NULL, conditioning 
   return(result)  
 }
 
+# sim.maxmin  <- simulation(ordering = "maxmin", which.coord = NULL, conditioning = "NN", m = 10, scale.aniso = 10, n = 30^2, range = 0.1, covparms = c(1, 0.1, 0.5), nugget = 0)
+# sim.xcoord  <- simulation(ordering = "coord", which.coord = 1, conditioning = "NN", m = 10, scale.aniso = 10, n = 30^2, range = 0.1, covparms = c(1, 0.1, 0.5), nugget = 0)
+# sim.ycoord  <- simulation(ordering = "coord", which.coord = 2, conditioning = "NN", m = 10, scale.aniso = 10, n = 30^2, range = 0.1, covparms = c(1, 0.1, 0.5), nugget = 0)
+
 repeated_simulation <- function(ordering = "maxmin", which.coord = NULL, conditioning = "NN", 
                                 ms = c(1, 2, 5, 7, 10, 12, 15, 20, 25, 30, 35, 40), scales = c(1, 3, 7, 9, 11, 13),
                                 n = 30^2, range = 0.1, covparms = c(1, 0.1, 0.5), nugget = 0) {
