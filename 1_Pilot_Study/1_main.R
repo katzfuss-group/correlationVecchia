@@ -20,7 +20,7 @@ source("1_Pilot_Study/3_kldiv.R")
 ## Call the simulation function
 source("1_Pilot_Study/4_simulation.R") 
 ## Call the visualization function
-source("1_Pilot_Study/4_visualization.R") 
+source("1_Pilot_Study/5_visualization.R") 
 
 
 set.seed(20190814)
@@ -231,6 +231,9 @@ sim.ycoord.nongrid  <- repeated_simulation_nongrid(ordering = "coord", which.coo
                                                    n = 30^2, range = 0.1, covparms = c(1, 0.1, 0.5), nugget = 0)
 
 # sim.xycoord.nongrid <- repeated_simulation_nongrid(ordering = "coord", which.coord = c(1, 2), conditioning = "NN", ms = cand.m, scales = cand.scale, n = 30^2, range = 0.1, covparms = c(1, 0.1, 0.5), nugget = 0)
+
+save.image(file='1_Pilot_Study/Simulation_4.RData')
+load(file='1_Pilot_Study/Simulation_4.RData')
 
 ##### KL divergence #####
 
