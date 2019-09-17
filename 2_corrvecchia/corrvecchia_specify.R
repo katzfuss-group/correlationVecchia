@@ -12,7 +12,7 @@
 
 library(GPvecchia)
 
-source("")
+source("order_maxmin_correlation.R")
 
 ####################################################################
 #### corrvecchia_specify()
