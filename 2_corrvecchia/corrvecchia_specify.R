@@ -29,6 +29,8 @@ source("order_maxmin_correlation.R")
 #' @param conditioning: conditioning on 'NN' (nearest neighbor) or 'firstm' (fixed set for low rank) or 'mra'
 #' @param covmodel: covariance model, 'matern' by default
 #' @param covparms: covariance parameters as a vector
+#'                   matern: with covparms (var,range,smoothness)
+#                    esqe: exponential + squared exp with covparms (var1,range1,var2,range2)
 #' @param nugget: either a single (constant) nugget or a vector of nugget terms for the observations
 #' @param covparms.ini: initial values of covariance parameters
 #' @param nugget.ini: initial value of single nugget
