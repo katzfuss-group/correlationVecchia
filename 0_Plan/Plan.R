@@ -31,10 +31,10 @@
 #' @return An object that specifies the vecchia approximation for later use in likelihood evaluation or prediction
 corvecchia_specify <- function(dat, locs, m=-1, ordering, which.coord=NULL, cond.yz, conditioning, covmodel='matern', covparms=NULL, nugget=NULL, covparms.ini=NULL, nugget.ini=NULL, locs.pred, ordering.pred, pred.cond, mra.options=NULL, verbose=FALSE)
 {
-  if(is.null(covparms.ini) & is.null(nugget.ini) & !is.null(covparms.ini) & !is.null(nugget.ini)) {
+  if(is.null(covparms) & is.null(nugget) & !is.null(covparms.ini) & !is.null(nugget.ini)) {
     # Start with estimating covparms and nugget
     corvecchia_specify_unknownparams(dat, locs, m, ordering, which.coord, cond.yz, conditioning, covmodel, covparms.ini, nugget.ini, locs.pred, ordering.pred, pred.cond, mra.options, verbose)
-  } else if(!is.null(covparms.ini) & !is.null(nugget.ini) & is.null(covparms.ini) & is.null(nugget.ini)) {
+  } else if(!is.null(covparms) & !is.null(nugget) & is.null(covparms.ini) & is.null(nugget.ini)) {
     # Start with pre-specified covparms and nugget
     corvecchia_specify_knownparams(locs, m, ordering, which.coord, cond.yz, conditioning, covmodel, covparms, nugget, locs.pred, ordering.pred, pred.cond, mra.options, verbose)
   } else {
