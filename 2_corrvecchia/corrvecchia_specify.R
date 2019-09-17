@@ -149,8 +149,154 @@ corrvecchia_specify_unknownparams <- function(dat, locs, m, ordering, which.coor
 
 corrvecchia_specify_knownparams <- function(locs, m, ordering, which.coord=NULL, cond.yz, conditioning, covmodel, covparms, nugget, locs.pred, ordering.pred, pred.cond, mra.options=NULL, verbose=FALSE)
 {
-  # Order locs and z
-  # Obtain conditioning sets
-  # Determine the sparsity structure of U
-  # Return an object that specifies the correlation-based Vecchia approximation
+  
+  ##### Order locs and z #####
+  if(missing(locs.pred)){  # no prediction
+    
+    if(ordering=='coord') { 
+      ord <- order_coordinate(locs, which.coord)
+    } else if(ordering=='maxmin') { 
+      ord <- order_maxmin_exact(locs)
+    } else if(ordering=='outsidein') {
+      ord <- order_outsidein(locs)
+    } else if(ordering=='none') {
+      ord <- seq(n)
+    }
+    
+    ord.z           <- ord
+    locsord         <- locs[ord, , drop=FALSE]
+    obs             <- rep(TRUE, n)
+    ordering.pred   <- 'general'
+    
+  } else {    # prediction is desired
+    
+    n.p                 <- nrow(locs.pred)
+    locs.all            <- rbind(locs, locs.pred)
+    observed.obspred    <- c(rep(TRUE, n), rep(FALSE, n.p))
+    
+    if(missing(ordering.pred)) {
+      if(spatial.dim==1 & ordering=='coord') ordering.pred <- 'general' else ordering.pred <- 'obspred'
+    }
+      
+    if(ordering.pred=='general'){
+      if(ordering=='coord') ord <- order_coordinate(locs.all) else ord <- order_maxmin_exact(locs.all)
+      ord.obs <- ord[ord<=n]
+    } else {
+      if(ordering=='coord') {
+        ord.obs   <- order_coordinate(locs, which.coord)
+        ord.pred  <- order_coordinate(locs.pred, which.coord)
+      } else if(ordering=='none') {
+        ord.obs   <- seq(n)
+        ord.pred  <- seq(n.p)
+      } else {
+        temp      <- order_maxmin_exact_obs_pred(locs, locs.pred)
+        ord.obs   <- temp$ord
+        ord.pred  <- temp$ord_pred
+      }
+      ord <- c(ord.obs, ord.pred+n)
+    }
+    
+    ord.z     <- ord.obs
+    locsord   <- locs.all[ord, , drop=FALSE]
+    obs       <- observed.obspred[ord]
+  }
+  
+  ##### Obtain conditioning sets #####
+  if( conditioning == 'mra' ) {
+    
+    NNarray <- findOrderedNN_mra(locsord, mra.options, m, verbose)
+    if(!methods::hasArg(m)) m <- ncol(NNarray) - 1
+    
+  } else if( conditioning %in% c('firstm', 'NN')) {
+    
+    if(spatial.dim == 1) {
+      NNarray <- findOrderedNN_kdtree2(locsord, m)
+    } else {
+      NNarray <- GpGp::find_ordered_nn(locsord, m)
+    }
+    
+    if(conditioning == 'firstm'){
+      first_m   <- NNarray[m+1,2:(m+1)]
+      n.all     <- nrow(NNarray)
+      
+      # if m=n-1, nothing to replace
+      if (m < n.all-1) NNarray[(m+2):n.all, 2:(m+1)] <- matrix(rep(first_m, n.all-m-1), byrow = TRUE, ncol = m)
+    }
+    
+  } else {
+    stop(paste0("conditioning='", conditioning, "' not defined"))
+  }
+  
+  if(!missing(locs.pred) & pred.cond == 'independent') {
+    if(ordering.pred == 'obspred') {
+      
+      NNarray.pred <- array(dim=c(n.p, m+1))
+      for(j in 1:n.p){
+        dists             <-fields::rdist(locsord[n+j, , drop=FALSE], locsord[1:n, , drop=FALSE])
+        m.nearest.obs     <- sort(order(dists)[1:m], decreasing=TRUE)
+        NNarray.pred[j,]  <- c(n+j, m.nearest.obs)
+      }
+      
+      NNarray[n+(1:n.p),] <- NNarray.pred
+      
+    } else {
+      print('indep. conditioning currently only implemented for obspred ordering')
+    }
+  }
+  
+  ##### Conditioning on y or z? #####
+  if(cond.yz == 'SGV'){
+    Cond    <- whichCondOnLatent(NNarray, firstind.pred=n+1)
+  } else if(cond.yz == 'SGVT'){
+    Cond    <- rbind(whichCondOnLatent(NNarray[1:n,]),matrix(TRUE,nrow=n.p,ncol=m+1))
+  } else if(cond.yz == 'y'){
+    Cond    <- matrix(NA, nrow(NNarray), ncol(NNarray)); Cond[!is.na(NNarray)] <- TRUE
+    #Cond=matrix(NA,nrow(NNarray),m+1); Cond[!is.na(NNarray)]=FALSE; Cond[,1]=TRUE
+  } else if(cond.yz == 'z'){
+    Cond    <- matrix(NA, nrow(NNarray), m+1); Cond[!is.na(NNarray)] <- FALSE; Cond[,1] <- TRUE
+  } else if(cond.yz %in% c('RVP','LK','zy')){
+    ### "trick" code into response-latent ('zy') ordering
+    
+    ## reset variables
+    obs       <- c(rep(TRUE, n), rep(FALSE, nrow(locsord)))
+    locsord   <- rbind(locsord[1:n, , drop=FALSE], locsord)
+    
+    ## specify neighbors
+    NNs <- FNN::get.knn(locsord[1:n, , drop=FALSE], m-1)$nn.index
+    if(cond.yz %in% c('RVP','zy')){
+      prev        <- (NNs<matrix(rep(1:n, m-1), nrow=n))
+      NNs[prev]   <- NNs[prev] + n # condition on latent y.obs if possible
+    }
+    
+    ## create NN array
+    NNarray.z   <- cbind(1:n, matrix(nrow=n, ncol=m))
+    NNarray.y   <- cbind((1:n)+n, 1:n, NNs)
+    if(missing(locs.pred)){
+      NNarray.yp      <- matrix(nrow=0, ncol=m+1)
+      ordering.pred   <- 'obspred'
+    } else {
+      if(ordering.pred!='obspred') print('Warning: ZY only implemented for obspred ordering')
+      if(cond.yz=='zy'){
+        NNarray.yp                <- NNarray[n+(1:n.p), ] + n
+      } else {
+        NNarray.yp                <- NNarray[n+(1:n.p), ]
+        NNarray.yp[NNarray.yp>n]  <- NNarray.yp[NNarray.yp>n] + n
+      }
+    }
+    NNarray <- rbind(NNarray.z, NNarray.y, NNarray.yp)
+    
+    ## conditioning
+    Cond      <- (NNarray>n); Cond[,1] <- TRUE
+    cond.yz   <- 'zy'
+    
+  } else {
+    stop(paste0("cond.yz='", cond.yz, "' not defined"))
+  }
+  
+  ##### Determine the sparsity structure of U #####
+  U.prep <- U_sparsity(locsord, NNarray, obs, Cond)
+  
+  ##### Return an object that specifies the correlation-based Vecchia approximation #####
+  vecchia.approx <- list(locsord=locsord, obs=obs, ord=ord, ord.z=ord.z, ord.pred=ordering.pred, U.prep=U.prep, cond.yz=cond.yz, conditioning=conditioning)
+  return(vecchia.approx)
 }
