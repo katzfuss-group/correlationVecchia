@@ -12,6 +12,7 @@
 
 library(GPvecchia)
 
+source("")
 
 ####################################################################
 #### corrvecchia_specify()
@@ -157,6 +158,7 @@ corrvecchia_specify_knownparams <- function(locs, m, ordering, which.coord=NULL,
       ord <- order_coordinate(locs, which.coord)
     } else if(ordering == 'maxmin') { 
       ord <- order_maxmin_exact(locs)
+      # ord <- order_maxmin_correlation(locs, covmodel, covparms)
     } else if(ordering == 'outsidein') {
       ord <- order_outsidein(locs)
     } else if(ordering == 'none') {
@@ -300,3 +302,6 @@ corrvecchia_specify_knownparams <- function(locs, m, ordering, which.coord=NULL,
   vecchia.approx <- list(locsord=locsord, obs=obs, ord=ord, ord.z=ord.z, ord.pred=ordering.pred, U.prep=U.prep, cond.yz=cond.yz, conditioning=conditioning)
   return(vecchia.approx)
 }
+
+
+
