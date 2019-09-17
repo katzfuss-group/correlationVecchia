@@ -153,13 +153,13 @@ corrvecchia_specify_knownparams <- function(locs, m, ordering, which.coord=NULL,
   ##### Order locs and z #####
   if(missing(locs.pred)){  # no prediction
     
-    if(ordering=='coord') { 
+    if(ordering == 'coord') { 
       ord <- order_coordinate(locs, which.coord)
-    } else if(ordering=='maxmin') { 
+    } else if(ordering == 'maxmin') { 
       ord <- order_maxmin_exact(locs)
-    } else if(ordering=='outsidein') {
+    } else if(ordering == 'outsidein') {
       ord <- order_outsidein(locs)
-    } else if(ordering=='none') {
+    } else if(ordering == 'none') {
       ord <- seq(n)
     }
     
@@ -175,17 +175,17 @@ corrvecchia_specify_knownparams <- function(locs, m, ordering, which.coord=NULL,
     observed.obspred    <- c(rep(TRUE, n), rep(FALSE, n.p))
     
     if(missing(ordering.pred)) {
-      if(spatial.dim==1 & ordering=='coord') ordering.pred <- 'general' else ordering.pred <- 'obspred'
+      if(spatial.dim == 1 & ordering == 'coord') ordering.pred <- 'general' else ordering.pred <- 'obspred'
     }
       
-    if(ordering.pred=='general'){
-      if(ordering=='coord') ord <- order_coordinate(locs.all) else ord <- order_maxmin_exact(locs.all)
-      ord.obs <- ord[ord<=n]
+    if(ordering.pred == 'general'){
+      if(ordering == 'coord') ord <- order_coordinate(locs.all) else ord <- order_maxmin_exact(locs.all)
+      ord.obs <- ord[ord <= n]
     } else {
-      if(ordering=='coord') {
+      if(ordering == 'coord') {
         ord.obs   <- order_coordinate(locs, which.coord)
         ord.pred  <- order_coordinate(locs.pred, which.coord)
-      } else if(ordering=='none') {
+      } else if(ordering == 'none') {
         ord.obs   <- seq(n)
         ord.pred  <- seq(n.p)
       } else {
@@ -216,7 +216,7 @@ corrvecchia_specify_knownparams <- function(locs, m, ordering, which.coord=NULL,
     }
     
     if(conditioning == 'firstm'){
-      first_m   <- NNarray[m+1,2:(m+1)]
+      first_m   <- NNarray[m+1, 2:(m+1)]
       n.all     <- nrow(NNarray)
       
       # if m=n-1, nothing to replace
@@ -230,9 +230,9 @@ corrvecchia_specify_knownparams <- function(locs, m, ordering, which.coord=NULL,
   if(!missing(locs.pred) & pred.cond == 'independent') {
     if(ordering.pred == 'obspred') {
       
-      NNarray.pred <- array(dim=c(n.p, m+1))
+      NNarray.pred <- array(dim = c(n.p, m+1))
       for(j in 1:n.p){
-        dists             <-fields::rdist(locsord[n+j, , drop=FALSE], locsord[1:n, , drop=FALSE])
+        dists             <- fields::rdist(locsord[n+j, , drop=FALSE], locsord[1:n, , drop=FALSE])
         m.nearest.obs     <- sort(order(dists)[1:m], decreasing=TRUE)
         NNarray.pred[j,]  <- c(n+j, m.nearest.obs)
       }
@@ -264,19 +264,19 @@ corrvecchia_specify_knownparams <- function(locs, m, ordering, which.coord=NULL,
     ## specify neighbors
     NNs <- FNN::get.knn(locsord[1:n, , drop=FALSE], m-1)$nn.index
     if(cond.yz %in% c('RVP','zy')){
-      prev        <- (NNs<matrix(rep(1:n, m-1), nrow=n))
+      prev        <- (NNs < matrix(rep(1:n, m-1), nrow = n))
       NNs[prev]   <- NNs[prev] + n # condition on latent y.obs if possible
     }
     
     ## create NN array
-    NNarray.z   <- cbind(1:n, matrix(nrow=n, ncol=m))
-    NNarray.y   <- cbind((1:n)+n, 1:n, NNs)
+    NNarray.z   <- cbind(1:n, matrix(nrow = n, ncol = m))
+    NNarray.y   <- cbind((1:n) + n, 1:n, NNs)
     if(missing(locs.pred)){
-      NNarray.yp      <- matrix(nrow=0, ncol=m+1)
+      NNarray.yp      <- matrix(nrow = 0, ncol = m + 1)
       ordering.pred   <- 'obspred'
     } else {
-      if(ordering.pred!='obspred') print('Warning: ZY only implemented for obspred ordering')
-      if(cond.yz=='zy'){
+      if(ordering.pred != 'obspred') print('Warning: ZY only implemented for obspred ordering')
+      if(cond.yz == 'zy'){
         NNarray.yp                <- NNarray[n+(1:n.p), ] + n
       } else {
         NNarray.yp                <- NNarray[n+(1:n.p), ]
@@ -286,7 +286,7 @@ corrvecchia_specify_knownparams <- function(locs, m, ordering, which.coord=NULL,
     NNarray <- rbind(NNarray.z, NNarray.y, NNarray.yp)
     
     ## conditioning
-    Cond      <- (NNarray>n); Cond[,1] <- TRUE
+    Cond      <- (NNarray > n); Cond[ ,1] <- TRUE
     cond.yz   <- 'zy'
     
   } else {
