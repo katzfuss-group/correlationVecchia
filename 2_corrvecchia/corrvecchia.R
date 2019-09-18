@@ -70,14 +70,24 @@ corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", conditioning
 # quilt.plot(locs[,1], locs[,2], y)
 # 
 # sim.iso     <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", conditioning = "NN", covmodel = cov.iso, covparms = covparms)
-# sim.aniso   <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", conditioning = "NN", covmodel = cov.aniso, covparms = covparms)
 # 
 # Sigma.ord       <- cov.aniso(sim.iso$locsord, covparms) # true cov in appropriate ordering
-# U               <- createU(sim.iso, c(1, 0.1, 0.5), nugget, covmodel = Sigma.ord)$U
+# U               <- createU(sim.iso, c(1, 0.1, 0.5), 0, covmodel = Sigma.ord)$U
 # revord          <- order(sim.iso$ord)
 # Sigma.hat       <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
+# source("2_corrvecchia/kldiv.R")
 # kls             <- kldiv(Sigma, Sigma.hat)
-
+# kls
+# 
+# sim.aniso   <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", conditioning = "NN", covmodel = cov.aniso, covparms = covparms)
+# 
+# Sigma.ord       <- cov.aniso(sim.aniso$locsord, covparms) # true cov in appropriate ordering
+# U               <- createU(sim.aniso, c(1, 0.1, 0.5), 0, covmodel = Sigma.ord)$U
+# revord          <- order(sim.aniso$ord)
+# Sigma.hat       <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
+# source("2_corrvecchia/kldiv.R")
+# kls             <- kldiv(Sigma, Sigma.hat)
+# kls
 
 distance_correlation <- function(locsord, covmodel, covparms)
 {
