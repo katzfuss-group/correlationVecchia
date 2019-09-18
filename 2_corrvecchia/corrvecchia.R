@@ -29,7 +29,7 @@ require(FNN)
 #' @param conditioning: 'NN' (nearest neighbor)
 #' 
 #' @param covmodel: covariance function
-#' @param covparms: covariance parameters as a vector
+#' @param covparms: covariance parameters as a vector (variance, range, degree of anisotropy)
 #' 
 corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", conditioning = "NN", covmodel, covparms)
 {
@@ -43,20 +43,29 @@ corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", conditioning
   dist.matrix   <- distance_correlation(locsord, covmodel, covparms)
   cond.sets     <- conditioning_nn(m, dist.matrix)
     
-  vecchia.approx <- generate_vecchia(locsord = locsord, ord = ord, ord.pred='general', cond.yz = 'false', conditioning = 'NN')
+  vecchia.approx <- list(locsord = locsord, ord = ord, ord.pred='general', cond.yz = 'false', conditioning = 'NN')
   return(vecchia.approx)
   
 }
 
-# locs          <- matrix(runif(30^2 * 2, 0, 1), 30^2, 2)
-# m             <- 30
-# #covmodel
+# locs          <- matrix(runif(15^2 * 2, 0, 1), 15^2, 2)
+# n             <- 15^2
+# m             <- 15
+# # covmodel
 # cov.iso       <- function(locs, covparms) covparms[1] * exp(-rdist(locs) / covparms[2])
 # cov.aniso     <- function(locs, covparms) covparms[1] * exp(-rdist(cbind(locs[ ,1] * covparms[3], locs[,2])) / covparms[2])
-# covparms      <- c(1, 1, 5)
+# covparms      <- c(1, 0.1, 10)
+# 
+# # true cov matrix
+# Sigma <- cov.aniso(locs, covparms)
+# 
+# # Visualize the process
+# y <- as.numeric(t(chol(Sigma)) %*% rnorm(n))
+# quilt.plot(locs[,1], locs[,2], y)
 # 
 # sim.iso     <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", conditioning = "NN", covmodel = cov.iso, covparms = covparms)
 # sim.aniso   <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", conditioning = "NN", covmodel = cov.aniso, covparms = covparms)
+
 
 distance_correlation <- function(locsord, covmodel, covparms)
 {
@@ -116,11 +125,11 @@ conditioning_nn <- function(m, dist.matrix)
 {
   # initialize an output object NN which is a n*n matrix
   n     <- nrow(dist.matrix)
-  NN    <- matrix(rep(NA, n^2), nrow = n, ncol = n) ; NN[1, 1] <- 1
+  NN    <- matrix(rep(NA, n^2), nrow = n, ncol = m + 1) ; NN[1, 1] <- 1
   
   # Find the nearest neighbor conditioning set for each i-th location using the 'dist_to_knn()' function 
   for(i in 2:n) {
-    k               <- min(i, m) # the number of neighbors of the i-th observation
+    k               <- min(i, m + 1) # the number of neighbors of the i-th observation
     NN[i, seq(k)]   <- scanstatistics::dist_to_knn(dist.matrix[seq(i), seq(i)], k = k)[i, seq(k)]
   }
   
@@ -132,6 +141,7 @@ conditioning_nn <- function(m, dist.matrix)
 # dist.matrix <- as.matrix(dist(locs))
 # m <- 3
 # conditioning_nn(m, dist.matrix)
+# GpGp::find_ordered_nn(locs, m)
 # 
 # # Test validity of dist_to_knn()
 # locs <- matrix(runif(100, 0, 1), 50, 2)
