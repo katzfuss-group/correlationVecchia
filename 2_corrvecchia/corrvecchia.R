@@ -18,12 +18,10 @@ require(scanstatistics)
 require(fields)
 require(FNN)
 
-
 ####################################################################
 #### corrvecchia_knownCovparms()
 ####################################################################
 
-#' @param dat: the observed data
 #' @param locs: nxd matrix of observed locs
 #' @param m: Number of nearby points to condition on
 #' 
@@ -33,7 +31,7 @@ require(FNN)
 #' @param covmodel: covariance function
 #' @param covparms: covariance parameters as a vector
 #' 
-corrvecchia_knownCovparms <- function(dat, locs, m, ordering = "maxmin", conditioning = "NN", covmodel, covparms)
+corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", conditioning = "NN", covmodel, covparms)
 {
   
   p     <- ncol(locs)
@@ -44,14 +42,21 @@ corrvecchia_knownCovparms <- function(dat, locs, m, ordering = "maxmin", conditi
   
   dist.matrix   <- distance_correlation(locsord, covmodel, covparms)
   cond.sets     <- conditioning_nn(m, dist.matrix)
-  
-  # sparsity structure
-  
-  vecchia.approx <- generate_vecchia()
+    
+  vecchia.approx <- generate_vecchia(locsord = locsord, ord = ord, ord.pred='general', cond.yz = 'false', conditioning = 'NN')
   return(vecchia.approx)
   
 }
 
+# locs          <- matrix(runif(30^2 * 2, 0, 1), 30^2, 2)
+# m             <- 30
+# #covmodel
+# cov.iso       <- function(locs, covparms) covparms[1] * exp(-rdist(locs) / covparms[2])
+# cov.aniso     <- function(locs, covparms) covparms[1] * exp(-rdist(cbind(locs[ ,1] * covparms[3], locs[,2])) / covparms[2])
+# covparms      <- c(1, 1, 5)
+# 
+# sim.iso     <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", conditioning = "NN", covmodel = cov.iso, covparms = covparms)
+# sim.aniso   <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", conditioning = "NN", covmodel = cov.aniso, covparms = covparms)
 
 distance_correlation <- function(locsord, covmodel, covparms)
 {
