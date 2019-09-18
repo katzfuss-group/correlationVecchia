@@ -63,9 +63,8 @@ conditioning_nn <- function(m, dist.matrix)
   n     <- nrow(dist.matrix)
   NN    <- matrix(rep(NA, n^2), nrow = n, ncol = n) ; NN[1, 1] <- 1
   for(i in 2:n){
-    k                   <- min(i, m)
-    dist.matrix.nested  <- dist.matrix[seq(i), seq(i)]
-    NN[i, seq(k)]       <- scanstatistics::dist_to_knn(dist.matrix.nested, k = min(i, m))[i, seq(k)]
+    k               <- min(i, m)
+    NN[i, seq(k)]   <- scanstatistics::dist_to_knn(dist.matrix[seq(i), seq(i)], k = min(i, m))[i, seq(k)]
   }
   
   return(NN)
