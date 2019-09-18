@@ -64,7 +64,10 @@ conditioning_nn <- function(m, dist.matrix)
   NN    <- matrix(rep(NA, n^2), nrow = n, ncol = n) ; NN[1, 1] <- 1
   
   # Find the nearest neighbor conditioning set for each i-th location using the 'dist_to_knn()' function 
-  for(i in 2:n) NN[i, seq(k)] <- scanstatistics::dist_to_knn(dist.matrix[seq(i), seq(i)], k = min(i, m))[i, seq(k)]
+  for(i in 2:n) {
+    k               <- min(i, m) # the number of neighbors of the i-th observation
+    NN[i, seq(k)]   <- scanstatistics::dist_to_knn(dist.matrix[seq(i), seq(i)], k = k)[i, seq(k)]
+  }
   
   return(NN)
 }
@@ -74,14 +77,14 @@ conditioning_nn <- function(m, dist.matrix)
 # dist.matrix <- as.matrix(dist(locs))
 # m <- 3
 # conditioning_nn(m, dist.matrix)
-
+# 
 # # Test validity of dist_to_knn()
 # locs <- matrix(runif(100, 0, 1), 50, 2)
 # locsord <- locs
-# 
+#
 # nn.spatstat <- nnwhich(locs, k = 1:10)
 # head(nn.spatstat)
-# 
+#
 # nn.scanstat <- dist_to_knn(dist(locs, diag = T, upper = T), k = 10)
 # head(nn.scanstat)
 
