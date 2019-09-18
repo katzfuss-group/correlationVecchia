@@ -13,6 +13,7 @@
 require(spatstat)
 require(scanstatistics)
 require(dplyr)
+require(fields)
 
 ####################################################################
 #### corrvecchia_knownCovparms()
@@ -54,8 +55,21 @@ order_maxmin <- function(locs)
 
 distance_correlation <- function(locsord, covmodel, covparms)
 {
-  
+  covparms[1]   <- 1 # correlation function
+  dist.matrix   <- 1 - covmodel(locsord, covparms) # 1-rho
+
+  return(dist.matrix)
 }
+
+# # Test code for distance_correlation()
+# locs        <- matrix(runif(20, 0, 1), 10, 2)
+# cov.iso     <- function(locs, covparms) covparms[1] * exp(-rdist(locs) / covparms[2])
+# cov.aniso   <- function(locs, covparms) covparms[1] * exp(-rdist(cbind(locs[ ,1] * covparms[3], locs[,2])) / covparms[2])
+# covparms    <- c(1, 1, 5)
+# 
+# distance_correlation(locs, cov.iso, covparms[1:2])
+# distance_correlation(locs, cov.aniso, covparms)
+
 
 conditioning_nn <- function(m, dist.matrix)
 {
