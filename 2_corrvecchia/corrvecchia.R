@@ -77,19 +77,15 @@ conditioning_nn <- function(m, dist.matrix)
 # m <- 3
 # conditioning_nn(m, dist.matrix)
 
-
-
-
-### Test validity of dist_to_knn() ###
-
-locs <- matrix(runif(100, 0, 1), 50, 2)
-locsord <- locs
-
-nn.spatstat <- nnwhich(locs, k = 1:10)
-head(nn.spatstat)
-
-nn.scanstat <- dist_to_knn(dist(locs, diag = T, upper = T), k = 10)
-head(nn.scanstat)
+# # Test validity of dist_to_knn()
+# locs <- matrix(runif(100, 0, 1), 50, 2)
+# locsord <- locs
+# 
+# nn.spatstat <- nnwhich(locs, k = 1:10)
+# head(nn.spatstat)
+# 
+# nn.scanstat <- dist_to_knn(dist(locs, diag = T, upper = T), k = 10)
+# head(nn.scanstat)
 
 
 
