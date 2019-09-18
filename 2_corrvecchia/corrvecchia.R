@@ -28,6 +28,7 @@
 #' @param m: Number of nearby points to condition on
 #' 
 #' @param ordering: 'maxmin'
+#' @param ordering.method: 'euclidean', 'correlation'
 #' @param conditioning: 'NN' (nearest neighbor)
 #' 
 #' @param covmodel: covariance function
