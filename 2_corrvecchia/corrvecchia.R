@@ -18,6 +18,8 @@ require(scanstatistics)
 require(fields)
 require(FNN)
 
+library(GPvecchia)
+
 ####################################################################
 #### corrvecchia_knownCovparms()
 ####################################################################
@@ -42,10 +44,14 @@ corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", conditioning
   
   dist.matrix   <- distance_correlation(locsord, covmodel, covparms)
   cond.sets     <- conditioning_nn(m, dist.matrix)
-    
-  vecchia.approx <- list(locsord = locsord, ord = ord, ord.pred='general', cond.yz = 'false', conditioning = 'NN')
-  return(vecchia.approx)
   
+  Cond          <- matrix(NA, nrow(cond.sets),ncol(cond.sets)); Cond[!is.na(cond.sets)] <- TRUE
+    
+  obs           <- rep(TRUE,n)
+  U.prep        <- U_sparsity(locsord, cond.sets, obs, Cond)
+  
+  vecchia.approx <- list(locsord = locsord, obs = obs, ord = ord, ord.z = ord, ord.pred='general', U.prep = U.prep, cond.yz = 'false', conditioning = 'NN')
+  return(vecchia.approx)
 }
 
 # locs          <- matrix(runif(15^2 * 2, 0, 1), 15^2, 2)
@@ -65,6 +71,12 @@ corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", conditioning
 # 
 # sim.iso     <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", conditioning = "NN", covmodel = cov.iso, covparms = covparms)
 # sim.aniso   <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", conditioning = "NN", covmodel = cov.aniso, covparms = covparms)
+# 
+# Sigma.ord       <- cov.aniso(sim.iso$locsord, covparms) # true cov in appropriate ordering
+# U               <- createU(sim.iso, c(1, 0.1, 0.5), nugget, covmodel = Sigma.ord)$U
+# revord          <- order(sim.iso$ord)
+# Sigma.hat       <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
+# kls             <- kldiv(Sigma, Sigma.hat)
 
 
 distance_correlation <- function(locsord, covmodel, covparms)
@@ -125,7 +137,7 @@ conditioning_nn <- function(m, dist.matrix)
 {
   # initialize an output object NN which is a n*n matrix
   n     <- nrow(dist.matrix)
-  NN    <- matrix(rep(NA, n^2), nrow = n, ncol = m + 1) ; NN[1, 1] <- 1
+  NN    <- matrix(rep(NA, n * (m + 1)), nrow = n, ncol = m + 1) ; NN[1, 1] <- 1
   
   # Find the nearest neighbor conditioning set for each i-th location using the 'dist_to_knn()' function 
   for(i in 2:n) {
