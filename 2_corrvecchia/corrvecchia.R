@@ -28,23 +28,21 @@ require(FNN)
 #' @param m: Number of nearby points to condition on
 #' 
 #' @param ordering: 'maxmin'
-#' @param ordering.method: 'euclidean' or 'correlation' distance
 #' @param conditioning: 'NN' (nearest neighbor)
 #' 
 #' @param covmodel: covariance function
 #' @param covparms: covariance parameters as a vector
 #' 
-corrvecchia_knownCovparms <- function(dat, locs, m, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", covmodel, covparms)
+corrvecchia_knownCovparms <- function(dat, locs, m, ordering = "maxmin", conditioning = "NN", covmodel, covparms)
 {
   
   p     <- ncol(locs)
   n     <- nrow(locs)
   
-  dist.matrix   <- distance_correlation(locs, covmodel, covparms)
-  ord           <- ifelse(ordering.method == "euclidean", 
-                          order_maxmin_euclidean(locs),
-                          order_maxmin_correlation(locs, dist.matrix))
-  locsord       <- locs[ord, , drop=FALSE]
+  ord           <- order_maxmin_euclidean(locs)
+  locsord       <- locs[ord, ]
+  
+  dist.matrix   <- distance_correlation(locsord, covmodel, covparms)
   cond.sets     <- conditioning_nn(m, dist.matrix)
   
   # sparsity structure
@@ -107,12 +105,6 @@ order_maxmin_euclidean <- function(locs)
 # locs <- matrix(runif(1000, 0, 1), 500, 2)
 # library(microbenchmark)
 # microbenchmark(which.min(diag(tcrossprod(locs)) -2 * as.numeric(tcrossprod(locs, cen))), which.min(rowSums((locs - matrix(as.numeric(cen), nrow = 500, ncol = 2, byrow = T))^2)))
-
-
-order_maxmin_correlation <- function(locs, dist.matrix)
-{
-  
-}
 
 
 conditioning_nn <- function(m, dist.matrix)
