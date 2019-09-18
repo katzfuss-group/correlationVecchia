@@ -40,7 +40,7 @@ corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", ordering.met
   p     <- ncol(locs)
   n     <- nrow(locs)
   
-  ord           <- ifelse(ordering.method == "euclidean", order_maxmin_euclidean(locs), order_maxmin_correlation(locs, covmodel, covparms))
+  ord           <- if(ordering.method == "euclidean") order_maxmin_euclidean(locs) else order_maxmin_correlation(locs, covmodel, covparms)
   locsord       <- locs[ord, ]
   
   dist.matrix   <- distance_correlation(locsord, covmodel, covparms)
