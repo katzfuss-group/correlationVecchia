@@ -10,15 +10,15 @@
 #### load required packages
 ####################################################################
 
-require(Rfast)
-
-require(spatstat)
-require(scanstatistics)
-
-require(fields)
-require(FNN)
-
-library(GPvecchia)
+# require(Rfast)
+# 
+# require(spatstat)
+# require(scanstatistics)
+# 
+# require(fields)
+# require(FNN)
+# 
+# library(GPvecchia)
 
 ####################################################################
 #### corrvecchia_knownCovparms()
@@ -58,8 +58,8 @@ corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", conditioning
 # n             <- 15^2
 # m             <- 15
 # # covmodel
-# cov.iso       <- function(locs, covparms) covparms[1] * exp(-rdist(locs) / covparms[2])
-# cov.aniso     <- function(locs, covparms) covparms[1] * exp(-rdist(cbind(locs[ ,1] * covparms[3], locs[,2])) / covparms[2])
+# cov.iso       <- function(locs, covparms) covparms[1] * exp(-fields::rdist(locs) / covparms[2])
+# cov.aniso     <- function(locs, covparms) covparms[1] * exp(-fields::rdist(cbind(locs[ ,1] * covparms[3], locs[,2])) / covparms[2])
 # covparms      <- c(1, 0.1, 10)
 # 
 # # true cov matrix
