@@ -10,10 +10,14 @@
 #### load required packages
 ####################################################################
 
+require(Rfast)
+
 require(spatstat)
 require(scanstatistics)
-require(dplyr)
+
 require(fields)
+require(FNN)
+
 
 ####################################################################
 #### corrvecchia_knownCovparms()
@@ -24,21 +28,23 @@ require(fields)
 #' @param m: Number of nearby points to condition on
 #' 
 #' @param ordering: 'maxmin'
+#' @param ordering.method: 'euclidean' or 'correlation' distance
 #' @param conditioning: 'NN' (nearest neighbor)
 #' 
 #' @param covmodel: covariance function
 #' @param covparms: covariance parameters as a vector
 #' 
-corrvecchia_knownCovparms <- function(dat, locs, m, ordering = "maxmin", conditioning = "NN", covmodel, covparms)
+corrvecchia_knownCovparms <- function(dat, locs, m, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", covmodel, covparms)
 {
   
   p     <- ncol(locs)
   n     <- nrow(locs)
   
-  ord       <- order_maxmin(locs)
-  locsord   <- locs[ord, , drop=FALSE]
-  
-  dist.matrix   <- distance_correlation(locsord, covmodel, covparms)
+  dist.matrix   <- distance_correlation(locs, covmodel, covparms)
+  ord           <- ifelse(ordering.method == "euclidean", 
+                          order_maxmin_euclidean(locs),
+                          order_maxmin_correlation(locs, dist.matrix))
+  locsord       <- locs[ord, , drop=FALSE]
   cond.sets     <- conditioning_nn(m, dist.matrix)
   
   # sparsity structure
@@ -48,16 +54,12 @@ corrvecchia_knownCovparms <- function(dat, locs, m, ordering = "maxmin", conditi
   
 }
 
-order_maxmin <- function(locs)
-{
-  
-}
 
 distance_correlation <- function(locsord, covmodel, covparms)
 {
   covparms[1]   <- 1 # correlation function
   dist.matrix   <- 1 - covmodel(locsord, covparms) # 1-rho
-
+  
   return(dist.matrix)
 }
 
@@ -69,6 +71,48 @@ distance_correlation <- function(locsord, covmodel, covparms)
 # 
 # distance_correlation(locs, cov.iso, covparms[1:2])
 # distance_correlation(locs, cov.aniso, covparms)
+
+
+order_maxmin_euclidean <- function(locs)
+{
+  n     <- nrow(locs)
+  p     <- ncol(locs)
+  ord   <- rep(NA, n)
+  cen   <- t(as.matrix(colMeans(locs)))
+  
+  ord[1]        <- which.min(rowSums((locs - matrix(as.numeric(cen), nrow = n, ncol = p, byrow = T))^2))
+  cand.argmax   <- seq(n)[seq(n) != ord[1]]
+  
+  cdist         <- fields::rdist(locs[cand.argmax, ], matrix(locs[ord[1], ], nrow = 1, ncol = 2))
+  ord[2]        <- cand.argmax[which.max(as.numeric(cdist))]
+  cand.argmax   <- cand.argmax[cand.argmax != ord[2]]
+  
+  for(j in 3:(n-1)){
+    cdist         <- fields::rdist(locs[cand.argmax, ], locs[ord[seq(j-1)], ])
+    cdist         <- Rfast::rowMins(cdist, value = T)
+    ord[j]        <- cand.argmax[which.max(cdist)]
+    cand.argmax   <- cand.argmax[cand.argmax != ord[j]]
+  } 
+  
+  ord[n]        <- cand.argmax
+  
+  return(ord)
+}
+
+# # Test code
+# locs <- matrix(runif(100, 0, 1), 50, 2)
+# identical(order_maxmin_euclidean(locs), GPvecchia::order_maxmin_exact(locs))
+# 
+# # Comparison in performance between two different approaches to find minimum
+# locs <- matrix(runif(1000, 0, 1), 500, 2)
+# library(microbenchmark)
+# microbenchmark(which.min(diag(tcrossprod(locs)) -2 * as.numeric(tcrossprod(locs, cen))), which.min(rowSums((locs - matrix(as.numeric(cen), nrow = 500, ncol = 2, byrow = T))^2)))
+
+
+order_maxmin_correlation <- function(locs, dist.matrix)
+{
+  
+}
 
 
 conditioning_nn <- function(m, dist.matrix)
@@ -101,7 +145,10 @@ conditioning_nn <- function(m, dist.matrix)
 #
 # nn.scanstat <- dist_to_knn(dist(locs, diag = T, upper = T), k = 10)
 # head(nn.scanstat)
-
+# 
+# # Comparison in performance between get.knn and dist_to_knn
+# library(microbenchmark)
+# microbenchmark(FNN::get.knn(locs, k = m), scanstatistics::dist_to_knn(dist(locs, diag = T, upper = T), k = 3))
 
 
 
