@@ -98,6 +98,14 @@ distance_correlation <- function(locs, covmodel, covparms)
   return(dist.matrix)
 }
 
+correlation <- function(locs, covmodel, covparms)
+{
+  covparms[1]   <- 1 # correlation function
+  corr.matrix   <- covmodel(locs, covparms) # 1-rho
+  
+  return(corr.matrix)
+}
+
 # # Test code for distance_correlation()
 # locs        <- matrix(runif(20, 0, 1), 10, 2)
 # cov.iso     <- function(locs, covparms) covparms[1] * exp(-fields::rdist(locs) / covparms[2])
@@ -144,16 +152,24 @@ order_maxmin_euclidean <- function(locs)
 # microbenchmark(which.min(diag(tcrossprod(locs)) -2 * as.numeric(tcrossprod(locs, cen))), which.min(rowSums((locs - matrix(as.numeric(cen), nrow = 500, ncol = 2, byrow = T))^2)))
 
 
-### Caution: order_maxmin_correlation is not completed. ###
-order_maxmin_correlation <- function(locs, covmodel, covparms)
+### Caution: old version is literally matched with the algorithm but cause numerical issues. ###
+order_maxmin_correlation_old <- function(locs, covmodel, covparms, initial.pt = NULL)
 {
   n     <- nrow(locs)
   p     <- ncol(locs)
   ord   <- rep(NA, n)
-  cen   <- t(as.matrix(colMeans(locs)))
   d     <- distance_correlation(locs, covmodel, covparms)
   
-  ord[1]        <- which.min(rowSums((locs - matrix(as.numeric(cen), nrow = n, ncol = p, byrow = T))^2))
+  if( is.null(initial.pt) ){
+    ord[1]        <-  which.min(rowSums(d))
+  } else if( is.numeric(initial.pt) ) {
+    ord[1]        <- initial.pt
+  } else if( initial.pt == 'center' ) {
+    cen           <- t(as.matrix(colMeans(locs)))
+    ord[1]        <- which.min(rowSums((locs - matrix(as.numeric(cen), nrow = n, ncol = p, byrow = T))^2))
+  } else { # at random
+    ord[1]        <- sample(1:n, 1)
+  }
   cand.argmax   <- seq(n)[seq(n) != ord[1]]
   
   ind           <- as.matrix(expand.grid(cand.argmax, ord[1]))
@@ -174,6 +190,43 @@ order_maxmin_correlation <- function(locs, covmodel, covparms)
   return(ord)
 }
 
+order_maxmin_correlation <- function(locs, covmodel, covparms, initial.pt = NULL)
+{
+  n     <- nrow(locs)
+  p     <- ncol(locs)
+  ord   <- rep(NA, n)
+  dinv  <- correlation(locs, covmodel, covparms)
+  
+  if( is.null(initial.pt) ){
+    ord[1]        <-  which.max(rowSums(dinv))
+  } else if( is.numeric(initial.pt) ) {
+    ord[1]        <- initial.pt
+  } else if( initial.pt == 'center' ) {
+    cen           <- t(as.matrix(colMeans(locs)))
+    ord[1]        <- which.min(rowSums((locs - matrix(as.numeric(cen), nrow = n, ncol = p, byrow = T))^2))
+  } else { # at random
+    ord[1]        <- sample(1:n, 1)
+  }
+  cand.argmax   <- seq(n)[seq(n) != ord[1]]
+  
+  ind           <- as.matrix(expand.grid(cand.argmax, ord[1]))
+  cdist         <- dinv[ind]
+  ord[2]        <- cand.argmax[which.min(as.numeric(cdist))]
+  cand.argmax   <- cand.argmax[cand.argmax != ord[2]]
+  
+  for(j in 3:(n-1)){
+    ind           <- as.matrix(expand.grid(cand.argmax, ord[seq(j-1)]))
+    cdist         <- matrix(dinv[ind], nrow = length(cand.argmax), ncol = j-1, byrow = F)
+    cdist         <- Rfast::rowMaxs(cdist, value = T)
+    ord[j]        <- cand.argmax[which.min(cdist)]
+    cand.argmax   <- cand.argmax[cand.argmax != ord[j]]
+  } 
+  
+  ord[n]        <- cand.argmax
+  
+  return(ord)
+}
+
 # # Test code
 # locs <- matrix(runif(100, 0, 1), 50, 2)
 # cov.iso       <- function(locs, covparms) covparms[1] * exp(-fields::rdist(locs) / covparms[2])
@@ -181,12 +234,18 @@ order_maxmin_correlation <- function(locs, covmodel, covparms)
 # covparms      <- c(1, 0.1, 10)
 # covmodel      <- cov.iso
 # 
-# identical(order_maxmin_euclidean(locs), order_maxmin_correlation(locs, cov.iso, covparms), GPvecchia::order_maxmin_exact(locs))
-# 
 # order_maxmin_euclidean(locs)
-# locs.trans <- cbind(locs[,1]*covparms[3],locs[,2])
+# order_maxmin_correlation_old(locs, cov.iso, covparms, initial.pt = 'center')
+# order_maxmin_correlation(locs, cov.iso, covparms, initial.pt = 'center')
+# GPvecchia::order_maxmin_exact(locs)
+# 
+# locs.trans <- cbind(locs[,1]*covparms[3],locs[,2]) / covparms[2]
+# covmodel      <- cov.aniso
+# 
 # order_maxmin_euclidean(locs.trans)
-# order_maxmin_correlation(locs, cov.aniso, covparms)
+# GPvecchia::order_maxmin_exact(locs.trans)
+# order_maxmin_correlation_old(locs, cov.aniso, covparms, initial.pt = 2)
+# order_maxmin_correlation(locs, cov.aniso, covparms, initial.pt = 2)
 
 
 conditioning_nn <- function(m, dist.matrix)
