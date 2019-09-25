@@ -30,17 +30,18 @@
 #' @param ordering: 'maxmin'
 #' @param ordering.method: 'euclidean', 'correlation'
 #' @param conditioning: 'NN' (nearest neighbor)
+#' @param initial.pt: NULL, 'center', integer, 'random'
 #' 
 #' @param covmodel: covariance function (or matrix)
 #' @param covparms: covariance parameters as a vector (variance, range, degree of anisotropy). The first element must be its variance.
 #' 
-corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", covmodel, covparms)
+corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", covmodel, covparms)
 {
   
   p     <- ncol(locs)
   n     <- nrow(locs)
   
-  ord           <- if(ordering.method == "euclidean") order_maxmin_euclidean(locs) else order_maxmin_correlation(locs, covmodel, covparms)
+  ord           <- if(ordering.method == "euclidean") order_maxmin_euclidean(locs) else order_maxmin_correlation(locs, covmodel, covparms, initial.pt)
   locsord       <- locs[ord, ]
   
   dist.matrix   <- distance_correlation(locsord, covmodel, covparms)
