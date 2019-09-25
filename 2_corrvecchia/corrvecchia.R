@@ -92,16 +92,28 @@ corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", ordering.met
 
 distance_correlation <- function(locs, covmodel, covparms)
 {
-  covparms[1]   <- 1 # correlation function
-  dist.matrix   <- 1 - covmodel(locs, covparms) # 1-rho
-  
+  if(is.function(covmodel)) {
+    covparms[1]   <- 1 # correlation function
+    dist.matrix   <- 1 - covmodel(locs, covparms) # 1-rho
+  } else if(is.matrix(covmodel)) {
+    dist.matrix   <- 1 - covmodel / covparms[1]
+  } else {
+    dist.matrix   <- 1 - diag(1, nrow = nrow(locs), ncol = nrow(locs))
+  }
+
   return(dist.matrix)
 }
 
 correlation <- function(locs, covmodel, covparms)
 {
-  covparms[1]   <- 1 # correlation function
-  corr.matrix   <- covmodel(locs, covparms) # 1-rho
+  if(is.function(covmodel)) {
+    covparms[1]   <- 1 # correlation function
+    corr.matrix   <- covmodel(locs, covparms) # 1-rho
+  } else if(is.matrix(covmodel)) {
+    corr.matrix   <- covmodel / covparms[1]
+  } else {
+    corr.matrix   <- diag(1, nrow = nrow(locs), ncol = nrow(locs))
+  }
   
   return(corr.matrix)
 }
@@ -114,6 +126,27 @@ correlation <- function(locs, covmodel, covparms)
 # 
 # distance_correlation(locs, cov.iso, covparms[1:2])
 # distance_correlation(locs, cov.aniso, covparms)
+# 
+# M <- cov.iso(locs, covparms)
+# distance_correlation(locs, M, covparms[1:2])
+# 
+# M <- cov.aniso(locs, covparms)
+# distance_correlation(locs, cov.aniso, covparms)
+# 
+# # Test code for correlation()
+# locs        <- matrix(runif(20, 0, 1), 10, 2)
+# cov.iso     <- function(locs, covparms) covparms[1] * exp(-fields::rdist(locs) / covparms[2])
+# cov.aniso   <- function(locs, covparms) covparms[1] * exp(-fields::rdist(cbind(locs[ ,1] * covparms[3], locs[,2])) / covparms[2])
+# covparms    <- c(1, 1, 5)
+# 
+# correlation(locs, cov.iso, covparms[1:2])
+# correlation(locs, cov.aniso, covparms)
+# 
+# M <- cov.iso(locs, covparms)
+# correlation(locs, M, covparms[1:2])
+# 
+# M <- cov.aniso(locs, covparms)
+# correlation(locs, cov.aniso, covparms)
 
 
 order_maxmin_euclidean <- function(locs)
