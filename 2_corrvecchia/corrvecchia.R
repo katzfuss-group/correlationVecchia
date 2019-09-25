@@ -31,8 +31,8 @@
 #' @param ordering.method: 'euclidean', 'correlation'
 #' @param conditioning: 'NN' (nearest neighbor)
 #' 
-#' @param covmodel: covariance function
-#' @param covparms: covariance parameters as a vector (variance, range, degree of anisotropy)
+#' @param covmodel: covariance function (or matrix)
+#' @param covparms: covariance parameters as a vector (variance, range, degree of anisotropy). The first element must be its variance.
 #' 
 corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", covmodel, covparms)
 {
@@ -90,6 +90,7 @@ corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", ordering.met
 # kls             <- kldiv(Sigma, Sigma.hat)
 # kls
 
+### CAUTION: This function can cause numerical issue. Please use the 'correlation()' function, instead. ###
 distance_correlation <- function(locs, covmodel, covparms)
 {
   if(is.function(covmodel)) {
