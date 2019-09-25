@@ -30,7 +30,7 @@
 #' @param ordering: 'maxmin'
 #' @param ordering.method: 'euclidean', 'correlation'
 #' @param conditioning: 'NN' (nearest neighbor)
-#' @param initial.pt: NULL, 'center', integer, 'random'
+#' @param initial.pt: NULL = which.min(rowMeans(d)), center = euclidean-based center, integer = specify the first obs, 'random' = at random, and else = which.min(rowMeans(d))
 #' 
 #' @param covmodel: covariance function (or matrix)
 #' @param covparms: covariance parameters as a vector (variance, range, degree of anisotropy). The first element must be its variance.
@@ -202,8 +202,10 @@ order_maxmin_correlation_old <- function(locs, covmodel, covparms, initial.pt = 
   } else if( initial.pt == 'center' ) {
     cen           <- t(as.matrix(colMeans(locs)))
     ord[1]        <- which.min(rowSums((locs - matrix(as.numeric(cen), nrow = n, ncol = p, byrow = T))^2))
-  } else { # at random
+  } else if( initial.pt == 'random') { # at random
     ord[1]        <- sample(1:n, 1)
+  } else {
+    ord[1]        <-  which.min(rowSums(d))
   }
   cand.argmax   <- seq(n)[seq(n) != ord[1]]
   
@@ -239,8 +241,10 @@ order_maxmin_correlation <- function(locs, covmodel, covparms, initial.pt = NULL
   } else if( initial.pt == 'center' ) {
     cen           <- t(as.matrix(colMeans(locs)))
     ord[1]        <- which.min(rowSums((locs - matrix(as.numeric(cen), nrow = n, ncol = p, byrow = T))^2))
-  } else { # at random
+  } else if( initial.pt == 'random') { # at random
     ord[1]        <- sample(1:n, 1)
+  } else {
+    ord[1]        <-  which.max(rowSums(dinv))
   }
   cand.argmax   <- seq(n)[seq(n) != ord[1]]
   
