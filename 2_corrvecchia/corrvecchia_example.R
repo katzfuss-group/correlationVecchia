@@ -21,9 +21,9 @@ set.seed(12345)
 #### example 1 : degree of anisotropy = 1
 ####################################################################
 
-locs          <- matrix(runif(15^2 * 2, 0, 1), 15^2, 2)
 n             <- 15^2
 m             <- 10
+locs          <- matrix(runif(n * 2, 0, 1), n, 2)
 
 # covmodel
 cov.iso       <- function(locs, covparms) covparms[1] * exp(-fields::rdist(locs) / covparms[2])
@@ -76,9 +76,9 @@ kls
 #### example 2 : degree of anisotropy = 10
 ####################################################################
 
-locs          <- matrix(runif(15^2 * 2, 0, 1), 15^2, 2)
 n             <- 15^2
 m             <- 10
+locs          <- matrix(runif(n * 2, 0, 1), n, 2)
 
 # covmodel
 cov.iso       <- function(locs, covparms) covparms[1] * exp(-fields::rdist(locs) / covparms[2])
@@ -126,3 +126,74 @@ for(i in 1:4){
 kls
 # standard vecchia / pilot correlation-based vecchia / standard vecchia with the corrvecchia function / correlation-based vecchia with the corrvecchia function
 # 0.4090684634 0.0002972307 0.4090684634 0.0003749438
+
+####################################################################
+#### example 3: 
+####################################################################
+
+# spatially-varying standard deviation
+sigma <- function(loc) 1
+# spatially-varying local anisotropy (controlling both the range and direction of dependence)
+aniso_mat<- function(loc) {
+  
+  eta <- 0
+  rot.mat <- matrix(c(cos(eta), sin(eta), -sin(eta), cos(eta)), nrow = length(loc), ncol = length(loc), byrow = T)
+  
+  range <- c(1, 1)
+  diag.mat <- diag(range, nrow = length(loc))
+  
+  aniso.mat <- t(rot.mat) %*% diag.mat %*% rot.mat
+  
+  return(aniso.mat)
+}
+# matern's smoothness
+smoothness <- function(loc) .7*loc[1] + .2
+
+# v <- seq(0, 6, by = 0.05)
+# plot(v, Matern(v, smoothness = 0.2), type = 'l', col = 'red', lwd = 3)
+# lines(v, Matern(v, smoothness = 0.9), col = 'blue', lwd = 3)
+  
+# Risser MD, Calder CA (2015)
+matern_ns <- function(locs1, locs2 = NULL) {
+  
+  if(is.null(locs2)) locs2 = locs1
+  
+  n1 <- nrow(locs1) ; n2 <- nrow(locs2) ; d <- ncol(locs1)
+  
+  mat.cov <- matrix(NA, nrow = n1, ncol = n2)
+  
+  for(i in 1:n1){
+    for(j in 1:n2){
+      
+      sigma.i <- sigma(locs1[i, ]) ; sigma.j <- sigma(locs2[j, ])
+      SIGMA.i <- aniso_mat(locs1[i, ]) ; SIGMA.j <- aniso_mat(locs2[j, ])
+      sigma.ij <- sigma.i * sigma.j
+      norm.ij <- (SIGMA.i + SIGMA.j) / 2 
+      smooth.ij <- ( smoothness(locs1[i ])+smoothness(locs2[j, ]) ) / 2
+      
+      q.ij <- crossprod( locs1[i, ] - locs2[j, ], solve(norm.ij, locs1[i, ] - locs2[j, ]) )
+  
+      mat.cov[i,j] <- sigma.ij * Matern( sqrt(q.ij), nu = smooth.ij) / sqrt( determinant(norm.ij, logarithm = F)[[1]][1] )
+    }
+  }
+  
+  return(mat.cov)
+}
+
+n             <- 15^2
+m             <- 10
+locs          <- matrix(runif(n * 2, 0, 1), n, 2)
+
+# covmodel
+cov.iso       <- function(locs, covparms) covparms[1] * exp(-fields::rdist(locs) / covparms[2])
+cov.aniso     <- function(locs, covparms) covparms[1] * exp(-fields::rdist(cbind(locs[ ,1] * covparms[3], locs[,2])) / covparms[2])
+covparms      <- c(1, 0.1, 1)
+
+locs.trans    <- cbind(locs[, 1] * covparms[3], locs[, 2])
+
+# true cov matrix
+Sigma <- cov.aniso(locs, covparms)
+
+# Visualize the process
+y <- as.numeric(t(chol(Sigma)) %*% rnorm(n))
+fields::quilt.plot(locs[,1], locs[,2], y)
