@@ -534,3 +534,84 @@ kls
 # standard vecchia / standard vecchia with the corrvecchia function / correlation-based vecchia with the corrvecchia function
 # 5.75016585 0.14757086 0.05779561
 # 5.55710955 0.16784603 0.07602673
+
+
+####################################################################
+#### example 7: nonstaionary covariance with matrix-type covmodel (anisotropy is nonstationary)
+####################################################################
+
+covparms <- c(1)
+
+# spatially-varying standard deviation
+sigma <- function(loc) determinant(aniso_mat(loc), logarithm = F)[[1]][1]^0.25
+# spatially-varying local anisotropy (controlling both the range and direction of dependence)
+aniso_mat<- function(loc) {
+  
+  eta <- 0
+  rot.mat <- matrix(c(cos(eta), sin(eta), -sin(eta), cos(eta)), nrow = length(loc), ncol = length(loc), byrow = T)
+  
+  a <- function(loc) 0.47 * loc[1] + 0.03
+  
+  range <- c(a(loc)^(-2), 1)
+  diag.mat <- diag(range, nrow = length(loc))
+  
+  aniso.mat <- t(rot.mat) %*% diag.mat %*% rot.mat
+  
+  return(aniso.mat)
+}
+# matern's smoothness
+smoothness <- function(loc) 0.2 * exp(loc[1])
+
+# v <- seq(0, 6, by = 0.05)
+# plot(v, Matern(v, smoothness = 0.2), type = 'l', col = 'red', lwd = 3)
+# lines(v, Matern(v, smoothness = 0.9), col = 'blue', lwd = 3)
+
+n             <- 15^2
+m             <- 10
+locs          <- matrix(runif(n * 2, 0, 1), n, 2)
+
+# true cov matrix
+Sigma <- matern_ns(locs)
+
+matrixcalc::is.positive.definite(aniso_mat(c(1,1)))
+temp <- eigen(aniso_mat(c(1,1)))
+head(sort(temp$values))
+
+matrixcalc::is.positive.definite(Sigma)
+temp <- eigen(Sigma)
+head(sort(temp$values))
+
+# Visualize the process
+y <- as.numeric(t(chol(Sigma)) %*% rnorm(n))
+fields::quilt.plot(locs[,1], locs[,2], y)
+
+
+### specify vecchia approximations
+approx <- list()
+
+# standard vecchia
+approx[[1]]           <- vecchia_specify_adjusted(locs, m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
+# standard vecchia with the corrvecchia function
+approx[[2]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", covmodel = Sigma, covparms = covparms)
+# correlation-based vecchia with the corrvecchia function
+approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", covmodel = Sigma, covparms = covparms)
+
+### compute approximate covariance matrices
+Sigma.hat   <- list()
+kls         <- c()
+for(i in 1:3){
+  
+  Sigma.ord       <- matern_ns(approx[[i]]$locsord) # true cov in appropriate ordering
+  
+  U               <- createU(approx[[i]], c(1, 1, 1), 0, covmodel = Sigma.ord)$U
+  revord          <- order(approx[[i]]$ord)
+  Sigma.hat[[i]]  <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
+  
+  kls[i]          <- kldiv(Sigma, Sigma.hat[[i]])
+}
+
+kls
+# standard vecchia / standard vecchia with the corrvecchia function / correlation-based vecchia with the corrvecchia function
+# 2.153917 1.319040 1.210453
+# 2.367766 1.432311 1.169622
+# 1.946253 1.329232 1.137366
