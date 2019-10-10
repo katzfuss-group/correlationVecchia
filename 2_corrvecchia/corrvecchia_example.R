@@ -133,6 +133,9 @@ kls
 #### Nonstaionary Matern covariance model (Risser MD, Calder CA (2015))
 ####################################################################
 
+# Katzfuss M. 2013. Bayesian nonstationary spatial modeling for very large datasets. Environmetrics 24(3):189–200.
+# Stein ML. 2005. Nonstationary spatial covariance functions, Technical Report, University of Chicago, Department of Statistics.
+
 matern_ns <- function(locs1, locs2 = NULL) {
   
   if(is.null(locs2)) locs2 = locs1
@@ -157,6 +160,71 @@ matern_ns <- function(locs1, locs2 = NULL) {
 }
 
 
+# ##### Test #####
+# 
+# # spatially-varying standard deviation
+# sigma <- function(loc) determinant(aniso_mat(loc), logarithm = F)[[1]][1]^0.25
+# # spatially-varying local anisotropy (controlling both the range and direction of dependence)
+# aniso_mat<- function(loc) {
+#   
+#   eta <- 0
+#   rot.mat <- matrix(c(cos(eta), -sin(eta), sin(eta), cos(eta)), nrow = length(loc), ncol = length(loc), byrow = T)
+#   
+#   range <- c(1, 1)
+#   diag.mat <- diag(range, nrow = length(loc))
+#   
+#   aniso.mat <- t(rot.mat) %*% diag.mat %*% rot.mat
+#   
+#   return(aniso.mat)
+# }
+# # matern's smoothness
+# smoothness <- function(loc) 0.5
+# 
+# n             <- 15
+# locs          <- matrix(runif(n * 2, 0, 1), n, 2)
+# 
+# Sigma.new <- matern_ns(locs)
+# 
+# cov.iso       <- function(locs, covparms) covparms[1] * exp(-fields::rdist(locs) / covparms[2])
+# covparms      <- c(1, 1, 10)
+# 
+# Sigma.old <- cov.iso(locs, covparms)
+# 
+# sum((Sigma.old - Sigma.new)^2)
+# 
+# ##### Test #####
+# 
+# # spatially-varying standard deviation
+# sigma <- function(loc) determinant(aniso_mat(loc), logarithm = F)[[1]][1]^0.25
+# # spatially-varying local anisotropy (controlling both the range and direction of dependence)
+# aniso_mat<- function(loc) {
+#   
+#   eta <- 0
+#   rot.mat <- matrix(c(cos(eta), -sin(eta), sin(eta), cos(eta)), nrow = length(loc), ncol = length(loc), byrow = T)
+#   
+#   range <- c(0.1^2, 1)
+#   diag.mat <- diag(range, nrow = length(loc))
+#   
+#   aniso.mat <- t(rot.mat) %*% diag.mat %*% rot.mat
+#   
+#   return(aniso.mat)
+# }
+# # matern's smoothness
+# smoothness <- function(loc) 0.5
+# 
+# n             <- 15
+# locs          <- matrix(runif(n * 2, 0, 1), n, 2)
+# 
+# Sigma.new <- matern_ns(locs)
+# 
+# cov.iso       <- function(locs, covparms) covparms[1] * exp(-fields::rdist(locs) / covparms[2])
+# cov.aniso     <- function(locs, covparms) covparms[1] * exp(-fields::rdist(cbind(locs[ ,1] * covparms[3], locs[,2])) / covparms[2])
+# covparms      <- c(1, 1, 10)
+# 
+# Sigma.old <- cov.aniso(locs, covparms)
+# 
+# sum((Sigma.old - Sigma.new)^2)
+
 ####################################################################
 #### example 3: basic nonstaionary covariance with function-type covmodel
 ####################################################################
@@ -164,7 +232,7 @@ matern_ns <- function(locs1, locs2 = NULL) {
 covparms <- c(1)
 
 # spatially-varying standard deviation
-sigma <- function(loc) 1
+sigma <- function(loc) determinant(aniso_mat(loc), logarithm = F)[[1]][1]^0.25
 # spatially-varying local anisotropy (controlling both the range and direction of dependence)
 aniso_mat<- function(loc) {
   
@@ -179,7 +247,7 @@ aniso_mat<- function(loc) {
   return(aniso.mat)
 }
 # matern's smoothness
-smoothness <- function(loc) 1
+smoothness <- function(loc) 0.5
 
 # v <- seq(0, 6, by = 0.05)
 # plot(v, Matern(v, smoothness = 0.2), type = 'l', col = 'red', lwd = 3)
@@ -232,7 +300,7 @@ for(i in 1:3){
 
 kls
 # standard vecchia / standard vecchia with the corrvecchia function / correlation-based vecchia with the corrvecchia function
-# 2.227210 2.233399 2.233399
+# 0.3970591 0.3984529 0.3921881
 
 
 ####################################################################
@@ -242,7 +310,7 @@ kls
 covparms <- c(1)
 
 # spatially-varying standard deviation
-sigma <- function(loc) 1
+sigma <- function(loc) determinant(aniso_mat(loc), logarithm = F)[[1]][1]^0.25
 # spatially-varying local anisotropy (controlling both the range and direction of dependence)
 aniso_mat<- function(loc) {
   
@@ -257,7 +325,7 @@ aniso_mat<- function(loc) {
   return(aniso.mat)
 }
 # matern's smoothness
-smoothness <- function(loc) 1
+smoothness <- function(loc) 0.5
 
 # v <- seq(0, 6, by = 0.05)
 # plot(v, Matern(v, smoothness = 0.2), type = 'l', col = 'red', lwd = 3)
@@ -309,7 +377,7 @@ for(i in 1:3){
 
 kls
 # standard vecchia / standard vecchia with the corrvecchia function / correlation-based vecchia with the corrvecchia function
-# 2.002316 2.000444 1.917039
+# 0.3523416 0.3514426 0.3453771
 
 
 ####################################################################
@@ -319,7 +387,7 @@ kls
 covparms <- c(1)
 
 # spatially-varying standard deviation
-sigma <- function(loc) 1
+sigma <- function(loc) determinant(aniso_mat(loc), logarithm = F)[[1]][1]^0.25
 # spatially-varying local anisotropy (controlling both the range and direction of dependence)
 aniso_mat<- function(loc) {
   
@@ -386,7 +454,8 @@ for(i in 1:3){
 
 kls
 # standard vecchia / standard vecchia with the corrvecchia function / correlation-based vecchia with the corrvecchia function
-# 0.1780750 0.2138144 0.1694870
+# 0.1830565 0.2259558 0.2162229
+# 0.1802892 0.1941291 0.1616930
 
 
 ####################################################################
@@ -396,14 +465,14 @@ kls
 covparms <- c(1)
 
 # spatially-varying standard deviation
-sigma <- function(loc) 1
+sigma <- function(loc) determinant(aniso_mat(loc), logarithm = F)[[1]][1]^0.25
 # spatially-varying local anisotropy (controlling both the range and direction of dependence)
 aniso_mat<- function(loc) {
   
   eta <- pi/4
   rot.mat <- matrix(c(cos(eta), sin(eta), -sin(eta), cos(eta)), nrow = length(loc), ncol = length(loc), byrow = T)
   
-  range <- c(1, 10)
+  range <- c(0.1^2, 1)
   diag.mat <- diag(range, nrow = length(loc))
   
   aniso.mat <- t(rot.mat) %*% diag.mat %*% rot.mat
@@ -463,4 +532,5 @@ for(i in 1:3){
 
 kls
 # standard vecchia / standard vecchia with the corrvecchia function / correlation-based vecchia with the corrvecchia function
-# 1.0195766 0.3645285 0.2752004
+# 5.75016585 0.14757086 0.05779561
+# 5.55710955 0.16784603 0.07602673
