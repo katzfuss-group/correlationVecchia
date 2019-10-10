@@ -129,7 +129,7 @@ kls
 # 0.4090684634 0.0002972307 0.4090684634 0.0003749438
 
 ####################################################################
-#### example 3: 
+#### example 3: basic nonstaionary covariance with function-type covmodel
 ####################################################################
 
 covparms <- c(1)
@@ -222,10 +222,10 @@ for(i in 1:3){
 
 kls
 # standard vecchia / standard vecchia with the corrvecchia function / correlation-based vecchia with the corrvecchia function
-
+# 2.183058 2.178872 2.178872
 
 ####################################################################
-#### example 4: 
+#### example 4: basic nonstaionary covariance with matrix-type covmodel
 ####################################################################
 
 covparms <- c(1)
@@ -317,3 +317,4 @@ for(i in 1:3){
 
 kls
 # standard vecchia / standard vecchia with the corrvecchia function / correlation-based vecchia with the corrvecchia function
+# 2.398728 2.398728 2.398728
