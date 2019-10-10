@@ -8,6 +8,8 @@
 
 set.seed(29913)
 
+source("2_corrvecchia/corrvecchia.R")
+
 n             <- 15^2
 m             <- 10
 locs          <- matrix(runif(n * 2, 0, 1), n, 2)
@@ -28,3 +30,5 @@ nn3[26, ]
 D[26, 18]
 D[26, 21]
 
+library(microbenchmark)
+microbenchmark(GpGp::find_ordered_nn(locs, m), GpGp::find_ordered_nn_brute(locs, m), conditioning_nn(m, D), times = 10)
