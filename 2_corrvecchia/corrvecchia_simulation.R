@@ -148,7 +148,4 @@ plot(cand.m, log10(vis.dat$kls.maxmin.euclidean), type = "o", col = 1, lty = 1, 
 lines(cand.m, log10(vis.dat$kls.maxmin.corr), type = "o", col = 2, lty = 2, lwd = 3)
 lines(cand.m, log10(vis.dat$kls.xcoord.euclidean), type = "o", col = 3, lty = 3, lwd = 3)
 lines(cand.m, log10(vis.dat$kls.ycoord.euclidean), type = "o", col = 4, lty = 4, lwd = 3)
-legend("bottomleft", 
-       legend=c("maxmin + Euclidean", "maxmin + correlation",
-                "x-coord + Euclidean", "y-coord + Euclidean"),
-       col=1:4, lty=1:4, lwd = 3, cex=1)
+legend("topright", legend=c("maxmin + Euclidean", "maxmin + correlation", "x-coord + Euclidean", "y-coord + Euclidean"), col=1:4, lty=1:4, lwd = 3, cex=1)
