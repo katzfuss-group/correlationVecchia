@@ -23,6 +23,8 @@ set.seed(10102019)
 
 covparms <- c(1)
 
+a <- function(loc) 0.47 * loc[1] + 0.03
+
 # spatially-varying standard deviation
 sigma <- function(loc) determinant(aniso_mat(loc), logarithm = F)[[1]][1]^0.25
 # spatially-varying local anisotropy (controlling both the range and direction of dependence)
@@ -30,8 +32,6 @@ aniso_mat<- function(loc) {
   
   eta <- 0
   rot.mat <- matrix(c(cos(eta), sin(eta), -sin(eta), cos(eta)), nrow = length(loc), ncol = length(loc), byrow = T)
-  
-  a <- function(loc) 0.47 * loc[1] + 0.03
   
   range <- c(a(loc)^(-2), 1)
   diag.mat <- diag(range, nrow = length(loc))
