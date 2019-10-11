@@ -149,3 +149,24 @@ lines(cand.m, log10(vis.dat$kls.maxmin.corr), type = "o", col = 2, lty = 2, lwd 
 lines(cand.m, log10(vis.dat$kls.xcoord.euclidean), type = "o", col = 3, lty = 3, lwd = 3)
 lines(cand.m, log10(vis.dat$kls.ycoord.euclidean), type = "o", col = 4, lty = 4, lwd = 3)
 legend("topright", legend=c("maxmin + Euclidean", "maxmin + correlation", "x-coord + Euclidean", "y-coord + Euclidean"), col=1:4, lty=1:4, lwd = 3, cex=1)
+
+
+####################################################################
+#### simulation 2
+####################################################################
+
+cand.m    <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45) ; n.cand.m <- length(cand.m)
+sim1      <- list()
+
+for(i in 1:length(cand.m)) sim1[[i]] <- simulation(n = 30^2, m = cand.m[i], covparms = c(1))
+
+kls.maxmin.euclidean    <- rep(NA, n.cand.m)
+kls.maxmin.corr         <- rep(NA, n.cand.m)
+kls.xcoord.euclidean    <- rep(NA, n.cand.m)
+kls.ycoord.euclidean    <- rep(NA, n.cand.m)
+for(i in 1:n.cand.m) {
+  kls.maxmin.euclidean[i]    <- sim1[[i]]$kls[1]
+  kls.maxmin.corr[i]         <- sim1[[i]]$kls[4]
+  kls.xcoord.euclidean[i]    <- sim1[[i]]$kls[2]
+  kls.ycoord.euclidean[i]    <- sim1[[i]]$kls[3]
+}
