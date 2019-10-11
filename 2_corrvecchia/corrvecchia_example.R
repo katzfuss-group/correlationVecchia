@@ -10,7 +10,6 @@ gc()
 rm(list = ls())
 
 library(GPvecchia)
-library(fields)
 
 source("1_Pilot_Study/2_vecchia_specify_adjusted.R")
 source("2_corrvecchia/corrvecchia.R")
@@ -152,13 +151,12 @@ matern_ns <- function(locs1, locs2 = NULL) {
       
       q.ij <- as.numeric(crossprod( locs1[i, ] - locs2[j, ], solve(kernel.ij, locs1[i, ] - locs2[j, ]) ))
       
-      mat.cov[i,j] <- sigma.ij * Matern( sqrt(q.ij), nu = smooth.ij) / sqrt( determinant(kernel.ij, logarithm = F)[[1]][1] )
+      mat.cov[i,j] <- sigma.ij * fields::Matern( sqrt(q.ij), nu = smooth.ij) / sqrt( determinant(kernel.ij, logarithm = F)[[1]][1] )
     }
   }
   
   return(mat.cov)
 }
-
 
 # ##### Test #####
 # 
@@ -405,8 +403,8 @@ aniso_mat<- function(loc) {
 smoothness <- function(loc) 0.2 * exp(loc[1])
 
 # v <- seq(0, 6, by = 0.05)
-# plot(v, Matern(v, smoothness = 0.2), type = 'l', col = 'red', lwd = 3)
-# lines(v, Matern(v, smoothness = 0.9), col = 'blue', lwd = 3)
+# plot(v, fields::Matern(v, smoothness = 0.2), type = 'l', col = 'red', lwd = 3)
+# lines(v, fields::Matern(v, smoothness = 0.9), col = 'blue', lwd = 3)
 
 n             <- 15^2
 m             <- 10
@@ -563,8 +561,8 @@ aniso_mat<- function(loc) {
 smoothness <- function(loc) 0.2 * exp(loc[1])
 
 # v <- seq(0, 6, by = 0.05)
-# plot(v, Matern(v, smoothness = 0.2), type = 'l', col = 'red', lwd = 3)
-# lines(v, Matern(v, smoothness = 0.9), col = 'blue', lwd = 3)
+# plot(v, fields::Matern(v, smoothness = 0.2), type = 'l', col = 'red', lwd = 3)
+# lines(v, fields::Matern(v, smoothness = 0.9), col = 'blue', lwd = 3)
 
 n             <- 15^2
 m             <- 10
