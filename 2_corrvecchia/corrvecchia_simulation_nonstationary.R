@@ -154,19 +154,3 @@ legend("topright", legend=c("maxmin + Euclidean", "maxmin + correlation", "x-coo
 ####################################################################
 #### simulation 2
 ####################################################################
-
-cand.m    <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45) ; n.cand.m <- length(cand.m)
-sim1      <- list()
-
-for(i in 1:length(cand.m)) sim1[[i]] <- simulation(n = 30^2, m = cand.m[i], covparms = c(1))
-
-kls.maxmin.euclidean    <- rep(NA, n.cand.m)
-kls.maxmin.corr         <- rep(NA, n.cand.m)
-kls.xcoord.euclidean    <- rep(NA, n.cand.m)
-kls.ycoord.euclidean    <- rep(NA, n.cand.m)
-for(i in 1:n.cand.m) {
-  kls.maxmin.euclidean[i]    <- sim1[[i]]$kls[1]
-  kls.maxmin.corr[i]         <- sim1[[i]]$kls[4]
-  kls.xcoord.euclidean[i]    <- sim1[[i]]$kls[2]
-  kls.ycoord.euclidean[i]    <- sim1[[i]]$kls[3]
-}
