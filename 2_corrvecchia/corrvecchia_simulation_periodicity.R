@@ -151,12 +151,12 @@ vis_arrange <- function(vdat1, vdat2, combined.legend, color.pal = brewer.pal(4,
           legend.direction = 'horizontal',
           plot.margin = unit(c(5.5, 20, 5.5, 5.5), "pt")) # t, r, b, l
   
-  xlabel2 <- sort(unique(vdat2$period))
-  plot2   <- ggplot(vdat2, aes(x=period, y = log10(KL), col = method)) + 
+  xlabel2 <- sort(unique(vdat2$range))
+  plot2   <- ggplot(vdat2, aes(x=range, y = log10(KL), col = method)) + 
     geom_point(aes(shape = method), size = 2) + 
     geom_line(size = 1, alpha = alpha.value) +
     ylab('log10(KL)') + 
-    scale_x_discrete(name = 'period', limits=xlabel2, labels=as.character(xlabel2)) +
+    scale_x_discrete(name = 'range', limits=xlabel2, labels=as.character(xlabel2)) +
     scale_color_manual(values = color.pal, labels = combined.legend) +
     scale_shape_manual(values = c(15, 16, 17, 18), labels = combined.legend) +
     theme(axis.title.x = element_text(size = size.lab), 
@@ -182,24 +182,20 @@ vis_arrange <- function(vdat1, vdat2, combined.legend, color.pal = brewer.pal(4,
 ####################################################################
 
 cand.m            <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45) ; n.cand.m <- length(cand.m)
-cand.period       <- c(1, 2, 4, 6, 8, 10) ; n.cand.period <- length(cand.period)
+cand.range       <- sort(1/c(1, 2, 4, 6, 8, 10)) ; n.cand.range <- length(cand.range)
 sim1              <- list()
 
-cand.all            <- expand.grid(cand.m, cand.period)
+cand.all            <- expand.grid(cand.m, cand.range)
 cand.all            <- cbind(seq(nrow(cand.all)), cand.all)
-colnames(cand.all)  <- c('index', 'm', 'period')
-n.cand.all          <- n.cand.m * n.cand.period
+colnames(cand.all)  <- c('index', 'm', 'range')
+n.cand.all          <- n.cand.m * n.cand.range
 
 no_cores            <- parallel::detectCores() - 2
 cl                  <- parallel::makeCluster(no_cores)
 
 doParallel::registerDoParallel(cl)
-sim1 <- foreach(m = cand.all$m, p = cand.all$period, .export = c("positive_def", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(30^2, m = m, covparms = c(1, 1/p), tol = 1e-5)
+sim1 <- foreach(m = cand.all$m, r = cand.all$range, .export = c("positive_def", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(30^2, m = m, covparms = c(1, r), tol = 1e-5)
 parallel::stopCluster(cl)
-
-# for(i in cand.all$index){
-#   sim1[[i]] <- simulation(n = 15^2, m = cand.all[i, 2], covparms = c(1, 1/cand.all[i, 3]))
-# }
 
 kls.maxmin.euclidean    <- rep(NA, n.cand.all)
 kls.maxmin.corr         <- rep(NA, n.cand.all)
@@ -212,8 +208,8 @@ for(i in 1:n.cand.all) {
   kls.ycoord.euclidean[i]    <- sim1[[i]]$kls[3]
 }
 
-set.period   <- 6
-ind         <- cand.all$period == set.period
+set.range   <- 1/6
+ind         <- cand.all$range == set.range
 vis.dat1    <- data.frame(kls.maxmin.euclidean[ind], kls.maxmin.corr[ind], kls.xcoord.euclidean[ind], kls.ycoord.euclidean[ind])
 vis.dat1    <- vis.dat1[, order(colnames(vis.dat1))]
 vis.dat1    <- cbind(rep(cand.m, times = 4), tidyr::gather(vis.dat1))
@@ -224,12 +220,12 @@ set.m       <- 30
 ind         <- cand.all$m == set.m
 vis.dat2    <- data.frame(kls.maxmin.euclidean[ind], kls.maxmin.corr[ind], kls.xcoord.euclidean[ind], kls.ycoord.euclidean[ind])
 vis.dat2    <- vis.dat2[, order(colnames(vis.dat2))]
-vis.dat2    <- cbind(rep(cand.period, times = 4), tidyr::gather(vis.dat2))
-colnames(vis.dat2) <- c("period", "method", "KL")
+vis.dat2    <- cbind(rep(cand.range, times = 4), tidyr::gather(vis.dat2))
+colnames(vis.dat2) <- c("range", "method", "KL")
 head(vis.dat2)
 
 kls.legend <- c("Correlation + Maxmin     ", "Euclidean + Maxmin     ", "Euclidean + x-coord     ", "Euclidean + y-coord")
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(4, "Set1"), alpha.value = 0.7, size.legend = 16, size.lab = 16, size.text = 12)
 
-save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, file='2_corrvecchia/sim_periodicity_1.RData')
+# save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, file='2_corrvecchia/sim_periodicity_1.RData')
 # load(file='2_corrvecchia/sim_periodicity_1.RData')
