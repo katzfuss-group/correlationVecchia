@@ -214,5 +214,5 @@ lines(cand.m, log10(vis.dat2$kls.xcoord.euclidean), type = "o", col = 3, lty = 3
 lines(cand.m, log10(vis.dat2$kls.ycoord.euclidean), type = "o", col = 4, lty = 4, lwd = 3)
 legend("topright", legend=c("maxmin + Euclidean", "maxmin + correlation", "x-coord + Euclidean", "y-coord + Euclidean"), col=1:4, lty=1:4, lwd = 3, cex=1)
 
-save(sim2, cand.m, vis.dat2, file='2_corrvecchia/sim_nonstationarity_2.RData')
+# save(sim2, cand.m, vis.dat2, file='2_corrvecchia/sim_nonstationarity_2.RData')
 # load(file='2_corrvecchia/sim_nonstationarity_2.RData')
