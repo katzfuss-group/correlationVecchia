@@ -182,8 +182,13 @@ vis_arrange <- function(vdat1, vdat2, combined.legend, color.pal = brewer.pal(4,
 ####################################################################
 
 cand.m            <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45) ; n.cand.m <- length(cand.m)
-cand.range       <- sort(1/c(1, 2, 4, 6, 8, 10)) ; n.cand.range <- length(cand.range)
+cand.range        <- sort(1/c(1, 4, 8, 12, 16, 20, 24)) ; n.cand.range <- length(cand.range)
 sim1              <- list()
+
+# # small case
+# cand.m            <- c(10, 20, 30) ; n.cand.m <- length(cand.m)
+# cand.range        <- sort(1/c(2, 8)) ; n.cand.range <- length(cand.range)
+# sim1              <- list()
 
 cand.all            <- expand.grid(cand.m, cand.range)
 cand.all            <- cbind(seq(nrow(cand.all)), cand.all)
@@ -208,7 +213,7 @@ for(i in 1:n.cand.all) {
   kls.ycoord.euclidean[i]    <- sim1[[i]]$kls[3]
 }
 
-set.range   <- 1/6
+set.range   <- 1/8
 ind         <- cand.all$range == set.range
 vis.dat1    <- data.frame(kls.maxmin.euclidean[ind], kls.maxmin.corr[ind], kls.xcoord.euclidean[ind], kls.ycoord.euclidean[ind])
 vis.dat1    <- vis.dat1[, order(colnames(vis.dat1))]

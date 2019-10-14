@@ -194,6 +194,11 @@ cand.m            <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45) ; n.cand.m <- lengt
 cand.scale        <- c(1, 5, 10, 15, 20, 25) ; n.cand.scale <- length(cand.scale)
 sim1              <- list()
 
+# # small case
+# cand.m            <- c(10, 20, 30) ; n.cand.m <- length(cand.m)
+# cand.scale        <- c(5, 10) ; n.cand.scale <- length(cand.scale)
+# sim1              <- list()
+
 cand.all            <- expand.grid(cand.m, cand.scale)
 cand.all            <- cbind(seq(nrow(cand.all)), cand.all)
 colnames(cand.all)  <- c('index', 'm', 'scale')

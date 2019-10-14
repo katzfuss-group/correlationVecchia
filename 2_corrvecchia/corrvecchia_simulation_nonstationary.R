@@ -130,6 +130,10 @@ simulation <- function(n = 15^2, m = 10, covparms = c(1)) {
 cand.m    <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45) ; n.cand.m <- length(cand.m)
 sim1      <- list()
 
+# # small case
+# cand.m    <- c(1, 10, 20, 30, 40) ; n.cand.m <- length(cand.m)
+# sim1      <- list()
+
 a <- function(loc) 1
 b <- function(loc) 1
 angle <- function(loc) 0
@@ -179,6 +183,10 @@ legend("topright", legend=c("maxmin + Euclidean", "maxmin + correlation", "x-coo
 
 cand.m    <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45) ; n.cand.m <- length(cand.m)
 sim2      <- list()
+
+# # small case
+# cand.m    <- c(1, 10, 20, 30, 40) ; n.cand.m <- length(cand.m)
+# sim2      <- list()
 
 a <- function(loc) 1/(0.03 + 0.97 * loc[1])
 b <- function(loc) 1/(0.03 + 0.97 * loc[1])
