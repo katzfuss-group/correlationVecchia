@@ -13,7 +13,7 @@ library(GPvecchia)
 
 library(foreach)
 
-source("1_Pilot_Study/2_vecchia_specify_adjusted.R")
+source("2_corrvecchia/vecchia_specify_adjusted.R")
 source("2_corrvecchia/corrvecchia.R")
 source("2_corrvecchia/kldiv.R")
 
