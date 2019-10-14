@@ -11,6 +11,8 @@ rm(list = ls())
 
 library(GPvecchia)
 
+library(foreach)
+
 source("1_Pilot_Study/2_vecchia_specify_adjusted.R")
 source("2_corrvecchia/corrvecchia.R")
 source("2_corrvecchia/kldiv.R")
@@ -24,16 +26,18 @@ set.seed(10102019)
 covparms <- c(1)
 
 a <- function(loc) 0.47 * loc[1] + 0.03
+b <- function(loc) 1
+angle <- function(loc) 0
 
 # spatially-varying standard deviation
 sigma <- function(loc) determinant(aniso_mat(loc), logarithm = F)[[1]][1]^0.25
 # spatially-varying local anisotropy (controlling both the range and direction of dependence)
 aniso_mat<- function(loc) {
   
-  eta <- 0
+  eta <- angle(loc)
   rot.mat <- matrix(c(cos(eta), sin(eta), -sin(eta), cos(eta)), nrow = length(loc), ncol = length(loc), byrow = T)
   
-  range <- c(a(loc)^(-2), 1)
+  range <- c(a(loc)^(-2), b(loc)^(-2))
   diag.mat <- diag(range, nrow = length(loc))
   
   aniso.mat <- t(rot.mat) %*% diag.mat %*% rot.mat
@@ -120,13 +124,28 @@ simulation <- function(n = 15^2, m = 10, covparms = c(1)) {
 
 
 ####################################################################
-#### simulation 1
+#### simulation 1: smoothness
 ####################################################################
 
 cand.m    <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45) ; n.cand.m <- length(cand.m)
 sim1      <- list()
 
-for(i in 1:length(cand.m)) sim1[[i]] <- simulation(n = 30^2, m = cand.m[i], covparms = c(1))
+a <- function(loc) 1
+b <- function(loc) 1
+angle <- function(loc) 0
+smoothness <- function(loc) 0.2 + 1.3 * loc[1]
+
+# plot(seq(0, 5, 0.01), fields::Matern(seq(0, 5, 0.01), smoothness = 1), type = "l", col = 1)
+# lines(seq(0, 5, 0.01), fields::Matern(seq(0, 5, 0.01), smoothness = 0.2), type = "l", col = 2)
+# lines(seq(0, 5, 0.01), fields::Matern(seq(0, 5, 0.01), smoothness = 1.5), type = "l", col = 3)
+# lines(seq(0, 5, 0.01), fields::Matern(seq(0, 5, 0.01), smoothness = 2), type = "l", col = 4)
+
+no_cores            <- parallel::detectCores() - 2
+cl                  <- parallel::makeCluster(no_cores)
+
+doParallel::registerDoParallel(cl)
+sim1 <- foreach(m = cand.m, .export = c("a", "b", "aniso_mat", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "matern_ns", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "smoothness", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(30^2, m = m, covparms = c(1))
+parallel::stopCluster(cl)
 
 kls.maxmin.euclidean    <- rep(NA, n.cand.m)
 kls.maxmin.corr         <- rep(NA, n.cand.m)
@@ -139,18 +158,61 @@ for(i in 1:n.cand.m) {
   kls.ycoord.euclidean[i]    <- sim1[[i]]$kls[3]
 }
 
-vis.dat <- data.frame(kls.maxmin.euclidean, kls.maxmin.corr, kls.xcoord.euclidean, kls.ycoord.euclidean)
-vis.dat <- vis.dat[, order(colnames(vis.dat))]
-head(vis.dat)
+vis.dat1 <- data.frame(kls.maxmin.euclidean, kls.maxmin.corr, kls.xcoord.euclidean, kls.ycoord.euclidean)
+vis.dat1 <- vis.dat1[, order(colnames(vis.dat1))]
+head(vis.dat1)
 
-plot(cand.m, log10(vis.dat$kls.maxmin.euclidean), type = "o", col = 1, lty = 1, lwd = 3,
-     ylim = c(min(log10(vis.dat)), max(log10(vis.dat))), xlab = "m", ylab = "log10(KL)", main = NULL)
-lines(cand.m, log10(vis.dat$kls.maxmin.corr), type = "o", col = 2, lty = 2, lwd = 3)
-lines(cand.m, log10(vis.dat$kls.xcoord.euclidean), type = "o", col = 3, lty = 3, lwd = 3)
-lines(cand.m, log10(vis.dat$kls.ycoord.euclidean), type = "o", col = 4, lty = 4, lwd = 3)
+plot(cand.m, log10(vis.dat1$kls.maxmin.euclidean), type = "o", col = 1, lty = 1, lwd = 3,
+     ylim = c(min(log10(vis.dat1)), max(log10(vis.dat1))), xlab = "m", ylab = "log10(KL)", main = NULL)
+lines(cand.m, log10(vis.dat1$kls.maxmin.corr), type = "o", col = 2, lty = 2, lwd = 3)
+lines(cand.m, log10(vis.dat1$kls.xcoord.euclidean), type = "o", col = 3, lty = 3, lwd = 3)
+lines(cand.m, log10(vis.dat1$kls.ycoord.euclidean), type = "o", col = 4, lty = 4, lwd = 3)
 legend("topright", legend=c("maxmin + Euclidean", "maxmin + correlation", "x-coord + Euclidean", "y-coord + Euclidean"), col=1:4, lty=1:4, lwd = 3, cex=1)
 
+# save(sim1, cand.m, vis.dat1, file='2_corrvecchia/sim_nonstationarity_1.RData')
+# load(file='2_corrvecchia/sim_nonstationarity_1.RData')
+
 
 ####################################################################
-#### simulation 2
+#### simulation 2: range
 ####################################################################
+
+cand.m    <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45) ; n.cand.m <- length(cand.m)
+sim2      <- list()
+
+a <- function(loc) 1/(0.03 + 0.97 * loc[1])
+b <- function(loc) 1/(0.03 + 0.97 * loc[1])
+angle <- function(loc) 0
+smoothness <- function(loc) 0.5
+
+no_cores            <- parallel::detectCores() - 2
+cl                  <- parallel::makeCluster(no_cores)
+
+doParallel::registerDoParallel(cl)
+sim2 <- foreach(m = cand.m, .export = c("a", "b", "aniso_mat", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "matern_ns", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "smoothness", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(30^2, m = m, covparms = c(1))
+parallel::stopCluster(cl)
+
+kls.maxmin.euclidean    <- rep(NA, n.cand.m)
+kls.maxmin.corr         <- rep(NA, n.cand.m)
+kls.xcoord.euclidean    <- rep(NA, n.cand.m)
+kls.ycoord.euclidean    <- rep(NA, n.cand.m)
+for(i in 1:n.cand.m) {
+  kls.maxmin.euclidean[i]    <- sim2[[i]]$kls[1]
+  kls.maxmin.corr[i]         <- sim2[[i]]$kls[4]
+  kls.xcoord.euclidean[i]    <- sim2[[i]]$kls[2]
+  kls.ycoord.euclidean[i]    <- sim2[[i]]$kls[3]
+}
+
+vis.dat2 <- data.frame(kls.maxmin.euclidean, kls.maxmin.corr, kls.xcoord.euclidean, kls.ycoord.euclidean)
+vis.dat2 <- vis.dat2[, order(colnames(vis.dat2))]
+head(vis.dat2)
+
+plot(cand.m, log10(vis.dat2$kls.maxmin.euclidean), type = "o", col = 1, lty = 1, lwd = 3,
+     ylim = c(min(log10(vis.dat2)), max(log10(vis.dat2))), xlab = "m", ylab = "log10(KL)", main = NULL)
+lines(cand.m, log10(vis.dat2$kls.maxmin.corr), type = "o", col = 2, lty = 2, lwd = 3)
+lines(cand.m, log10(vis.dat2$kls.xcoord.euclidean), type = "o", col = 3, lty = 3, lwd = 3)
+lines(cand.m, log10(vis.dat2$kls.ycoord.euclidean), type = "o", col = 4, lty = 4, lwd = 3)
+legend("topright", legend=c("maxmin + Euclidean", "maxmin + correlation", "x-coord + Euclidean", "y-coord + Euclidean"), col=1:4, lty=1:4, lwd = 3, cex=1)
+
+save(sim2, cand.m, vis.dat2, file='2_corrvecchia/sim_nonstationarity_2.RData')
+# load(file='2_corrvecchia/sim_nonstationarity_2.RData')

@@ -11,6 +11,8 @@ rm(list = ls())
 
 library(GPvecchia)
 
+library(foreach)
+
 ## To visualize results
 library(tidyr) ; library(ggplot2) ; library(gridExtra) ; library(RColorBrewer)
 
@@ -27,18 +29,18 @@ set.seed(10102019)
 
 covparms <- c(1)
 
-a <- function(loc) 10
-
 # spatially-varying standard deviation
-sigma <- function(loc) determinant(aniso_mat(loc), logarithm = F)[[1]][1]^0.25
+sigma <- function(loc, deg.aniso) determinant(aniso_mat(loc, deg.aniso), logarithm = F)[[1]][1]^0.25
 # spatially-varying local anisotropy (controlling both the range and direction of dependence)
-aniso_mat<- function(loc) {
+aniso_mat <- function(loc, deg.aniso) {
   
-  eta <- 0
-  rot.mat <- matrix(c(cos(eta), sin(eta), -sin(eta), cos(eta)), nrow = length(loc), ncol = length(loc), byrow = T)
+  eta       <- 0
+  rot.mat   <- matrix(c(cos(eta), sin(eta), -sin(eta), cos(eta)), nrow = length(loc), ncol = length(loc), byrow = T)
   
-  range <- c(a(loc)^(-2), 1)
-  diag.mat <- diag(range, nrow = length(loc))
+  a         <- function(loc) deg.aniso
+  
+  range     <- c(a(loc)^(-2), 1)
+  diag.mat  <- diag(range, nrow = length(loc))
   
   aniso.mat <- t(rot.mat) %*% diag.mat %*% rot.mat
   
@@ -50,7 +52,7 @@ smoothness <- function(loc) 0.5
 # Katzfuss M. 2013. Bayesian nonstationary spatial modeling for very large datasets. Environmetrics 24(3):189–200.
 # Stein ML. 2005. Nonstationary spatial covariance functions, Technical Report, University of Chicago, Department of Statistics.
 
-matern_ns <- function(locs1, locs2 = NULL) {
+matern_ns <- function(locs1, locs2 = NULL, deg.aniso) {
   
   if(is.null(locs2)) locs2 = locs1
   
@@ -60,8 +62,8 @@ matern_ns <- function(locs1, locs2 = NULL) {
   
   for(i in 1:n1){
     for(j in 1:n2){
-      sigma.ij    <- sigma(locs1[i, ]) * sigma(locs2[j, ])
-      kernel.ij   <- ( aniso_mat(locs1[i, ]) + aniso_mat(locs2[j, ]) ) / 2 
+      sigma.ij    <- sigma(locs1[i, ], deg.aniso) * sigma(locs2[j, ], deg.aniso)
+      kernel.ij   <- ( aniso_mat(locs1[i, ], deg.aniso) + aniso_mat(locs2[j, ], deg.aniso) ) / 2 
       smooth.ij   <- ( smoothness(locs1[i, ]) + smoothness(locs2[j, ]) ) / 2
       
       q.ij <- as.numeric(crossprod( locs1[i, ] - locs2[j, ], solve(kernel.ij, locs1[i, ] - locs2[j, ]) ))
@@ -90,10 +92,10 @@ matern_ns <- function(locs1, locs2 = NULL) {
 #### simulation function
 ####################################################################
 
-simulation <- function(n = 15^2, m = 10, covparms = c(1)) {
+simulation <- function(n = 30^2, m = 30, deg.aniso = 10, covparms = c(1)) {
 
   locs      <- matrix(runif(n * 2, 0, 1), n, 2)
-  Sigma     <- matern_ns(locs)
+  Sigma     <- matern_ns(locs1 = locs, locs2 = NULL, deg.aniso = deg.aniso)
   y         <- as.numeric(t(chol(Sigma)) %*% rnorm(n))
   
   ### specify vecchia approximations
@@ -113,7 +115,7 @@ simulation <- function(n = 15^2, m = 10, covparms = c(1)) {
   kls         <- c()
   for(i in 1:4){
     
-    Sigma.ord       <- matern_ns(approx[[i]]$locsord) # true cov in appropriate ordering
+    Sigma.ord       <- matern_ns(locs1 = approx[[i]]$locsord, locs2 = NULL, deg.aniso = deg.aniso) # true cov in appropriate ordering
     
     U               <- createU(approx[[i]], c(1, 1, 1), 0, covmodel = Sigma.ord)$U
     revord          <- order(approx[[i]]$ord)
@@ -140,19 +142,32 @@ simulation <- function(n = 15^2, m = 10, covparms = c(1)) {
 #### simulation 1
 ####################################################################
 
-cand.m    <- c(5, 20, 45) ; n.cand.m <- length(cand.m)
-cand.scale  <- c(1, 10, 25) ; n.cand.scale <- length(cand.scale)
-sim1      <- list()
+cand.m            <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45) ; n.cand.m <- length(cand.m)
+cand.scale        <- c(1, 5, 10, 15, 20, 25) ; n.cand.scale <- length(cand.scale)
+sim1              <- list()
 
-cand.all <- expand.grid(cand.m, cand.scale)
-cand.all <- cbind(seq(nrow(cand.all)), cand.all)
-colnames(cand.all) <- c('index', 'm', 'scale')
-n.cand.all <- n.cand.m * n.cand.scale
+cand.all            <- expand.grid(cand.m, cand.scale)
+cand.all            <- cbind(seq(nrow(cand.all)), cand.all)
+colnames(cand.all)  <- c('index', 'm', 'scale')
+n.cand.all          <- n.cand.m * n.cand.scale
 
-for(i in cand.all$index){
-  a <- function(loc) cand.all[i, 3]
-  sim1[[i]] <- simulation(10^2, m = cand.all[i, 2], covparms = c(1))
-}
+no_cores            <- parallel::detectCores() - 2
+cl                  <- parallel::makeCluster(no_cores)
+
+doParallel::registerDoParallel(cl)
+sim1 <- foreach(m = cand.all$m, a = cand.all$scale, .export = c("aniso_mat", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "matern_ns", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "smoothness", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(n = 30^2, m = m, deg.aniso = a, covparms = c(1))
+parallel::stopCluster(cl)
+
+# for(i in cand.all$index){
+# 
+#   start.time      <- proc.time()
+#   sim1[[i]]       <- simulation(30^2, m = cand.all[i, 2], deg.aniso = cand.all[i, 3], covparms = c(1))
+#   end.time        <- proc.time()
+# 
+#   proctime        <- end.time - start.time
+# 
+#   print(paste0("simulation ", i, " is done. [ ", proctime[3], "s ]"))
+# }
 
 kls.maxmin.euclidean    <- rep(NA, n.cand.all)
 kls.maxmin.corr         <- rep(NA, n.cand.all)
@@ -165,26 +180,26 @@ for(i in 1:n.cand.all) {
   kls.ycoord.euclidean[i]    <- sim1[[i]]$kls[3]
 }
 
-set.scale <- 10
-ind <- cand.all$scale == set.scale
-vis.dat1 <- data.frame(kls.maxmin.euclidean[ind], kls.maxmin.corr[ind], kls.xcoord.euclidean[ind], kls.ycoord.euclidean[ind])
-vis.dat1 <- vis.dat1[, order(colnames(vis.dat1))]
-vis.dat1 <- cbind(rep(cand.m, times = 4), tidyr::gather(vis.dat1))
+set.scale   <- 10
+ind         <- cand.all$scale == set.scale
+vis.dat1    <- data.frame(kls.maxmin.euclidean[ind], kls.maxmin.corr[ind], kls.xcoord.euclidean[ind], kls.ycoord.euclidean[ind])
+vis.dat1    <- vis.dat1[, order(colnames(vis.dat1))]
+vis.dat1    <- cbind(rep(cand.m, times = 4), tidyr::gather(vis.dat1))
 colnames(vis.dat1) <- c("m", "method", "KL")
 head(vis.dat1)
 
-set.m <- 20
-ind <- cand.all$m == set.m
-vis.dat2 <- data.frame(kls.maxmin.euclidean[ind], kls.maxmin.corr[ind], kls.xcoord.euclidean[ind], kls.ycoord.euclidean[ind])
-vis.dat2 <- vis.dat2[, order(colnames(vis.dat2))]
-vis.dat2 <- cbind(rep(cand.scale, times = 4), tidyr::gather(vis.dat2))
+set.m       <- 30
+ind         <- cand.all$m == set.m
+vis.dat2    <- data.frame(kls.maxmin.euclidean[ind], kls.maxmin.corr[ind], kls.xcoord.euclidean[ind], kls.ycoord.euclidean[ind])
+vis.dat2    <- vis.dat2[, order(colnames(vis.dat2))]
+vis.dat2    <- cbind(rep(cand.scale, times = 4), tidyr::gather(vis.dat2))
 colnames(vis.dat2) <- c("scale", "method", "KL")
 head(vis.dat2)
 
 kls.legend <- c("Correlation + Maxmin     ", "Euclidean + Maxmin     ", "Euclidean + x-coord     ", "Euclidean + y-coord")
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(4, "Set1"), alpha.value = 0.7, size.legend = 16, size.lab = 16, size.text = 12)
 
-
-
+save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, file='2_corrvecchia/sim_anisotropy_1.RData')
+# load(file='2_corrvecchia/sim_anisotropy_1.RData')
 
 
