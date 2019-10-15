@@ -152,11 +152,11 @@ vis_arrange <- function(vdat1, vdat2, combined.legend, color.pal = brewer.pal(4,
           plot.margin = unit(c(5.5, 20, 5.5, 5.5), "pt")) # t, r, b, l
   
   xlabel2 <- sort(unique(vdat2$range))
-  plot2   <- ggplot(vdat2, aes(x=range, y = log10(KL), col = method)) + 
+  plot2   <- ggplot(vdat2, aes(x=range, y = log10(KL), col = method)) +
     geom_point(aes(shape = method), size = 2) + 
     geom_line(size = 1, alpha = alpha.value) +
     ylab('log10(KL)') + 
-    scale_x_discrete(name = 'range', limits=xlabel2, labels=as.character(xlabel2)) +
+    scale_x_continuous(name = 'range', limits=range(xlabel2), breaks=xlabel2) +
     scale_color_manual(values = color.pal, labels = combined.legend) +
     scale_shape_manual(values = c(15, 16, 17, 18), labels = combined.legend) +
     theme(axis.title.x = element_text(size = size.lab), 
@@ -182,7 +182,7 @@ vis_arrange <- function(vdat1, vdat2, combined.legend, color.pal = brewer.pal(4,
 ####################################################################
 
 cand.m            <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45) ; n.cand.m <- length(cand.m)
-cand.range        <- sort(1/c(1, 4, 8, 12, 16, 20, 24)) ; n.cand.range <- length(cand.range)
+cand.range        <- c(0.1, 0.2, 0.4, 0.6, 0.8, 1) ; n.cand.range <- length(cand.range)
 sim1              <- list()
 
 # # small case
@@ -199,7 +199,7 @@ no_cores            <- parallel::detectCores() - 2
 cl                  <- parallel::makeCluster(no_cores)
 
 doParallel::registerDoParallel(cl)
-sim1 <- foreach(m = cand.all$m, r = cand.all$range, .export = c("positive_def", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(30^2, m = m, covparms = c(1, r), tol = 1e-5)
+sim1 <- foreach(m = cand.all$m, r = cand.all$range, .export = c("positive_def", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(30^2, m = m, covparms = c(1, r), tol = 1e-4)
 parallel::stopCluster(cl)
 
 kls.maxmin.euclidean    <- rep(NA, n.cand.all)
@@ -213,7 +213,7 @@ for(i in 1:n.cand.all) {
   kls.ycoord.euclidean[i]    <- sim1[[i]]$kls[3]
 }
 
-set.range   <- 1/8
+set.range   <- 0.1
 ind         <- cand.all$range == set.range
 vis.dat1    <- data.frame(kls.maxmin.euclidean[ind], kls.maxmin.corr[ind], kls.xcoord.euclidean[ind], kls.ycoord.euclidean[ind])
 vis.dat1    <- vis.dat1[, order(colnames(vis.dat1))]
@@ -232,5 +232,11 @@ head(vis.dat2)
 kls.legend <- c("Correlation + Maxmin     ", "Euclidean + Maxmin     ", "Euclidean + x-coord     ", "Euclidean + y-coord")
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(4, "Set1"), alpha.value = 0.7, size.legend = 16, size.lab = 16, size.text = 12)
 
-# save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, file='2_corrvecchia/sim_periodicity_1.RData')
+err.modifying <- c()
+for(i in 1:length(sim1)) err.modifying[i] <- sqrt(sum((sim1[[1]]$Sigma - sim1[[1]]$Sigma.modified))^2)
+tail(sort(err.modifying))
+
+# save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying, file='2_corrvecchia/sim_periodicity_1.RData')
 # load(file='2_corrvecchia/sim_periodicity_1.RData')
+
+
