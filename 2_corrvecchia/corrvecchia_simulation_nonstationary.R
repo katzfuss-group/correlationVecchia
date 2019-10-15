@@ -151,6 +151,8 @@ doParallel::registerDoParallel(cl)
 sim1 <- foreach(m = cand.m, .export = c("a", "b", "aniso_mat", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "matern_ns", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "smoothness", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(30^2, m = m, covparms = c(1))
 parallel::stopCluster(cl)
 
+# for(i in 1:n.cand.m) sim[[i]] <- simulation(30^2, m = cand.m[i], covparms = c(1))
+
 kls.maxmin.euclidean    <- rep(NA, n.cand.m)
 kls.maxmin.corr         <- rep(NA, n.cand.m)
 kls.xcoord.euclidean    <- rep(NA, n.cand.m)
