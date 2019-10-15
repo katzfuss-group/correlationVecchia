@@ -67,10 +67,8 @@ covmodel_periodic <- function(locs, covparms) {
 ####################################################################
 
 positive_def <- function(Sigma, tol){
-  eig.decomp <- eigen(Sigma)
-  diagvec <- eig.decomp$values
-  diagvec[eig.decomp$values < tol] <- 0
-  diagvec[diagvec == 0] <- min(diagvec[diagvec != 0])
+  eig.decomp  <- eigen(Sigma)
+  diagvec     <- ifelse(eig.decomp$values < tol, tol, eig.decomp$values)
   
   Sigma.modified <- eig.decomp$vectors %*% diag(diagvec) %*% t(eig.decomp$vectors)
   return(Sigma.modified)

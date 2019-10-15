@@ -77,11 +77,22 @@ matern_ns <- function(locs1, locs2 = NULL) {
 #### simulation function
 ####################################################################
 
-simulation <- function(n = 15^2, m = 10, covparms = c(1)) {
+positive_def <- function(Sigma, tol){
+  eig.decomp  <- eigen(Sigma)
+  diagvec     <- ifelse(eig.decomp$values < tol, tol, eig.decomp$values)
+  
+  Sigma.modified <- eig.decomp$vectors %*% diag(diagvec) %*% t(eig.decomp$vectors)
+  return(Sigma.modified)
+}
+
+simulation <- function(n = 15^2, m = 10, covparms = c(1), tol = 1e-6) {
 
   locs      <- matrix(runif(n * 2, 0, 1), n, 2)
   Sigma     <- matern_ns(locs)
-  y         <- as.numeric(t(chol(Sigma)) %*% rnorm(n))
+  
+  Sigma.modified <- positive_def(Sigma, tol)
+  
+  y         <- as.numeric(t(chol(Sigma.modified)) %*% rnorm(n))
   
   ### specify vecchia approximations
   approx <- list()
@@ -93,7 +104,7 @@ simulation <- function(n = 15^2, m = 10, covparms = c(1)) {
   # standard vecchia with y coord ordering
   approx[[3]]           <- vecchia_specify_adjusted(locs, m, ordering = "coord", which.coord = 2, cond.yz='y', conditioning = "NN")
   # correlation-based vecchia with the corrvecchia function
-  approx[[4]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", covmodel = Sigma, covparms = covparms)
+  approx[[4]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", covmodel = Sigma.modified, covparms = covparms)
   
   ### compute approximate covariance matrices
   Sigma.hat   <- list()
@@ -102,11 +113,13 @@ simulation <- function(n = 15^2, m = 10, covparms = c(1)) {
     
     Sigma.ord       <- matern_ns(approx[[i]]$locsord) # true cov in appropriate ordering
     
-    U               <- createU(approx[[i]], c(1, 1, 1), 0, covmodel = Sigma.ord)$U
+    Sigma.ord.modified <- positive_def(Sigma.ord, tol)
+    
+    U               <- createU(approx[[i]], c(1, 1, 1), 0, covmodel = Sigma.ord.modified)$U
     revord          <- order(approx[[i]]$ord)
     Sigma.hat[[i]]  <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
     
-    kls[i]          <- kldiv(Sigma, Sigma.hat[[i]])
+    kls[i]          <- kldiv(Sigma.modified, Sigma.hat[[i]])
   }
   
   result                  <- list()
@@ -117,6 +130,7 @@ simulation <- function(n = 15^2, m = 10, covparms = c(1)) {
   result$approx           <- approx
   result$kls              <- kls
   result$Sigma            <- Sigma
+  result$Sigma.modified   <- Sigma.modified
   result$Sigma.hat        <- Sigma.hat
   
   return(result)  
@@ -148,7 +162,7 @@ no_cores            <- parallel::detectCores() - 2
 cl                  <- parallel::makeCluster(no_cores)
 
 doParallel::registerDoParallel(cl)
-sim1 <- foreach(m = cand.m, .export = c("a", "b", "aniso_mat", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "matern_ns", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "smoothness", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(30^2, m = m, covparms = c(1))
+sim1 <- foreach(m = cand.m, .export = c("a", "b", "aniso_mat", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "matern_ns", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "smoothness", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(30^2, m = m, covparms = c(1), tol = 1e-4)
 parallel::stopCluster(cl)
 
 # for(i in 1:n.cand.m) sim[[i]] <- simulation(30^2, m = cand.m[i], covparms = c(1))
@@ -168,6 +182,10 @@ vis.dat1 <- data.frame(kls.maxmin.euclidean, kls.maxmin.corr, kls.xcoord.euclide
 vis.dat1 <- vis.dat1[, order(colnames(vis.dat1))]
 head(vis.dat1)
 
+err.modifying1 <- c()
+for(i in 1:length(sim1)) err.modifying1[i] <- sqrt(sum((sim1[[i]]$Sigma - sim1[[i]]$Sigma.modified))^2)
+max(err.modifying1)
+
 plot(cand.m, log10(vis.dat1$kls.maxmin.euclidean), type = "o", col = 1, lty = 1, lwd = 3,
      ylim = c(min(log10(vis.dat1)), max(log10(vis.dat1))), xlab = "m", ylab = "log10(KL)", main = NULL)
 lines(cand.m, log10(vis.dat1$kls.maxmin.corr), type = "o", col = 2, lty = 2, lwd = 3)
@@ -175,7 +193,7 @@ lines(cand.m, log10(vis.dat1$kls.xcoord.euclidean), type = "o", col = 3, lty = 3
 lines(cand.m, log10(vis.dat1$kls.ycoord.euclidean), type = "o", col = 4, lty = 4, lwd = 3)
 legend("topright", legend=c("maxmin + Euclidean", "maxmin + correlation", "x-coord + Euclidean", "y-coord + Euclidean"), col=1:4, lty=1:4, lwd = 3, cex=1)
 
-# save(sim1, cand.m, vis.dat1, file='2_corrvecchia/sim_nonstationarity_1.RData')
+# save(sim1, cand.m, vis.dat1, err.modifying1, file='2_corrvecchia/sim_nonstationarity_1.RData')
 # load(file='2_corrvecchia/sim_nonstationarity_1.RData')
 
 
@@ -199,7 +217,7 @@ no_cores            <- parallel::detectCores() - 2
 cl                  <- parallel::makeCluster(no_cores)
 
 doParallel::registerDoParallel(cl)
-sim2 <- foreach(m = cand.m, .export = c("a", "b", "aniso_mat", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "matern_ns", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "smoothness", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(30^2, m = m, covparms = c(1))
+sim2 <- foreach(m = cand.m, .export = c("a", "b", "aniso_mat", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "matern_ns", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "smoothness", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(30^2, m = m, covparms = c(1), tol = 1e-4)
 parallel::stopCluster(cl)
 
 kls.maxmin.euclidean    <- rep(NA, n.cand.m)
@@ -217,6 +235,10 @@ vis.dat2 <- data.frame(kls.maxmin.euclidean, kls.maxmin.corr, kls.xcoord.euclide
 vis.dat2 <- vis.dat2[, order(colnames(vis.dat2))]
 head(vis.dat2)
 
+err.modifying2 <- c()
+for(i in 1:length(sim1)) err.modifying2[i] <- sqrt(sum((sim1[[i]]$Sigma - sim1[[i]]$Sigma.modified))^2)
+max(err.modifying2)
+
 plot(cand.m, log10(vis.dat2$kls.maxmin.euclidean), type = "o", col = 1, lty = 1, lwd = 3,
      ylim = c(min(log10(vis.dat2)), max(log10(vis.dat2))), xlab = "m", ylab = "log10(KL)", main = NULL)
 lines(cand.m, log10(vis.dat2$kls.maxmin.corr), type = "o", col = 2, lty = 2, lwd = 3)
@@ -224,5 +246,5 @@ lines(cand.m, log10(vis.dat2$kls.xcoord.euclidean), type = "o", col = 3, lty = 3
 lines(cand.m, log10(vis.dat2$kls.ycoord.euclidean), type = "o", col = 4, lty = 4, lwd = 3)
 legend("topright", legend=c("maxmin + Euclidean", "maxmin + correlation", "x-coord + Euclidean", "y-coord + Euclidean"), col=1:4, lty=1:4, lwd = 3, cex=1)
 
-# save(sim2, cand.m, vis.dat2, file='2_corrvecchia/sim_nonstationarity_2.RData')
+# save(sim2, cand.m, vis.dat2, err.modifying2, file='2_corrvecchia/sim_nonstationarity_2.RData')
 # load(file='2_corrvecchia/sim_nonstationarity_2.RData')
