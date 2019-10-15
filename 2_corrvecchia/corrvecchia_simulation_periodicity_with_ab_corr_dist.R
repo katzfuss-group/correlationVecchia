@@ -182,8 +182,27 @@ vis_arrange <- function(vdat1, vdat2, combined.legend, color.pal = brewer.pal(4,
 ####################################################################
 
 cand.m            <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45) ; n.cand.m <- length(cand.m)
-cand.range        <- c(0.1, 0.2, 0.4, 0.6, 0.8, 1) ; n.cand.range <- length(cand.range)
+cand.range        <- c(0.05, 0.07, 0.09, 0.1) ; n.cand.range <- length(cand.range)
 sim1              <- list()
+
+# n <- 15^2
+# locs <- matrix(runif(n * 2, 0, 1), n, 2)
+# 
+# h <- fields::rdist(locs)
+# ord <- order(unlist(h))
+# hord <- unlist(h)[ord]
+# 
+# c <- covmodel_periodic(locs, covparms = c(1, cand.range[1]))
+# cord <- unlist(c)[ord]
+# 
+# plot(hord, cord, col = 1, type = 'l')
+# 
+# for(i in 2:n.cand.range){
+#   c <- covmodel_periodic(locs, covparms = c(1, cand.range[i]))
+#   cord <- unlist(c)[ord]
+#   
+#   lines(hord, cord, col = i)
+# }
 
 # # small case
 # cand.m            <- c(10, 20, 30) ; n.cand.m <- length(cand.m)
@@ -213,7 +232,7 @@ for(i in 1:n.cand.all) {
   kls.ycoord.euclidean[i]    <- sim1[[i]]$kls[3]
 }
 
-set.range   <- 0.1
+set.range   <- 0.05
 ind         <- cand.all$range == set.range
 vis.dat1    <- data.frame(kls.maxmin.euclidean[ind], kls.maxmin.corr[ind], kls.xcoord.euclidean[ind], kls.ycoord.euclidean[ind])
 vis.dat1    <- vis.dat1[, order(colnames(vis.dat1))]
@@ -233,8 +252,8 @@ kls.legend <- c("Correlation + Maxmin     ", "Euclidean + Maxmin     ", "Euclide
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(4, "Set1"), alpha.value = 0.7, size.legend = 16, size.lab = 16, size.text = 12)
 
 err.modifying <- c()
-for(i in 1:length(sim1)) err.modifying[i] <- sqrt(sum((sim1[[1]]$Sigma - sim1[[1]]$Sigma.modified))^2)
-tail(sort(err.modifying))
+for(i in 1:length(sim1)) err.modifying[i] <- sqrt(sum((sim1[[i]]$Sigma - sim1[[i]]$Sigma.modified))^2)
+max(err.modifying)
 
-# save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, file='2_corrvecchia/sim_periodicity_with_ab_corr_dist_1.RData')
+# save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying, file='2_corrvecchia/sim_periodicity_with_ab_corr_dist_1.RData')
 # load(file='2_corrvecchia/sim_periodicity_with_ab_corr_dist_1.RData')
