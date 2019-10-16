@@ -236,7 +236,7 @@ vis.dat2 <- vis.dat2[, order(colnames(vis.dat2))]
 head(vis.dat2)
 
 err.modifying2 <- c()
-for(i in 1:length(sim1)) err.modifying2[i] <- sqrt(sum((sim1[[i]]$Sigma - sim1[[i]]$Sigma.modified))^2)
+for(i in 1:length(sim2)) err.modifying2[i] <- sqrt(sum((sim2[[i]]$Sigma - sim2[[i]]$Sigma.modified))^2)
 max(err.modifying2)
 
 plot(cand.m, log10(vis.dat2$kls.maxmin.euclidean), type = "o", col = 1, lty = 1, lwd = 3,
