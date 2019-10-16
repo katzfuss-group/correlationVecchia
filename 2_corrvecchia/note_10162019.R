@@ -10,8 +10,8 @@ library(foreach)
 library(tidyr) ; library(ggplot2) ; library(gridExtra) ; library(RColorBrewer)
 
 source("2_corrvecchia/vecchia_specify_adjusted.R")
-# source("2_corrvecchia/corrvecchia.R")
-source("2_corrvecchia/corrvecchia_with_ab_corr_dist.R")
+source("2_corrvecchia/corrvecchia.R")
+# source("2_corrvecchia/corrvecchia_with_ab_corr_dist.R")
 source("2_corrvecchia/kldiv.R")
 
 set.seed(10102019)
@@ -67,8 +67,9 @@ each.vec[length(each.vec)] <- each.vec[length(each.vec)] + n %% k
 o <- rep(seq(as.integer(n / k)), each.vec) ; ord.o <- order(o) ; o <- paste0('gp', o)
 vis.dat <- cbind(locs, o) 
 vis.dat <- vis.dat[ord.o, ]
-plot(vis.dat[, 1], vis.dat[, 2], col = factor(vis.dat[, 3], levels = unique(vis.dat[, 3])), pch = 16, xlim = c(0, 1.2), ylim = c(0, 1), main = 'maxmin order', xlab = NULL, ylab = NULL)
+fac <- factor(vis.dat[, 3], levels = unique(vis.dat[, 3]))
+plot(vis.dat[, 1], vis.dat[, 2], col = brewer.pal(as.integer(n / k), "Spectral")[fac], pch = 16, xlim = c(0, 1.2), ylim = c(0, 1), main = 'maxmin order', xlab = NULL, ylab = NULL)
 abline(v = 1)
-legend("topright", legend = levels(factor(vis.dat[, 3], levels = unique(vis.dat[, 3]))), col = c(1:length(unique(vis.dat[, 3]))), pch = 16)
+legend("topright", legend = levels(fac), col = brewer.pal(as.integer(n / k), "Spectral"), pch = 16)
 par(mfrow = c(1, 1))
 
