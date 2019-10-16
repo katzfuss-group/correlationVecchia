@@ -251,3 +251,7 @@ vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, co
 err.modifying <- c()
 for(i in 1:length(sim1)) err.modifying[i] <- sqrt(sum((sim1[[i]]$Sigma - sim1[[i]]$Sigma.modified))^2)
 max(err.modifying)
+
+# save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying, file='2_corrvecchia/sim_bessel_with_ab_corr_dist_1.RData')
+# load(file='2_corrvecchia/sim_bessel_with_ab_corr_dist_1.RData')
+
