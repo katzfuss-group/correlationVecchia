@@ -44,14 +44,14 @@ fields::quilt.plot(locs[,1], locs[,2], y)
 approx <- list()
 
 # standard vecchia
-approx[[1]]           <- vecchia_specify_adjusted(locs, m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
+approx[[1]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
 # pilot correlation-based vecchia
-approx[[2]]           <- vecchia_specify_adjusted(locs.trans, m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
+approx[[2]]           <- vecchia_specify_adjusted(locs = locs.trans, m = m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
 approx[[2]]$locsord   <- locs[approx[[2]]$ord,]
 # standard vecchia with the corrvecchia function
-approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", covmodel = cov.iso, covparms = covparms)
+approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, def.dist = NULL, ordering = "maxmin", ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = cov.iso, covparms = covparms)
 # correlation-based vecchia with the corrvecchia function
-approx[[4]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", covmodel = cov.aniso, covparms = covparms)
+approx[[4]]           <- corrvecchia_knownCovparms(locs = locs, m = m, def.dist = NULL, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = cov.aniso, covparms = covparms)
 
 
 ### compute approximate covariance matrices
@@ -61,7 +61,7 @@ for(i in 1:4){
   
   Sigma.ord       <- cov.aniso(approx[[i]]$locsord, covparms) # true cov in appropriate ordering
   
-  U               <- createU(approx[[i]], c(1, 0.1, 0.5), 0, covmodel = Sigma.ord)$U
+  U               <- createU(approx[[i]], c(1, 0.1, 1), 0, covmodel = Sigma.ord)$U
   revord          <- order(approx[[i]]$ord)
   Sigma.hat[[i]]  <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
   
@@ -99,14 +99,14 @@ fields::quilt.plot(locs[,1], locs[,2], y)
 approx <- list()
 
 # standard vecchia
-approx[[1]]           <- vecchia_specify_adjusted(locs, m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
+approx[[1]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
 # pilot correlation-based vecchia
-approx[[2]]           <- vecchia_specify_adjusted(locs.trans, m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
+approx[[2]]           <- vecchia_specify_adjusted(locs = locs.trans, m = m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
 approx[[2]]$locsord   <- locs[approx[[2]]$ord,]
 # standard vecchia with the corrvecchia function
-approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", covmodel = cov.iso, covparms = covparms)
+approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, def.dist = NULL, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", conditioning.method = "correlation", covmodel = cov.iso, covparms = covparms)
 # correlation-based vecchia with the corrvecchia function
-approx[[4]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", covmodel = cov.aniso, covparms = covparms)
+approx[[4]]           <- corrvecchia_knownCovparms(locs = locs, m = m, def.dist = NULL, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = cov.aniso, covparms = covparms)
 
 
 ### compute approximate covariance matrices
@@ -276,11 +276,11 @@ approx <- list()
 covmodel <- function(locs, covparms) matern_ns(locs) / covparms[1]
 
 # standard vecchia
-approx[[1]]           <- vecchia_specify_adjusted(locs, m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
+approx[[1]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
 # standard vecchia with the corrvecchia function
-approx[[2]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", covmodel = covmodel, covparms = covparms)
+approx[[2]]           <- corrvecchia_knownCovparms(locs = locs, m = m, def.dist = NULL, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", conditioning.method = "correlation", covmodel = covmodel, covparms = covparms)
 # correlation-based vecchia with the corrvecchia function
-approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", covmodel = covmodel, covparms = covparms)
+approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, def.dist = NULL, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmodel, covparms = covparms)
 
 ### compute approximate covariance matrices
 Sigma.hat   <- list()
@@ -355,9 +355,9 @@ approx <- list()
 # standard vecchia
 approx[[1]]           <- vecchia_specify_adjusted(locs, m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
 # standard vecchia with the corrvecchia function
-approx[[2]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", covmodel = Sigma, covparms = covparms)
+approx[[2]]           <- corrvecchia_knownCovparms(locs = locs, m = m, def.dist = NULL, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
 # correlation-based vecchia with the corrvecchia function
-approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", covmodel = Sigma, covparms = covparms)
+approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, def.dist = NULL, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
 
 ### compute approximate covariance matrices
 Sigma.hat   <- list()
@@ -432,9 +432,9 @@ approx <- list()
 # standard vecchia
 approx[[1]]           <- vecchia_specify_adjusted(locs, m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
 # standard vecchia with the corrvecchia function
-approx[[2]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", covmodel = Sigma, covparms = covparms)
+approx[[2]]           <- corrvecchia_knownCovparms(locs = locs, m = m, def.dist = NULL, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
 # correlation-based vecchia with the corrvecchia function
-approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", covmodel = Sigma, covparms = covparms)
+approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, def.dist = NULL, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
 
 ### compute approximate covariance matrices
 Sigma.hat   <- list()
@@ -510,9 +510,9 @@ approx <- list()
 # standard vecchia
 approx[[1]]           <- vecchia_specify_adjusted(locs, m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
 # standard vecchia with the corrvecchia function
-approx[[2]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", covmodel = Sigma, covparms = covparms)
+approx[[2]]           <- corrvecchia_knownCovparms(locs = locs, m = m, def.dist = NULL, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
 # correlation-based vecchia with the corrvecchia function
-approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", covmodel = Sigma, covparms = covparms)
+approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, def.dist = NULL, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
 
 ### compute approximate covariance matrices
 Sigma.hat   <- list()
@@ -531,7 +531,6 @@ for(i in 1:3){
 kls
 # standard vecchia / standard vecchia with the corrvecchia function / correlation-based vecchia with the corrvecchia function
 # 5.75016585 0.14757086 0.05779561
-# 5.55710955 0.16784603 0.07602673
 
 
 ####################################################################
@@ -590,9 +589,9 @@ approx <- list()
 # standard vecchia
 approx[[1]]           <- vecchia_specify_adjusted(locs, m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
 # standard vecchia with the corrvecchia function
-approx[[2]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", covmodel = Sigma, covparms = covparms)
+approx[[2]]           <- corrvecchia_knownCovparms(locs = locs, m = m, def.dist = NULL, ordering = "maxmin", ordering.method = "euclidean", conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
 # correlation-based vecchia with the corrvecchia function
-approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", covmodel = Sigma, covparms = covparms)
+approx[[3]]           <- corrvecchia_knownCovparms(locs = locs, m = m, def.dist = NULL, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
 
 ### compute approximate covariance matrices
 Sigma.hat   <- list()
@@ -610,6 +609,4 @@ for(i in 1:3){
 
 kls
 # standard vecchia / standard vecchia with the corrvecchia function / correlation-based vecchia with the corrvecchia function
-# 2.153917 1.319040 1.210453
-# 2.367766 1.432311 1.169622
-# 1.946253 1.329232 1.137366
+# 2.021768 1.412446 1.173727
