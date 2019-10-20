@@ -38,7 +38,7 @@ aniso_mat <- function(loc, deg.aniso) {
   
   a         <- function(loc) deg.aniso
   
-  range     <- c(a(loc)^(-2), 1)
+  range     <- c(a(loc)^(-2), 1) * 0.01
   diag.mat  <- diag(range, nrow = length(loc))
   
   aniso.mat <- t(rot.mat) %*% diag.mat %*% rot.mat
@@ -53,7 +53,7 @@ smoothness <- function(loc) 0.5
 
 matern_ns <- function(locs1, locs2 = NULL, deg.aniso) {
   
-  if(is.null(locs2)) locs2 = locs1
+  if(is.null(locs2)) locs2 <- locs1
   
   n1 <- nrow(locs1) ; n2 <- nrow(locs2) ; d <- ncol(locs1)
   
@@ -77,11 +77,11 @@ matern_ns <- function(locs1, locs2 = NULL, deg.aniso) {
 # n         <- 15^2
 # locs      <- matrix(runif(n * 2, 0, 1), n, 2)
 # 
-# Sigma.new <- matern_ns(locs)
+# Sigma.new <- matern_ns(locs1 = locs, locs2 = NULL, deg.aniso = 10)
 # 
 # cov.iso       <- function(locs, covparms) covparms[1] * exp(-fields::rdist(locs) / covparms[2])
-# cov.aniso     <- function(locs, covparms) covparms[1] * exp(-fields::rdist(cbind(locs[ ,1] * covparms[3], locs[,2])) / covparms[2])
-# covparms      <- c(1, 1, 10)
+# cov.aniso     <- function(locs, covparms) covparms[1] * exp(-fields::rdist(cbind(locs[ ,1] * covparms[3], locs[ ,2])) / covparms[2])
+# covparms      <- c(1, 0.1, 10)
 # 
 # Sigma.old <- cov.aniso(locs, covparms)
 # 
@@ -101,18 +101,25 @@ simulation <- function(n = 30^2, m = 30, deg.aniso = 10, covparms = c(1)) {
   approx <- list()
   
   # standard vecchia with maxmin ordering
-  approx[[1]]           <- vecchia_specify_adjusted(locs, m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
+  approx[[1]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
   # standard vecchia with x coord ordering
-  approx[[2]]           <- vecchia_specify_adjusted(locs, m, ordering = "coord", which.coord = 1, cond.yz='y', conditioning = "NN")
+  approx[[2]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "coord", which.coord = 1, cond.yz='y', conditioning = "NN")
   # standard vecchia with y coord ordering
-  approx[[3]]           <- vecchia_specify_adjusted(locs, m, ordering = "coord", which.coord = 2, cond.yz='y', conditioning = "NN")
-  # correlation-based vecchia with the corrvecchia function
-  approx[[4]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", covmodel = Sigma, covparms = covparms)
+  approx[[3]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "coord", which.coord = 2, cond.yz='y', conditioning = "NN")
+  # euclidean-based ordering + euclidean-based conditioning
+  approx[[4]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma, covparms = covparms)
+  # euclidean-based ordering + correlation-based conditioning
+  approx[[5]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
+  # correlation-based ordering + euclidean-based conditioning
+  approx[[6]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma, covparms = covparms)
+  # correlation-based ordering + correlation-based conditioning
+  approx[[7]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
   
   ### compute approximate covariance matrices
+  n.approx <- length(approx)
   Sigma.hat   <- list()
-  kls         <- c()
-  for(i in 1:4){
+  kls         <- rep(NA, n.approx)
+  for(i in 1:n.approx){
     
     Sigma.ord       <- matern_ns(locs1 = approx[[i]]$locsord, locs2 = NULL, deg.aniso = deg.aniso) # true cov in appropriate ordering
     
@@ -128,10 +135,10 @@ simulation <- function(n = 30^2, m = 30, deg.aniso = 10, covparms = c(1)) {
   result$m                <- m
   result$covparms         <- covparms
   result$locs             <- locs
-  result$approx           <- approx
-  result$kls              <- kls
   result$Sigma            <- Sigma
+  result$approx           <- approx
   result$Sigma.hat        <- Sigma.hat
+  result$kls              <- kls
   
   return(result)  
 }
@@ -141,16 +148,16 @@ simulation <- function(n = 30^2, m = 30, deg.aniso = 10, covparms = c(1)) {
 #### visualization
 ####################################################################
 
-vis_arrange <- function(vdat1, vdat2, combined.legend, color.pal = brewer.pal(4, "Set1"), alpha.value = 0.7, size.legend = 28, size.lab = 28, size.text = 18){
+vis_arrange <- function(vdat1, vdat2, combined.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(8, 13, 15, 16, 17, 18), alpha.value = 0.7, size.legend = 28, size.lab = 28, size.text = 18){
   
   xlabel1 <- sort(unique(vdat1$m))
   plot1   <- ggplot(vdat1, aes(x=m, y = log10(KL), col = method)) + 
     geom_point(aes(shape = method), size = 3) + 
     geom_line(size = 1, alpha = alpha.value) +
     ylab('log10(KL)') + 
-    scale_x_discrete(name = 'm', limits=xlabel1, labels=as.character(xlabel1)) +
+    scale_x_continuous(name = 'm', limits=range(xlabel1), breaks=xlabel1) +
     scale_color_manual(values = color.pal, labels = combined.legend) +
-    scale_shape_manual(values = c(15, 16, 17, 18), labels = combined.legend) +
+    scale_shape_manual(values = shape.pal, labels = combined.legend) +
     theme(axis.title.x = element_text(size = size.lab), 
           axis.text.x = element_text(size = size.text),
           axis.title.y = element_text(size = size.lab), 
@@ -165,9 +172,9 @@ vis_arrange <- function(vdat1, vdat2, combined.legend, color.pal = brewer.pal(4,
     geom_point(aes(shape = method), size = 2) + 
     geom_line(size = 1, alpha = alpha.value) +
     ylab('log10(KL)') + 
-    scale_x_discrete(name = 'a', limits=xlabel2, labels=as.character(xlabel2)) +
+    scale_x_continuous(name = 'a', limits=range(xlabel2), breaks=xlabel2) +
     scale_color_manual(values = color.pal, labels = combined.legend) +
-    scale_shape_manual(values = c(15, 16, 17, 18), labels = combined.legend) +
+    scale_shape_manual(values = shape.pal, labels = combined.legend) +
     theme(axis.title.x = element_text(size = size.lab), 
           axis.text.x = element_text(size = size.text),
           axis.title.y = element_text(size = size.lab), 
@@ -222,35 +229,41 @@ parallel::stopCluster(cl)
 #   print(paste0("simulation ", i, " is done. [ ", proctime[3], "s ]"))
 # }
 
-kls.maxmin.euclidean    <- rep(NA, n.cand.all)
-kls.maxmin.corr         <- rep(NA, n.cand.all)
-kls.xcoord.euclidean    <- rep(NA, n.cand.all)
-kls.ycoord.euclidean    <- rep(NA, n.cand.all)
+kls.maxmin.eucord.euccond.ref <- rep(NA, n.cand.all)
+kls.xcoord.eucord.euccond     <- rep(NA, n.cand.all)
+kls.ycoord.eucord.euccond     <- rep(NA, n.cand.all)
+kls.maxmin.eucord.euccond     <- rep(NA, n.cand.all)
+kls.maxmin.eucord.corcond     <- rep(NA, n.cand.all)
+kls.maxmin.corord.euccond     <- rep(NA, n.cand.all)
+kls.maxmin.corord.corcond     <- rep(NA, n.cand.all)
 for(i in 1:n.cand.all) {
-  kls.maxmin.euclidean[i]    <- sim1[[i]]$kls[1]
-  kls.maxmin.corr[i]         <- sim1[[i]]$kls[4]
-  kls.xcoord.euclidean[i]    <- sim1[[i]]$kls[2]
-  kls.ycoord.euclidean[i]    <- sim1[[i]]$kls[3]
+  kls.maxmin.eucord.euccond.ref[i]  <- sim1[[i]]$kls[1]
+  kls.xcoord.eucord.euccond[i]      <- sim1[[i]]$kls[2]
+  kls.ycoord.eucord.euccond[i]      <- sim1[[i]]$kls[3]
+  kls.maxmin.eucord.euccond[i]      <- sim1[[i]]$kls[4]
+  kls.maxmin.eucord.corcond[i]      <- sim1[[i]]$kls[5]
+  kls.maxmin.corord.euccond[i]      <- sim1[[i]]$kls[6]
+  kls.maxmin.corord.corcond[i]      <- sim1[[i]]$kls[7]
 }
 
 set.scale   <- 10
 ind         <- cand.all$scale == set.scale
-vis.dat1    <- data.frame(kls.maxmin.euclidean[ind], kls.maxmin.corr[ind], kls.xcoord.euclidean[ind], kls.ycoord.euclidean[ind])
+vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat1    <- vis.dat1[, order(colnames(vis.dat1))]
-vis.dat1    <- cbind(rep(cand.m, times = 4), tidyr::gather(vis.dat1))
+vis.dat1    <- cbind(rep(cand.m, times = ncol(vis.dat1)), tidyr::gather(vis.dat1))
 colnames(vis.dat1) <- c("m", "method", "KL")
 head(vis.dat1)
 
 set.m       <- 30
 ind         <- cand.all$m == set.m
-vis.dat2    <- data.frame(kls.maxmin.euclidean[ind], kls.maxmin.corr[ind], kls.xcoord.euclidean[ind], kls.ycoord.euclidean[ind])
+vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat2    <- vis.dat2[, order(colnames(vis.dat2))]
-vis.dat2    <- cbind(rep(cand.scale, times = 4), tidyr::gather(vis.dat2))
+vis.dat2    <- cbind(rep(cand.scale, times = ncol(vis.dat2)), tidyr::gather(vis.dat2))
 colnames(vis.dat2) <- c("scale", "method", "KL")
 head(vis.dat2)
 
-kls.legend <- c("Correlation + Maxmin     ", "Euclidean + Maxmin     ", "Euclidean + x-coord     ", "Euclidean + y-coord")
-vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(4, "Set1"), alpha.value = 0.7, size.legend = 16, size.lab = 16, size.text = 12)
+kls.legend <- c("Maxmin + C.ord + C.cond", "Maxmin + C.ord + E.cond", "Maxmin + E.ord + C.cond", "Maxmin + E.ord + E.cond", "X-coord + Maxmin + E.ord + E.cond", "Y-coord + Maxmin + E.ord + E.cond")
+vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(16, 17, 15, 18, 8, 13), alpha.value = 0.7, size.legend = 14, size.lab = 14, size.text = 12)
 
 # save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, file='2_corrvecchia/sim_anisotropy_1.RData')
 # load(file='2_corrvecchia/sim_anisotropy_1.RData')
