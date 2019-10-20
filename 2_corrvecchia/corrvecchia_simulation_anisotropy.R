@@ -116,7 +116,7 @@ simulation <- function(n = 30^2, m = 30, deg.aniso = 10, covparms = c(1)) {
   approx[[7]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
   
   ### compute approximate covariance matrices
-  n.approx <- length(approx)
+  n.approx    <- length(approx)
   Sigma.hat   <- list()
   kls         <- rep(NA, n.approx)
   for(i in 1:n.approx){
@@ -246,6 +246,8 @@ for(i in 1:n.cand.all) {
   kls.maxmin.corord.corcond[i]      <- sim1[[i]]$kls[7]
 }
 
+sqrt((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2)
+
 set.scale   <- 10
 ind         <- cand.all$scale == set.scale
 vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
@@ -262,7 +264,7 @@ vis.dat2    <- cbind(rep(cand.scale, times = ncol(vis.dat2)), tidyr::gather(vis.
 colnames(vis.dat2) <- c("scale", "method", "KL")
 head(vis.dat2)
 
-kls.legend <- c("Maxmin + C.ord + C.cond", "Maxmin + C.ord + E.cond", "Maxmin + E.ord + C.cond", "Maxmin + E.ord + E.cond", "X-coord + Maxmin + E.ord + E.cond", "Y-coord + Maxmin + E.ord + E.cond")
+kls.legend <- c("Maxmin + C.ord + C.cond", "Maxmin + C.ord + E.cond", "Maxmin + E.ord + C.cond", "Maxmin + E.ord + E.cond", "X-coord + E.ord + E.cond", "Y-coord + E.ord + E.cond")
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(16, 17, 15, 18, 8, 13), alpha.value = 0.7, size.legend = 14, size.lab = 14, size.text = 12)
 
 # save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, file='2_corrvecchia/sim_anisotropy_1.RData')
