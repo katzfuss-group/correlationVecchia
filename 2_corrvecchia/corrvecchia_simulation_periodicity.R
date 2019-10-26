@@ -124,14 +124,24 @@ simulation <- function(n = 15^2, m = 10, covparms = c(1, 1/10), covm = "Dampedsi
   approx[[2]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "coord", which.coord = 1, cond.yz='y', conditioning = "NN")
   # standard vecchia with y coord ordering
   approx[[3]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "coord", which.coord = 2, cond.yz='y', conditioning = "NN")
-  # euclidean-based ordering + euclidean-based conditioning
-  approx[[4]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", def.dist = def.dist, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma.modified, covparms = covparms)
-  # euclidean-based ordering + correlation-based conditioning
-  approx[[5]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", def.dist = def.dist, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma.modified, covparms = covparms)
-  # correlation-based ordering + euclidean-based conditioning
-  approx[[6]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", def.dist = def.dist, ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma.modified, covparms = covparms)
-  # correlation-based ordering + correlation-based conditioning
-  approx[[7]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", def.dist = def.dist, ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma.modified, covparms = covparms)
+  # euclidean-based ordering + euclidean-based NN conditioning
+  approx[[4]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, def.dist = def.dist, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma.modified, covparms = covparms)
+  # euclidean-based ordering + correlation-based NN conditioning
+  approx[[5]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, def.dist = def.dist, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma.modified, covparms = covparms)
+  # correlation-based ordering + euclidean-based NN conditioning
+  approx[[6]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, def.dist = def.dist, ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma.modified, covparms = covparms)
+  # correlation-based ordering + correlation-based NN conditioning
+  approx[[7]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, def.dist = def.dist, ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma.modified, covparms = covparms)
+  # x-coordinate-based ordering + correlation-based NN conditioning
+  approx[[8]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1), def.dist = def.dist, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma.modified, covparms = covparms)
+  # y-coordinate-based ordering + correlation-based NN conditioning
+  approx[[9]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(2), def.dist = def.dist, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma.modified, covparms = covparms)
+  # (x+y)-coordinate-based ordering + correlation-based NN conditioning
+  approx[[10]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1, 2), def.dist = def.dist, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma.modified, covparms = covparms)
+  # (x+y)-coordinate-based ordering + euclidean-based NN conditioning
+  approx[[11]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1, 2), def.dist = def.dist, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma.modified, covparms = covparms)
+  # standard vecchia with maxmin ordering
+  approx[[12]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "coord", which.coord = c(1, 2), cond.yz='y', conditioning = "NN")
   
   ### compute approximate covariance matrices
   n.approx    <- length(approx)
@@ -232,16 +242,21 @@ no_cores            <- parallel::detectCores() - 2
 cl                  <- parallel::makeCluster(no_cores)
 
 doParallel::registerDoParallel(cl)
-sim1 <- foreach(m = cand.all$m, p = cand.all$period, .export = c("covmodel_dampedsine", "covmodel_dampedcosine", "covmodel_besselJ", "covmodel_wave", "positive_def", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(n = 30^2, m = m, covparms = c(1, p), covm = "Dampedsine", def.dist = NULL, tol = 1e-4)
+sim1 <- foreach(m = cand.all$m, p = cand.all$period, .export = c("order_coordinate", "covmodel_dampedsine", "covmodel_dampedcosine", "covmodel_besselJ", "covmodel_wave", "positive_def", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(n = 30^2, m = m, covparms = c(1, p), covm = "Dampedsine", def.dist = NULL, tol = 1e-4)
 parallel::stopCluster(cl)
 
-kls.maxmin.eucord.euccond.ref <- rep(NA, n.cand.all)
-kls.xcoord.eucord.euccond     <- rep(NA, n.cand.all)
-kls.ycoord.eucord.euccond     <- rep(NA, n.cand.all)
-kls.maxmin.eucord.euccond     <- rep(NA, n.cand.all)
-kls.maxmin.eucord.corcond     <- rep(NA, n.cand.all)
-kls.maxmin.corord.euccond     <- rep(NA, n.cand.all)
-kls.maxmin.corord.corcond     <- rep(NA, n.cand.all)
+kls.maxmin.eucord.euccond.ref   <- rep(NA, n.cand.all)
+kls.xcoord.eucord.euccond       <- rep(NA, n.cand.all)
+kls.ycoord.eucord.euccond       <- rep(NA, n.cand.all)
+kls.maxmin.eucord.euccond       <- rep(NA, n.cand.all)
+kls.maxmin.eucord.corcond       <- rep(NA, n.cand.all)
+kls.maxmin.corord.euccond       <- rep(NA, n.cand.all)
+kls.maxmin.corord.corcond       <- rep(NA, n.cand.all)
+kls.xcoord.eucord.corcond       <- rep(NA, n.cand.all)
+kls.ycoord.eucord.corcond       <- rep(NA, n.cand.all)
+kls.xycoord.eucord.corcond      <- rep(NA, n.cand.all)
+kls.xycoord.eucord.euccond      <- rep(NA, n.cand.all)
+kls.xycoord.eucord.euccond.ref  <- rep(NA, n.cand.all)
 for(i in 1:n.cand.all) {
   kls.maxmin.eucord.euccond.ref[i]  <- sim1[[i]]$kls[1]
   kls.xcoord.eucord.euccond[i]      <- sim1[[i]]$kls[2]
@@ -250,9 +265,15 @@ for(i in 1:n.cand.all) {
   kls.maxmin.eucord.corcond[i]      <- sim1[[i]]$kls[5]
   kls.maxmin.corord.euccond[i]      <- sim1[[i]]$kls[6]
   kls.maxmin.corord.corcond[i]      <- sim1[[i]]$kls[7]
+  kls.xcoord.eucord.corcond[i]      <- sim1[[i]]$kls[8]
+  kls.ycoord.eucord.corcond[i]      <- sim1[[i]]$kls[9]
+  kls.xycoord.eucord.corcond[i]     <- sim1[[i]]$kls[10]
+  kls.xycoord.eucord.euccond[i]     <- sim1[[i]]$kls[11]
+  kls.xycoord.eucord.euccond.ref[i] <- sim1[[i]]$kls[12]
 }
 
 sqrt(sum((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2))
+sqrt(sum((kls.xycoord.eucord.euccond.ref - kls.xycoord.eucord.euccond)^2))
 
 err.modifying1 <- c()
 for(i in 1:length(sim1)) err.modifying1[i] <- sqrt(sum((sim1[[i]]$Sigma - sim1[[i]]$Sigma.modified))^2)
@@ -260,7 +281,7 @@ max(err.modifying1)
 
 set.period  <- 0.05
 ind         <- cand.all$period == set.period
-vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
+vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.xycoord.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat1    <- vis.dat1[, order(colnames(vis.dat1))]
 vis.dat1    <- cbind(rep(cand.m, times = ncol(vis.dat1)), tidyr::gather(vis.dat1))
 colnames(vis.dat1) <- c("m", "method", "KL")
@@ -268,13 +289,13 @@ head(vis.dat1)
 
 set.m       <- 30
 ind         <- cand.all$m == set.m
-vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
+vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.xycoord.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat2    <- vis.dat2[, order(colnames(vis.dat2))]
 vis.dat2    <- cbind(rep(cand.period, times = ncol(vis.dat2)), tidyr::gather(vis.dat2))
 colnames(vis.dat2) <- c("period", "method", "KL")
 head(vis.dat2)
 
-kls.legend <- c("Maxmin + C.ord + C.cond", "Maxmin + C.ord + E.cond", "Maxmin + E.ord + C.cond", "Maxmin + E.ord + E.cond", "X-coord + E.ord + E.cond", "Y-coord + E.ord + E.cond")
+kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + E-NN", "X-Coord + E-NN", "(X+Y)-Coord + C-NN", "Y-Coord + E-NN")
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(16, 17, 15, 18, 8, 13), alpha.value = 0.7, size.legend = 14, size.lab = 14, size.text = 12)
 
 # save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying1, file='2_corrvecchia/sim_periodicity_1.RData')
@@ -299,27 +320,38 @@ no_cores            <- parallel::detectCores() - 2
 cl                  <- parallel::makeCluster(no_cores)
 
 doParallel::registerDoParallel(cl)
-sim2 <- foreach(m = cand.all$m, p = cand.all$period, .export = c("covmodel_dampedsine", "covmodel_dampedcosine", "covmodel_besselJ", "covmodel_wave", "positive_def", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(n = 30^2, m = m, covparms = c(1, p), covm = "Dampedsine", def.dist = "abs", tol = 1e-4)
+sim2 <- foreach(m = cand.all$m, p = cand.all$period, .export = c("order_coordinate", "covmodel_dampedsine", "covmodel_dampedcosine", "covmodel_besselJ", "covmodel_wave", "positive_def", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(n = 30^2, m = m, covparms = c(1, p), covm = "Dampedsine", def.dist = "abs", tol = 1e-4)
 parallel::stopCluster(cl)
 
-kls.maxmin.eucord.euccond.ref <- rep(NA, n.cand.all)
-kls.xcoord.eucord.euccond     <- rep(NA, n.cand.all)
-kls.ycoord.eucord.euccond     <- rep(NA, n.cand.all)
-kls.maxmin.eucord.euccond     <- rep(NA, n.cand.all)
-kls.maxmin.eucord.corcond     <- rep(NA, n.cand.all)
-kls.maxmin.corord.euccond     <- rep(NA, n.cand.all)
-kls.maxmin.corord.corcond     <- rep(NA, n.cand.all)
+kls.maxmin.eucord.euccond.ref   <- rep(NA, n.cand.all)
+kls.xcoord.eucord.euccond       <- rep(NA, n.cand.all)
+kls.ycoord.eucord.euccond       <- rep(NA, n.cand.all)
+kls.maxmin.eucord.euccond       <- rep(NA, n.cand.all)
+kls.maxmin.eucord.corcond       <- rep(NA, n.cand.all)
+kls.maxmin.corord.euccond       <- rep(NA, n.cand.all)
+kls.maxmin.corord.corcond       <- rep(NA, n.cand.all)
+kls.xcoord.eucord.corcond       <- rep(NA, n.cand.all)
+kls.ycoord.eucord.corcond       <- rep(NA, n.cand.all)
+kls.xycoord.eucord.corcond      <- rep(NA, n.cand.all)
+kls.xycoord.eucord.euccond      <- rep(NA, n.cand.all)
+kls.xycoord.eucord.euccond.ref  <- rep(NA, n.cand.all)
 for(i in 1:n.cand.all) {
-  kls.maxmin.eucord.euccond.ref[i]  <- sim2[[i]]$kls[1]
-  kls.xcoord.eucord.euccond[i]      <- sim2[[i]]$kls[2]
-  kls.ycoord.eucord.euccond[i]      <- sim2[[i]]$kls[3]
-  kls.maxmin.eucord.euccond[i]      <- sim2[[i]]$kls[4]
-  kls.maxmin.eucord.corcond[i]      <- sim2[[i]]$kls[5]
-  kls.maxmin.corord.euccond[i]      <- sim2[[i]]$kls[6]
-  kls.maxmin.corord.corcond[i]      <- sim2[[i]]$kls[7]
+  kls.maxmin.eucord.euccond.ref[i]  <- sim1[[i]]$kls[1]
+  kls.xcoord.eucord.euccond[i]      <- sim1[[i]]$kls[2]
+  kls.ycoord.eucord.euccond[i]      <- sim1[[i]]$kls[3]
+  kls.maxmin.eucord.euccond[i]      <- sim1[[i]]$kls[4]
+  kls.maxmin.eucord.corcond[i]      <- sim1[[i]]$kls[5]
+  kls.maxmin.corord.euccond[i]      <- sim1[[i]]$kls[6]
+  kls.maxmin.corord.corcond[i]      <- sim1[[i]]$kls[7]
+  kls.xcoord.eucord.corcond[i]      <- sim1[[i]]$kls[8]
+  kls.ycoord.eucord.corcond[i]      <- sim1[[i]]$kls[9]
+  kls.xycoord.eucord.corcond[i]     <- sim1[[i]]$kls[10]
+  kls.xycoord.eucord.euccond[i]     <- sim1[[i]]$kls[11]
+  kls.xycoord.eucord.euccond.ref[i] <- sim1[[i]]$kls[12]
 }
 
 sqrt(sum((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2))
+sqrt(sum((kls.xycoord.eucord.euccond.ref - kls.xycoord.eucord.euccond)^2))
 
 err.modifying2 <- c()
 for(i in 1:length(sim2)) err.modifying2[i] <- sqrt(sum((sim2[[i]]$Sigma - sim2[[i]]$Sigma.modified))^2)
@@ -327,7 +359,7 @@ max(err.modifying2)
 
 set.period  <- 0.05
 ind         <- cand.all$period == set.period
-vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
+vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.xycoord.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat1    <- vis.dat1[, order(colnames(vis.dat1))]
 vis.dat1    <- cbind(rep(cand.m, times = ncol(vis.dat1)), tidyr::gather(vis.dat1))
 colnames(vis.dat1) <- c("m", "method", "KL")
@@ -335,13 +367,13 @@ head(vis.dat1)
 
 set.m       <- 30
 ind         <- cand.all$m == set.m
-vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
+vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.xycoord.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat2    <- vis.dat2[, order(colnames(vis.dat2))]
 vis.dat2    <- cbind(rep(cand.period, times = ncol(vis.dat2)), tidyr::gather(vis.dat2))
 colnames(vis.dat2) <- c("period", "method", "KL")
 head(vis.dat2)
 
-kls.legend <- c("Maxmin + C.ord + C.cond", "Maxmin + C.ord + E.cond", "Maxmin + E.ord + C.cond", "Maxmin + E.ord + E.cond", "X-coord + E.ord + E.cond", "Y-coord + E.ord + E.cond")
+kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + E-NN", "X-Coord + E-NN", "(X+Y)-Coord + C-NN", "Y-Coord + E-NN")
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(16, 17, 15, 18, 8, 13), alpha.value = 0.7, size.legend = 14, size.lab = 14, size.text = 12)
 
 # save(sim2, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying2, file='2_corrvecchia/sim_periodicity_2.RData')
@@ -366,27 +398,38 @@ no_cores            <- parallel::detectCores() - 2
 cl                  <- parallel::makeCluster(no_cores)
 
 doParallel::registerDoParallel(cl)
-sim3 <- foreach(m = cand.all$m, p = cand.all$period, .export = c("covmodel_dampedsine", "covmodel_dampedcosine", "covmodel_besselJ", "covmodel_wave", "positive_def", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(n = 30^2, m = m, covparms = c(1, 0, p), covm = "BesselJ", def.dist = "abs", tol = 1e-3)
+sim3 <- foreach(m = cand.all$m, p = cand.all$period, .export = c("order_coordinate", "covmodel_dampedsine", "covmodel_dampedcosine", "covmodel_besselJ", "covmodel_wave", "positive_def", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(n = 30^2, m = m, covparms = c(1, 0, p), covm = "BesselJ", def.dist = "abs", tol = 1e-3)
 parallel::stopCluster(cl)
 
-kls.maxmin.eucord.euccond.ref <- rep(NA, n.cand.all)
-kls.xcoord.eucord.euccond     <- rep(NA, n.cand.all)
-kls.ycoord.eucord.euccond     <- rep(NA, n.cand.all)
-kls.maxmin.eucord.euccond     <- rep(NA, n.cand.all)
-kls.maxmin.eucord.corcond     <- rep(NA, n.cand.all)
-kls.maxmin.corord.euccond     <- rep(NA, n.cand.all)
-kls.maxmin.corord.corcond     <- rep(NA, n.cand.all)
+kls.maxmin.eucord.euccond.ref   <- rep(NA, n.cand.all)
+kls.xcoord.eucord.euccond       <- rep(NA, n.cand.all)
+kls.ycoord.eucord.euccond       <- rep(NA, n.cand.all)
+kls.maxmin.eucord.euccond       <- rep(NA, n.cand.all)
+kls.maxmin.eucord.corcond       <- rep(NA, n.cand.all)
+kls.maxmin.corord.euccond       <- rep(NA, n.cand.all)
+kls.maxmin.corord.corcond       <- rep(NA, n.cand.all)
+kls.xcoord.eucord.corcond       <- rep(NA, n.cand.all)
+kls.ycoord.eucord.corcond       <- rep(NA, n.cand.all)
+kls.xycoord.eucord.corcond      <- rep(NA, n.cand.all)
+kls.xycoord.eucord.euccond      <- rep(NA, n.cand.all)
+kls.xycoord.eucord.euccond.ref  <- rep(NA, n.cand.all)
 for(i in 1:n.cand.all) {
-  kls.maxmin.eucord.euccond.ref[i]  <- sim3[[i]]$kls[1]
-  kls.xcoord.eucord.euccond[i]      <- sim3[[i]]$kls[2]
-  kls.ycoord.eucord.euccond[i]      <- sim3[[i]]$kls[3]
-  kls.maxmin.eucord.euccond[i]      <- sim3[[i]]$kls[4]
-  kls.maxmin.eucord.corcond[i]      <- sim3[[i]]$kls[5]
-  kls.maxmin.corord.euccond[i]      <- sim3[[i]]$kls[6]
-  kls.maxmin.corord.corcond[i]      <- sim3[[i]]$kls[7]
+  kls.maxmin.eucord.euccond.ref[i]  <- sim1[[i]]$kls[1]
+  kls.xcoord.eucord.euccond[i]      <- sim1[[i]]$kls[2]
+  kls.ycoord.eucord.euccond[i]      <- sim1[[i]]$kls[3]
+  kls.maxmin.eucord.euccond[i]      <- sim1[[i]]$kls[4]
+  kls.maxmin.eucord.corcond[i]      <- sim1[[i]]$kls[5]
+  kls.maxmin.corord.euccond[i]      <- sim1[[i]]$kls[6]
+  kls.maxmin.corord.corcond[i]      <- sim1[[i]]$kls[7]
+  kls.xcoord.eucord.corcond[i]      <- sim1[[i]]$kls[8]
+  kls.ycoord.eucord.corcond[i]      <- sim1[[i]]$kls[9]
+  kls.xycoord.eucord.corcond[i]     <- sim1[[i]]$kls[10]
+  kls.xycoord.eucord.euccond[i]     <- sim1[[i]]$kls[11]
+  kls.xycoord.eucord.euccond.ref[i] <- sim1[[i]]$kls[12]
 }
 
 sqrt(sum((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2))
+sqrt(sum((kls.xycoord.eucord.euccond.ref - kls.xycoord.eucord.euccond)^2))
 
 err.modifying3 <- c()
 for(i in 1:length(sim3)) err.modifying3[i] <- sqrt(sum((sim3[[i]]$Sigma - sim3[[i]]$Sigma.modified))^2)
@@ -394,7 +437,7 @@ max(err.modifying3)
 
 set.period  <- 0.125
 ind         <- cand.all$period == set.period
-vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
+vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.xycoord.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat1    <- vis.dat1[, order(colnames(vis.dat1))]
 vis.dat1    <- cbind(rep(cand.m, times = ncol(vis.dat1)), tidyr::gather(vis.dat1))
 colnames(vis.dat1) <- c("m", "method", "KL")
@@ -402,13 +445,13 @@ head(vis.dat1)
 
 set.m       <- 30
 ind         <- cand.all$m == set.m
-vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
+vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.xycoord.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat2    <- vis.dat2[, order(colnames(vis.dat2))]
 vis.dat2    <- cbind(rep(cand.period, times = ncol(vis.dat2)), tidyr::gather(vis.dat2))
 colnames(vis.dat2) <- c("period", "method", "KL")
 head(vis.dat2)
 
-kls.legend <- c("Maxmin + C.ord + C.cond", "Maxmin + C.ord + E.cond", "Maxmin + E.ord + C.cond", "Maxmin + E.ord + E.cond", "X-coord + E.ord + E.cond", "Y-coord + E.ord + E.cond")
+kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + E-NN", "X-Coord + E-NN", "(X+Y)-Coord + C-NN", "Y-Coord + E-NN")
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(16, 17, 15, 18, 8, 13), alpha.value = 0.7, size.legend = 14, size.lab = 14, size.text = 12)
 
 # save(sim3, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying3, file='2_corrvecchia/sim_periodicity_3.RData')

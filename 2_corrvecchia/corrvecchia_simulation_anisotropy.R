@@ -106,14 +106,24 @@ simulation <- function(n = 30^2, m = 30, deg.aniso = 10, covparms = c(1)) {
   approx[[2]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "coord", which.coord = 1, cond.yz='y', conditioning = "NN")
   # standard vecchia with y coord ordering
   approx[[3]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "coord", which.coord = 2, cond.yz='y', conditioning = "NN")
-  # euclidean-based ordering + euclidean-based conditioning
-  approx[[4]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma, covparms = covparms)
-  # euclidean-based ordering + correlation-based conditioning
-  approx[[5]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
-  # correlation-based ordering + euclidean-based conditioning
-  approx[[6]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma, covparms = covparms)
-  # correlation-based ordering + correlation-based conditioning
-  approx[[7]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
+  # euclidean-based ordering + euclidean-based NN conditioning
+  approx[[4]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma, covparms = covparms)
+  # euclidean-based ordering + correlation-based NN conditioning
+  approx[[5]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
+  # correlation-based ordering + euclidean-based NN conditioning
+  approx[[6]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, def.dist = NULL, ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma, covparms = covparms)
+  # correlation-based ordering + correlation-based NN conditioning
+  approx[[7]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, def.dist = NULL, ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
+  # x-coordinate-based ordering + correlation-based NN conditioning
+  approx[[8]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1), def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
+  # y-coordinate-based ordering + correlation-based NN conditioning
+  approx[[9]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(2), def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
+  # (x+y)-coordinate-based ordering + correlation-based NN conditioning
+  approx[[10]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1, 2), def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
+  # (x+y)-coordinate-based ordering + euclidean-based NN conditioning
+  approx[[11]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1, 2), def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma, covparms = covparms)
+  # standard vecchia with maxmin ordering
+  approx[[12]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "coord", which.coord = c(1, 2), cond.yz='y', conditioning = "NN")
   
   ### compute approximate covariance matrices
   n.approx    <- length(approx)
@@ -215,7 +225,7 @@ no_cores            <- parallel::detectCores() - 2
 cl                  <- parallel::makeCluster(no_cores)
 
 doParallel::registerDoParallel(cl)
-sim1 <- foreach(m = cand.all$m, a = cand.all$scale, .export = c("aniso_mat", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "matern_ns", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "smoothness", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(n = 30^2, m = m, deg.aniso = a, covparms = c(1))
+sim1 <- foreach(m = cand.all$m, a = cand.all$scale, .export = c("order_coordinate", "aniso_mat", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "matern_ns", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "smoothness", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(n = 30^2, m = m, deg.aniso = a, covparms = c(1))
 parallel::stopCluster(cl)
 
 # for(i in cand.all$index){
@@ -229,13 +239,18 @@ parallel::stopCluster(cl)
 #   print(paste0("simulation ", i, " is done. [ ", proctime[3], "s ]"))
 # }
 
-kls.maxmin.eucord.euccond.ref <- rep(NA, n.cand.all)
-kls.xcoord.eucord.euccond     <- rep(NA, n.cand.all)
-kls.ycoord.eucord.euccond     <- rep(NA, n.cand.all)
-kls.maxmin.eucord.euccond     <- rep(NA, n.cand.all)
-kls.maxmin.eucord.corcond     <- rep(NA, n.cand.all)
-kls.maxmin.corord.euccond     <- rep(NA, n.cand.all)
-kls.maxmin.corord.corcond     <- rep(NA, n.cand.all)
+kls.maxmin.eucord.euccond.ref   <- rep(NA, n.cand.all)
+kls.xcoord.eucord.euccond       <- rep(NA, n.cand.all)
+kls.ycoord.eucord.euccond       <- rep(NA, n.cand.all)
+kls.maxmin.eucord.euccond       <- rep(NA, n.cand.all)
+kls.maxmin.eucord.corcond       <- rep(NA, n.cand.all)
+kls.maxmin.corord.euccond       <- rep(NA, n.cand.all)
+kls.maxmin.corord.corcond       <- rep(NA, n.cand.all)
+kls.xcoord.eucord.corcond       <- rep(NA, n.cand.all)
+kls.ycoord.eucord.corcond       <- rep(NA, n.cand.all)
+kls.xycoord.eucord.corcond      <- rep(NA, n.cand.all)
+kls.xycoord.eucord.euccond      <- rep(NA, n.cand.all)
+kls.xycoord.eucord.euccond.ref  <- rep(NA, n.cand.all)
 for(i in 1:n.cand.all) {
   kls.maxmin.eucord.euccond.ref[i]  <- sim1[[i]]$kls[1]
   kls.xcoord.eucord.euccond[i]      <- sim1[[i]]$kls[2]
@@ -244,13 +259,19 @@ for(i in 1:n.cand.all) {
   kls.maxmin.eucord.corcond[i]      <- sim1[[i]]$kls[5]
   kls.maxmin.corord.euccond[i]      <- sim1[[i]]$kls[6]
   kls.maxmin.corord.corcond[i]      <- sim1[[i]]$kls[7]
+  kls.xcoord.eucord.corcond[i]      <- sim1[[i]]$kls[8]
+  kls.ycoord.eucord.corcond[i]      <- sim1[[i]]$kls[9]
+  kls.xycoord.eucord.corcond[i]     <- sim1[[i]]$kls[10]
+  kls.xycoord.eucord.euccond[i]     <- sim1[[i]]$kls[11]
+  kls.xycoord.eucord.euccond.ref[i] <- sim1[[i]]$kls[12]
 }
 
-sqrt((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2)
+sqrt(sum((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2))
+sqrt(sum((kls.xycoord.eucord.euccond.ref - kls.xycoord.eucord.euccond)^2))
 
 set.scale   <- 10
 ind         <- cand.all$scale == set.scale
-vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
+vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.xycoord.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat1    <- vis.dat1[, order(colnames(vis.dat1))]
 vis.dat1    <- cbind(rep(cand.m, times = ncol(vis.dat1)), tidyr::gather(vis.dat1))
 colnames(vis.dat1) <- c("m", "method", "KL")
@@ -258,13 +279,13 @@ head(vis.dat1)
 
 set.m       <- 30
 ind         <- cand.all$m == set.m
-vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
+vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.xycoord.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat2    <- vis.dat2[, order(colnames(vis.dat2))]
 vis.dat2    <- cbind(rep(cand.scale, times = ncol(vis.dat2)), tidyr::gather(vis.dat2))
 colnames(vis.dat2) <- c("scale", "method", "KL")
 head(vis.dat2)
 
-kls.legend <- c("Maxmin + C.ord + C.cond", "Maxmin + C.ord + E.cond", "Maxmin + E.ord + C.cond", "Maxmin + E.ord + E.cond", "X-coord + E.ord + E.cond", "Y-coord + E.ord + E.cond")
+kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + E-NN", "X-Coord + E-NN", "(X+Y)-Coord + C-NN", "Y-Coord + E-NN")
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(16, 17, 15, 18, 8, 13), alpha.value = 0.7, size.legend = 14, size.lab = 14, size.text = 12)
 
 # save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, file='2_corrvecchia/sim_anisotropy_1.RData')
