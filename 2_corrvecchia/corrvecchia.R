@@ -27,7 +27,8 @@
 #' @param locs: nxd matrix of observed locs
 #' @param m: Number of nearby points to condition on
 #' 
-#' @param ordering: 'maxmin'
+#' @param ordering: 'maxmin' or 'coord'
+#' @param coordinate: NULL, 1, 2, or c(1, 2)
 #' @param def.dist: either 'NULL' or 'abs'
 #' @param ordering.method: either 'euclidean' or 'correlation'
 #' @param conditioning: 'NN' (nearest neighbor)
@@ -37,7 +38,7 @@
 #' @param covmodel: covariance function (or matrix)
 #' @param covparms: covariance parameters as a vector (variance, range, degree of anisotropy). The first element must be its variance.
 #' 
-corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", def.dist = NULL, ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel, covparms)
+corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", coordinate = NULL, def.dist = NULL, ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel, covparms)
 {
   
   p     <- ncol(locs)
@@ -48,9 +49,12 @@ corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", def.dist = N
   }
   
   # ordering
-  if(ordering.method == "euclidean") {
+  if(ordering == "coord") {
+    if(is.null(coordinate)) coordinate <- seq(p)
+    ord         <- order_coordinate(locs = locs, coordinate = coordinate)
+  } else if(ordering == "maxmin" & ordering.method == "euclidean") {
     ord         <- order_maxmin_euclidean(locs = locs)
-  } else if(ordering.method == "correlation") {
+  } else if(ordering == "maxmin" & ordering.method == "correlation") {
     ord         <- order_maxmin_correlation(locs = locs, dinv = rho, covmodel = covmodel, covparms = covparms, initial.pt = initial.pt)
   } else {
     stop("Please check the ordering method.")
@@ -82,7 +86,6 @@ corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", def.dist = N
 }
 
 # # Test code
-# # Test code
 # library(GPvecchia)
 # 
 # locs          <- matrix(runif(15^2 * 2, 0, 1), 15^2, 2)
@@ -101,26 +104,39 @@ corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", def.dist = N
 # y <- as.numeric(t(chol(Sigma)) %*% rnorm(n))
 # fields::quilt.plot(locs[,1], locs[,2], y)
 # 
-# out1 <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = cov.aniso, covparms = covparms)
-# out2 <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = cov.aniso, covparms = covparms)
-# out3 <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = cov.aniso, covparms = covparms)
-# out4 <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = cov.aniso, covparms = covparms)
+# out1 <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = cov.aniso, covparms = covparms)
+# out2 <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = cov.aniso, covparms = covparms)
+# out3 <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = cov.aniso, covparms = covparms)
+# out4 <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = cov.aniso, covparms = covparms)
+# 
+# out5 <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = cov.aniso, covparms = covparms)
+# out6 <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1), ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = cov.aniso, covparms = covparms)
+# out7 <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(2), ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = cov.aniso, covparms = covparms)
+# out8 <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1, 2), ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = cov.aniso, covparms = covparms)
 # 
 # source("2_corrvecchia/kldiv.R")
+# source("2_corrvecchia/vecchia_specify_adjusted.R")
+# outref1 <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
 # 
-# Sigma.ord       <- cov.aniso(out1$locsord, covparms) # true cov in appropriate ordering
-# U               <- createU(out1, c(1, 0.1, 0.5), 0, covmodel = Sigma.ord)$U
-# revord          <- order(out1$ord)
+# Sigma.ord       <- cov.aniso(outref1$locsord, covparms) # true cov in appropriate ordering
+# U               <- createU(outref1, c(1, 0.1, 0.5), 0, covmodel = Sigma.ord)$U
+# revord          <- order(outref1$ord)
 # Sigma.hat       <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
 # kls             <- kldiv(Sigma, Sigma.hat)
 # kls
 # 
-# source("2_corrvecchia/vecchia_specify_adjusted.R")
-# outref <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
+# outref2 <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "coord", which.coord = c(1, 2), cond.yz='y', conditioning = "NN")
 # 
-# Sigma.ord       <- cov.aniso(outref$locsord, covparms) # true cov in appropriate ordering
-# U               <- createU(outref, c(1, 0.1, 0.5), 0, covmodel = Sigma.ord)$U
-# revord          <- order(outref$ord)
+# Sigma.ord       <- cov.aniso(outref2$locsord, covparms) # true cov in appropriate ordering
+# U               <- createU(outref2, c(1, 0.1, 0.5), 0, covmodel = Sigma.ord)$U
+# revord          <- order(outref2$ord)
+# Sigma.hat       <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
+# kls             <- kldiv(Sigma, Sigma.hat)
+# kls
+# 
+# Sigma.ord       <- cov.aniso(out1$locsord, covparms) # true cov in appropriate ordering
+# U               <- createU(out1, c(1, 0.1, 0.5), 0, covmodel = Sigma.ord)$U
+# revord          <- order(out1$ord)
 # Sigma.hat       <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
 # kls             <- kldiv(Sigma, Sigma.hat)
 # kls
@@ -145,6 +161,38 @@ corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", def.dist = N
 # Sigma.hat       <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
 # kls             <- kldiv(Sigma, Sigma.hat)
 # kls
+# 
+# Sigma.ord       <- cov.aniso(out5$locsord, covparms) # true cov in appropriate ordering
+# U               <- createU(out5, c(1, 0.1, 0.5), 0, covmodel = Sigma.ord)$U
+# revord          <- order(out5$ord)
+# Sigma.hat       <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
+# kls             <- kldiv(Sigma, Sigma.hat)
+# kls
+# 
+# Sigma.ord       <- cov.aniso(out6$locsord, covparms) # true cov in appropriate ordering
+# U               <- createU(out6, c(1, 0.1, 0.5), 0, covmodel = Sigma.ord)$U
+# revord          <- order(out6$ord)
+# Sigma.hat       <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
+# kls             <- kldiv(Sigma, Sigma.hat)
+# kls
+# 
+# Sigma.ord       <- cov.aniso(out7$locsord, covparms) # true cov in appropriate ordering
+# U               <- createU(out7, c(1, 0.1, 0.5), 0, covmodel = Sigma.ord)$U
+# revord          <- order(out7$ord)
+# Sigma.hat       <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
+# kls             <- kldiv(Sigma, Sigma.hat)
+# kls
+# 
+# Sigma.ord       <- cov.aniso(out8$locsord, covparms) # true cov in appropriate ordering
+# U               <- createU(out8, c(1, 0.1, 0.5), 0, covmodel = Sigma.ord)$U
+# revord          <- order(out8$ord)
+# Sigma.hat       <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
+# kls             <- kldiv(Sigma, Sigma.hat)
+# kls
+
+order_coordinate <- function (locs, coordinate) {
+  order(rowSums(locs[, coordinate, drop = FALSE]))
+}
 
 
 order_maxmin_euclidean <- function(locs)
