@@ -299,7 +299,7 @@ kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + E-NN", "X-Coor
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(16, 17, 15, 18, 8, 13), alpha.value = 0.7, size.legend = 14, size.lab = 14, size.text = 12)
 
 # save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying1, file='2_corrvecchia/sim_periodicity_1.RData')
-# rm(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying1, kls.xcoord.eucord.euccond, kls.ycoord.eucord.euccond, kls.maxmin.eucord.euccond, kls.maxmin.eucord.corcond, kls.maxmin.corord.euccond, kls.maxmin.corord.corcond)
+# rm(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying1)
 # load(file='2_corrvecchia/sim_periodicity_1.RData')
 
 
@@ -336,18 +336,18 @@ kls.xycoord.eucord.corcond      <- rep(NA, n.cand.all)
 kls.xycoord.eucord.euccond      <- rep(NA, n.cand.all)
 kls.xycoord.eucord.euccond.ref  <- rep(NA, n.cand.all)
 for(i in 1:n.cand.all) {
-  kls.maxmin.eucord.euccond.ref[i]  <- sim1[[i]]$kls[1]
-  kls.xcoord.eucord.euccond[i]      <- sim1[[i]]$kls[2]
-  kls.ycoord.eucord.euccond[i]      <- sim1[[i]]$kls[3]
-  kls.maxmin.eucord.euccond[i]      <- sim1[[i]]$kls[4]
-  kls.maxmin.eucord.corcond[i]      <- sim1[[i]]$kls[5]
-  kls.maxmin.corord.euccond[i]      <- sim1[[i]]$kls[6]
-  kls.maxmin.corord.corcond[i]      <- sim1[[i]]$kls[7]
-  kls.xcoord.eucord.corcond[i]      <- sim1[[i]]$kls[8]
-  kls.ycoord.eucord.corcond[i]      <- sim1[[i]]$kls[9]
-  kls.xycoord.eucord.corcond[i]     <- sim1[[i]]$kls[10]
-  kls.xycoord.eucord.euccond[i]     <- sim1[[i]]$kls[11]
-  kls.xycoord.eucord.euccond.ref[i] <- sim1[[i]]$kls[12]
+  kls.maxmin.eucord.euccond.ref[i]  <- sim2[[i]]$kls[1]
+  kls.xcoord.eucord.euccond[i]      <- sim2[[i]]$kls[2]
+  kls.ycoord.eucord.euccond[i]      <- sim2[[i]]$kls[3]
+  kls.maxmin.eucord.euccond[i]      <- sim2[[i]]$kls[4]
+  kls.maxmin.eucord.corcond[i]      <- sim2[[i]]$kls[5]
+  kls.maxmin.corord.euccond[i]      <- sim2[[i]]$kls[6]
+  kls.maxmin.corord.corcond[i]      <- sim2[[i]]$kls[7]
+  kls.xcoord.eucord.corcond[i]      <- sim2[[i]]$kls[8]
+  kls.ycoord.eucord.corcond[i]      <- sim2[[i]]$kls[9]
+  kls.xycoord.eucord.corcond[i]     <- sim2[[i]]$kls[10]
+  kls.xycoord.eucord.euccond[i]     <- sim2[[i]]$kls[11]
+  kls.xycoord.eucord.euccond.ref[i] <- sim2[[i]]$kls[12]
 }
 
 sqrt(sum((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2))
@@ -377,7 +377,7 @@ kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + E-NN", "X-Coor
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(16, 17, 15, 18, 8, 13), alpha.value = 0.7, size.legend = 14, size.lab = 14, size.text = 12)
 
 # save(sim2, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying2, file='2_corrvecchia/sim_periodicity_2.RData')
-# rm(sim2, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying2, kls.xcoord.eucord.euccond, kls.ycoord.eucord.euccond, kls.maxmin.eucord.euccond, kls.maxmin.eucord.corcond, kls.maxmin.corord.euccond, kls.maxmin.corord.corcond)
+# rm(sim2, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying2)
 # load(file='2_corrvecchia/sim_periodicity_2.RData')
 
 
@@ -414,18 +414,18 @@ kls.xycoord.eucord.corcond      <- rep(NA, n.cand.all)
 kls.xycoord.eucord.euccond      <- rep(NA, n.cand.all)
 kls.xycoord.eucord.euccond.ref  <- rep(NA, n.cand.all)
 for(i in 1:n.cand.all) {
-  kls.maxmin.eucord.euccond.ref[i]  <- sim1[[i]]$kls[1]
-  kls.xcoord.eucord.euccond[i]      <- sim1[[i]]$kls[2]
-  kls.ycoord.eucord.euccond[i]      <- sim1[[i]]$kls[3]
-  kls.maxmin.eucord.euccond[i]      <- sim1[[i]]$kls[4]
-  kls.maxmin.eucord.corcond[i]      <- sim1[[i]]$kls[5]
-  kls.maxmin.corord.euccond[i]      <- sim1[[i]]$kls[6]
-  kls.maxmin.corord.corcond[i]      <- sim1[[i]]$kls[7]
-  kls.xcoord.eucord.corcond[i]      <- sim1[[i]]$kls[8]
-  kls.ycoord.eucord.corcond[i]      <- sim1[[i]]$kls[9]
-  kls.xycoord.eucord.corcond[i]     <- sim1[[i]]$kls[10]
-  kls.xycoord.eucord.euccond[i]     <- sim1[[i]]$kls[11]
-  kls.xycoord.eucord.euccond.ref[i] <- sim1[[i]]$kls[12]
+  kls.maxmin.eucord.euccond.ref[i]  <- sim3[[i]]$kls[1]
+  kls.xcoord.eucord.euccond[i]      <- sim3[[i]]$kls[2]
+  kls.ycoord.eucord.euccond[i]      <- sim3[[i]]$kls[3]
+  kls.maxmin.eucord.euccond[i]      <- sim3[[i]]$kls[4]
+  kls.maxmin.eucord.corcond[i]      <- sim3[[i]]$kls[5]
+  kls.maxmin.corord.euccond[i]      <- sim3[[i]]$kls[6]
+  kls.maxmin.corord.corcond[i]      <- sim3[[i]]$kls[7]
+  kls.xcoord.eucord.corcond[i]      <- sim3[[i]]$kls[8]
+  kls.ycoord.eucord.corcond[i]      <- sim3[[i]]$kls[9]
+  kls.xycoord.eucord.corcond[i]     <- sim3[[i]]$kls[10]
+  kls.xycoord.eucord.euccond[i]     <- sim3[[i]]$kls[11]
+  kls.xycoord.eucord.euccond.ref[i] <- sim3[[i]]$kls[12]
 }
 
 sqrt(sum((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2))
