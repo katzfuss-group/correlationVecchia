@@ -68,34 +68,34 @@ covmodel_wave <- function(locs, covparms, covm = "Dampedsine") {
   }
 }
 
-n     <- 15^2
-locs  <- matrix(runif(n, 0, 1), n, 1)
-h     <- fields::rdist(locs)
-ind   <- order(unlist(h))
-hord  <- unlist(h)[ind]
-
-covparms  <- c(1, 1/10)
-covh      <- covmodel_wave(locs = locs, covparms = covparms, covm = "Dampedsine")
-covhord   <- unlist(covh)[ind]
-plot(hord, covhord, type = 'l', ylim = c(-0.8, 1), col = 1)
-abline(h = 0, col = 'gray')
-
-covparms  <- c(1, 1, 1/10)
-covh      <- covmodel_wave(locs = locs, covparms = covparms, covm = "Dampedcosine")
-covhord   <- unlist(covh)[ind]
-lines(hord, covhord, type = 'l', col = 2)
-
-covparms  <- c(1, 1, 1/20)
-covh      <- covmodel_wave(locs = locs, covparms = covparms, covm = "Dampedcosine")
-covhord   <- unlist(covh)[ind]
-lines(hord, covhord, type = 'l', col = 2)
-
-covparms  <- c(1, 1/10, 1/10)
-covh      <- covmodel_wave(locs = locs, covparms = covparms, covm = "BesselJ")
-covhord   <- unlist(covh)[ind]
-lines(hord, covhord, type = 'l', col = 3)
-
-legend("topright", legend = c("Damped Sine", "Damped Cosine", "Bessel J"), col = 1:3, lty = 1)
+# n     <- 15^2
+# locs  <- matrix(runif(n, 0, 1), n, 1)
+# h     <- fields::rdist(locs)
+# ind   <- order(unlist(h))
+# hord  <- unlist(h)[ind]
+# 
+# covparms  <- c(1, 1/10)
+# covh      <- covmodel_wave(locs = locs, covparms = covparms, covm = "Dampedsine")
+# covhord   <- unlist(covh)[ind]
+# plot(hord, covhord, type = 'l', ylim = c(-0.8, 1), col = 1)
+# abline(h = 0, col = 'gray')
+# 
+# covparms  <- c(1, 1, 1/10)
+# covh      <- covmodel_wave(locs = locs, covparms = covparms, covm = "Dampedcosine")
+# covhord   <- unlist(covh)[ind]
+# lines(hord, covhord, type = 'l', col = 2)
+# 
+# covparms  <- c(1, 1, 1/20)
+# covh      <- covmodel_wave(locs = locs, covparms = covparms, covm = "Dampedcosine")
+# covhord   <- unlist(covh)[ind]
+# lines(hord, covhord, type = 'l', col = 3)
+# 
+# covparms  <- c(1, 1/10, 1/10)
+# covh      <- covmodel_wave(locs = locs, covparms = covparms, covm = "BesselJ")
+# covhord   <- unlist(covh)[ind]
+# lines(hord, covhord, type = 'l', col = 4)
+# 
+# legend("topright", legend = c("Damped Sine with (1, 0.1)", "Damped Cosine with (1, 1, 0.1)", "Damped Cosine with (1, 1, 0.05)","Bessel J with (1, 0.1, 0.1)"), col = 1:4, lty = 1)
 
 
 ####################################################################
