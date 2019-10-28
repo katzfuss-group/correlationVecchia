@@ -41,6 +41,7 @@
 corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", coordinate = NULL, def.dist = NULL, ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel, covparms)
 {
   
+  locs  <- as.matrix(locs)
   p     <- ncol(locs)
   n     <- nrow(locs)
   
@@ -60,7 +61,7 @@ corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", coordinate =
     stop("Please check the ordering method.")
   }
 
-  locsord       <- locs[ord, ]
+  locsord       <- locs[ord, , drop = FALSE]
   
   if(is.matrix(covmodel)) {
     covmodel    <- covmodel[ord, ord]
@@ -191,7 +192,11 @@ corrvecchia_knownCovparms <- function(locs, m, ordering = "maxmin", coordinate =
 # kls
 
 order_coordinate <- function (locs, coordinate) {
-  order(rowSums(locs[, coordinate, drop = FALSE]))
+  if(ncol(locs) == 1){
+    order(rowSums(locs[, drop = FALSE]))
+  } else {
+    order(rowSums(locs[, coordinate, drop = FALSE]))
+  }
 }
 
 
