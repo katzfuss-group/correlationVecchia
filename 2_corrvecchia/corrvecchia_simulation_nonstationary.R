@@ -324,18 +324,18 @@ kls.xycoord.eucord.corcond      <- rep(NA, n.cand.m)
 kls.xycoord.eucord.euccond      <- rep(NA, n.cand.m)
 kls.xycoord.eucord.euccond.ref  <- rep(NA, n.cand.m)
 for(i in 1:n.cand.m) {
-  kls.maxmin.eucord.euccond.ref[i]  <- sim1[[i]]$kls[1]
-  kls.xcoord.eucord.euccond[i]      <- sim1[[i]]$kls[2]
-  kls.ycoord.eucord.euccond[i]      <- sim1[[i]]$kls[3]
-  kls.maxmin.eucord.euccond[i]      <- sim1[[i]]$kls[4]
-  kls.maxmin.eucord.corcond[i]      <- sim1[[i]]$kls[5]
-  kls.maxmin.corord.euccond[i]      <- sim1[[i]]$kls[6]
-  kls.maxmin.corord.corcond[i]      <- sim1[[i]]$kls[7]
-  kls.xcoord.eucord.corcond[i]      <- sim1[[i]]$kls[8]
-  kls.ycoord.eucord.corcond[i]      <- sim1[[i]]$kls[9]
-  kls.xycoord.eucord.corcond[i]     <- sim1[[i]]$kls[10]
-  kls.xycoord.eucord.euccond[i]     <- sim1[[i]]$kls[11]
-  kls.xycoord.eucord.euccond.ref[i] <- sim1[[i]]$kls[12]
+  kls.maxmin.eucord.euccond.ref[i]  <- sim2[[i]]$kls[1]
+  kls.xcoord.eucord.euccond[i]      <- sim2[[i]]$kls[2]
+  kls.ycoord.eucord.euccond[i]      <- sim2[[i]]$kls[3]
+  kls.maxmin.eucord.euccond[i]      <- sim2[[i]]$kls[4]
+  kls.maxmin.eucord.corcond[i]      <- sim2[[i]]$kls[5]
+  kls.maxmin.corord.euccond[i]      <- sim2[[i]]$kls[6]
+  kls.maxmin.corord.corcond[i]      <- sim2[[i]]$kls[7]
+  kls.xcoord.eucord.corcond[i]      <- sim2[[i]]$kls[8]
+  kls.ycoord.eucord.corcond[i]      <- sim2[[i]]$kls[9]
+  kls.xycoord.eucord.corcond[i]     <- sim2[[i]]$kls[10]
+  kls.xycoord.eucord.euccond[i]     <- sim2[[i]]$kls[11]
+  kls.xycoord.eucord.euccond.ref[i] <- sim2[[i]]$kls[12]
 }
 
 sqrt(sum((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2))
@@ -363,6 +363,154 @@ legend("topright", legend=c("E-Maxmin + E-NN", "C-Maxmin + C-NN", "(X+Y)-Coord +
 
 
 ####################################################################
+#### simulation 3: anisotropy
+####################################################################
+
+cand.m    <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45) ; n.cand.m <- length(cand.m)
+sim3      <- list()
+
+# # small case
+# cand.m    <- c(1, 10, 20, 30, 40) ; n.cand.m <- length(cand.m)
+# sim3      <- list()
+
+a <- function(loc) 1 + 10 * loc[1]
+b <- function(loc) 1
+angle <- function(loc) 0
+smoothness <- function(loc) 0.5
+
+no_cores            <- parallel::detectCores() - 2
+cl                  <- parallel::makeCluster(no_cores)
+
+doParallel::registerDoParallel(cl)
+sim3 <- foreach(m = cand.m, .export = c("order_coordinate", "a", "b", "angle", "smoothness", "aniso_mat", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "matern_ns", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "smoothness", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(30^2, m = m, covparms = c(1), tol = 1e-4)
+parallel::stopCluster(cl)
+
+kls.maxmin.eucord.euccond.ref   <- rep(NA, n.cand.m)
+kls.xcoord.eucord.euccond       <- rep(NA, n.cand.m)
+kls.ycoord.eucord.euccond       <- rep(NA, n.cand.m)
+kls.maxmin.eucord.euccond       <- rep(NA, n.cand.m)
+kls.maxmin.eucord.corcond       <- rep(NA, n.cand.m)
+kls.maxmin.corord.euccond       <- rep(NA, n.cand.m)
+kls.maxmin.corord.corcond       <- rep(NA, n.cand.m)
+kls.xcoord.eucord.corcond       <- rep(NA, n.cand.m)
+kls.ycoord.eucord.corcond       <- rep(NA, n.cand.m)
+kls.xycoord.eucord.corcond      <- rep(NA, n.cand.m)
+kls.xycoord.eucord.euccond      <- rep(NA, n.cand.m)
+kls.xycoord.eucord.euccond.ref  <- rep(NA, n.cand.m)
+for(i in 1:n.cand.m) {
+  kls.maxmin.eucord.euccond.ref[i]  <- sim3[[i]]$kls[1]
+  kls.xcoord.eucord.euccond[i]      <- sim3[[i]]$kls[2]
+  kls.ycoord.eucord.euccond[i]      <- sim3[[i]]$kls[3]
+  kls.maxmin.eucord.euccond[i]      <- sim3[[i]]$kls[4]
+  kls.maxmin.eucord.corcond[i]      <- sim3[[i]]$kls[5]
+  kls.maxmin.corord.euccond[i]      <- sim3[[i]]$kls[6]
+  kls.maxmin.corord.corcond[i]      <- sim3[[i]]$kls[7]
+  kls.xcoord.eucord.corcond[i]      <- sim3[[i]]$kls[8]
+  kls.ycoord.eucord.corcond[i]      <- sim3[[i]]$kls[9]
+  kls.xycoord.eucord.corcond[i]     <- sim3[[i]]$kls[10]
+  kls.xycoord.eucord.euccond[i]     <- sim3[[i]]$kls[11]
+  kls.xycoord.eucord.euccond.ref[i] <- sim3[[i]]$kls[12]
+}
+
+sqrt(sum((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2))
+sqrt(sum((kls.xycoord.eucord.euccond.ref - kls.xycoord.eucord.euccond)^2))
+
+vis.dat3 <- data.frame(kls.xcoord.eucord.euccond, kls.ycoord.eucord.euccond, kls.maxmin.eucord.euccond, kls.xycoord.eucord.corcond, kls.maxmin.corord.euccond, kls.maxmin.corord.corcond)
+vis.dat3 <- vis.dat3[, order(colnames(vis.dat3))]
+head(vis.dat3)
+
+err.modifying3 <- c()
+for(i in 1:length(sim3)) err.modifying3[i] <- sqrt(sum((sim3[[i]]$Sigma - sim3[[i]]$Sigma.modified))^2)
+max(err.modifying3)
+
+plot(cand.m, log10(vis.dat3$kls.maxmin.eucord.euccond), type = "o", col = 1, lty = 1, lwd = 3, ylim = c(min(log10(vis.dat3)), max(log10(vis.dat3))), xlab = "m", ylab = "log10(KL)", main = NULL)
+lines(cand.m, log10(vis.dat3$kls.maxmin.corord.corcond), type = "o", col = 2, lty = 2, lwd = 3)
+lines(cand.m, log10(vis.dat3$kls.xycoord.eucord.corcond), type = "o", col = 3, lty = 3, lwd = 3)
+lines(cand.m, log10(vis.dat3$kls.maxmin.corord.euccond), type = "o", col = 4, lty = 4, lwd = 3)
+lines(cand.m, log10(vis.dat3$kls.xcoord.eucord.euccond), type = "o", col = 5, lty = 5, lwd = 3)
+lines(cand.m, log10(vis.dat3$kls.ycoord.eucord.euccond), type = "o", col = 6, lty = 6, lwd = 3)
+legend("topright", legend=c("E-Maxmin + E-NN", "C-Maxmin + C-NN", "(X+Y)-Coord + C-NN", "C-Maxmin + E-NN", "X-coord + E-NN", "Y-coord + E-NN"), col=1:6, lty=1:6, lwd = 3, cex=1)
+
+# save(sim3, cand.m, vis.dat3, err.modifying3, file='2_corrvecchia/sim_nonstationarity_3.RData')
+# rm(sim3, cand.m)
+# load(file='2_corrvecchia/sim_nonstationarity_3.RData')
+
+
+####################################################################
+#### simulation 4: rotating anisotropy
+####################################################################
+
+cand.m    <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45) ; n.cand.m <- length(cand.m)
+sim4      <- list()
+
+# # small case
+# cand.m    <- c(1, 10, 20, 30, 40) ; n.cand.m <- length(cand.m)
+# sim4      <- list()
+
+a <- function(loc) 10
+b <- function(loc) 1
+angle <- function(loc) pi * loc[1] / 2
+smoothness <- function(loc) 0.5
+
+no_cores            <- parallel::detectCores() - 2
+cl                  <- parallel::makeCluster(no_cores)
+
+doParallel::registerDoParallel(cl)
+sim4 <- foreach(m = cand.m, .export = c("order_coordinate", "a", "b", "angle", "smoothness", "aniso_mat", "conditioning_nn", "correlation", "corrvecchia_knownCovparms", "distance_correlation", "kldiv", "matern_ns", "order_maxmin_correlation", "order_maxmin_correlation_old", "order_maxmin_euclidean", "simulation", "smoothness", "vecchia_specify_adjusted"), .packages='GPvecchia') %dopar% simulation(30^2, m = m, covparms = c(1), tol = 1e-4)
+parallel::stopCluster(cl)
+
+kls.maxmin.eucord.euccond.ref   <- rep(NA, n.cand.m)
+kls.xcoord.eucord.euccond       <- rep(NA, n.cand.m)
+kls.ycoord.eucord.euccond       <- rep(NA, n.cand.m)
+kls.maxmin.eucord.euccond       <- rep(NA, n.cand.m)
+kls.maxmin.eucord.corcond       <- rep(NA, n.cand.m)
+kls.maxmin.corord.euccond       <- rep(NA, n.cand.m)
+kls.maxmin.corord.corcond       <- rep(NA, n.cand.m)
+kls.xcoord.eucord.corcond       <- rep(NA, n.cand.m)
+kls.ycoord.eucord.corcond       <- rep(NA, n.cand.m)
+kls.xycoord.eucord.corcond      <- rep(NA, n.cand.m)
+kls.xycoord.eucord.euccond      <- rep(NA, n.cand.m)
+kls.xycoord.eucord.euccond.ref  <- rep(NA, n.cand.m)
+for(i in 1:n.cand.m) {
+  kls.maxmin.eucord.euccond.ref[i]  <- sim4[[i]]$kls[1]
+  kls.xcoord.eucord.euccond[i]      <- sim4[[i]]$kls[2]
+  kls.ycoord.eucord.euccond[i]      <- sim4[[i]]$kls[3]
+  kls.maxmin.eucord.euccond[i]      <- sim4[[i]]$kls[4]
+  kls.maxmin.eucord.corcond[i]      <- sim4[[i]]$kls[5]
+  kls.maxmin.corord.euccond[i]      <- sim4[[i]]$kls[6]
+  kls.maxmin.corord.corcond[i]      <- sim4[[i]]$kls[7]
+  kls.xcoord.eucord.corcond[i]      <- sim4[[i]]$kls[8]
+  kls.ycoord.eucord.corcond[i]      <- sim4[[i]]$kls[9]
+  kls.xycoord.eucord.corcond[i]     <- sim4[[i]]$kls[10]
+  kls.xycoord.eucord.euccond[i]     <- sim4[[i]]$kls[11]
+  kls.xycoord.eucord.euccond.ref[i] <- sim4[[i]]$kls[12]
+}
+
+sqrt(sum((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2))
+sqrt(sum((kls.xycoord.eucord.euccond.ref - kls.xycoord.eucord.euccond)^2))
+
+vis.dat4 <- data.frame(kls.xcoord.eucord.euccond, kls.ycoord.eucord.euccond, kls.maxmin.eucord.euccond, kls.xycoord.eucord.corcond, kls.maxmin.corord.euccond, kls.maxmin.corord.corcond)
+vis.dat4 <- vis.dat4[, order(colnames(vis.dat4))]
+head(vis.dat4)
+
+err.modifying4 <- c()
+for(i in 1:length(sim4)) err.modifying4[i] <- sqrt(sum((sim4[[i]]$Sigma - sim4[[i]]$Sigma.modified))^2)
+max(err.modifying4)
+
+plot(cand.m, log10(vis.dat4$kls.maxmin.eucord.euccond), type = "o", col = 1, lty = 1, lwd = 3, ylim = c(min(log10(vis.dat4)), max(log10(vis.dat4))), xlab = "m", ylab = "log10(KL)", main = NULL)
+lines(cand.m, log10(vis.dat4$kls.maxmin.corord.corcond), type = "o", col = 2, lty = 2, lwd = 3)
+lines(cand.m, log10(vis.dat4$kls.xycoord.eucord.corcond), type = "o", col = 3, lty = 3, lwd = 3)
+lines(cand.m, log10(vis.dat4$kls.maxmin.corord.euccond), type = "o", col = 4, lty = 4, lwd = 3)
+lines(cand.m, log10(vis.dat4$kls.xcoord.eucord.euccond), type = "o", col = 5, lty = 5, lwd = 3)
+lines(cand.m, log10(vis.dat4$kls.ycoord.eucord.euccond), type = "o", col = 6, lty = 6, lwd = 3)
+legend("topright", legend=c("E-Maxmin + E-NN", "C-Maxmin + C-NN", "(X+Y)-Coord + C-NN", "C-Maxmin + E-NN", "X-coord + E-NN", "Y-coord + E-NN"), col=1:6, lty=1:6, lwd = 3, cex=1)
+
+# save(sim4, cand.m, vis.dat4, err.modifying4, file='2_corrvecchia/sim_nonstationarity_4.RData')
+# rm(sim4, cand.m)
+# load(file='2_corrvecchia/sim_nonstationarity_4.RData')
+
+
+####################################################################
 #### visualization step
 ####################################################################
 
@@ -378,6 +526,16 @@ vis.dat2    <- cbind(rep(cand.m, times = ncol(vis.dat2)), tidyr::gather(vis.dat2
 colnames(vis.dat2) <- c("m", "method", "KL")
 head(vis.dat2)
 
+vis.dat3    <- vis.dat3[, order(colnames(vis.dat3))]
+vis.dat3    <- cbind(rep(cand.m, times = ncol(vis.dat3)), tidyr::gather(vis.dat3))
+colnames(vis.dat3) <- c("m", "method", "KL")
+head(vis.dat3)
+
+vis.dat4    <- vis.dat4[, order(colnames(vis.dat4))]
+vis.dat4    <- cbind(rep(cand.m, times = ncol(vis.dat4)), tidyr::gather(vis.dat4))
+colnames(vis.dat4) <- c("m", "method", "KL")
+head(vis.dat4)
+
 kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + E-NN", "X-Coord + E-NN", "(X+Y)-Coord + C-NN", "Y-Coord + E-NN")
-vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(16, 17, 15, 18, 8, 13), alpha.value = 0.7, size.legend = 14, size.lab = 14, size.text = 12)
+vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat3, combined.legend = kls.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(16, 17, 15, 18, 8, 13), alpha.value = 0.7, size.legend = 14, size.lab = 14, size.text = 12)
 
