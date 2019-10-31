@@ -119,11 +119,11 @@ simulation <- function(n = 30^2, m = 30, deg.aniso = 10, covparms = c(1)) {
   # y-coordinate-based ordering + correlation-based NN conditioning
   approx[[9]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(2), def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
   # (x+y)-coordinate-based ordering + correlation-based NN conditioning
-  approx[[10]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1, 2), def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
+  approx[[10]]          <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1, 2), def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma, covparms = covparms)
   # (x+y)-coordinate-based ordering + euclidean-based NN conditioning
-  approx[[11]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1, 2), def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma, covparms = covparms)
+  approx[[11]]          <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1, 2), def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma, covparms = covparms)
   # standard vecchia with maxmin ordering
-  approx[[12]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "coord", which.coord = c(1, 2), cond.yz='y', conditioning = "NN")
+  approx[[12]]          <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "coord", which.coord = c(1, 2), cond.yz='y', conditioning = "NN")
   
   ### compute approximate covariance matrices
   n.approx    <- length(approx)
@@ -271,7 +271,7 @@ sqrt(sum((kls.xycoord.eucord.euccond.ref - kls.xycoord.eucord.euccond)^2))
 
 set.scale   <- 10
 ind         <- cand.all$scale == set.scale
-vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.xycoord.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
+vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat1    <- vis.dat1[, order(colnames(vis.dat1))]
 vis.dat1    <- cbind(rep(cand.m, times = ncol(vis.dat1)), tidyr::gather(vis.dat1))
 colnames(vis.dat1) <- c("m", "method", "KL")
@@ -279,16 +279,16 @@ head(vis.dat1)
 
 set.m       <- 30
 ind         <- cand.all$m == set.m
-vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.xycoord.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
+vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat2    <- vis.dat2[, order(colnames(vis.dat2))]
 vis.dat2    <- cbind(rep(cand.scale, times = ncol(vis.dat2)), tidyr::gather(vis.dat2))
 colnames(vis.dat2) <- c("scale", "method", "KL")
 head(vis.dat2)
 
-kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + E-NN", "X-Coord + E-NN", "(X+Y)-Coord + C-NN", "Y-Coord + E-NN")
+kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + C-NN", "E-Maxmin + E-NN", "X-Coord + E-NN", "Y-Coord + E-NN")
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(16, 17, 15, 18, 8, 13), alpha.value = 0.7, size.legend = 14, size.lab = 14, size.text = 12)
 
-# save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, file='2_corrvecchia/sim_anisotropy_1.RData')
+# save(sim1, cand.all, n.cand.all, set.scale, vis.dat1, set.m, vis.dat2, kls.legend, vis_arrange, file='2_corrvecchia/sim_anisotropy_1.RData')
 # load(file='2_corrvecchia/sim_anisotropy_1.RData')
 
 

@@ -267,7 +267,7 @@ for(i in 1:n.cand.m) {
 sqrt(sum((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2))
 sqrt(sum((kls.xycoord.eucord.euccond.ref - kls.xycoord.eucord.euccond)^2))
 
-vis.dat1 <- data.frame(kls.xcoord.eucord.euccond, kls.ycoord.eucord.euccond, kls.maxmin.eucord.euccond, kls.xycoord.eucord.corcond, kls.maxmin.corord.euccond, kls.maxmin.corord.corcond)
+vis.dat1 <- data.frame(kls.xcoord.eucord.euccond, kls.ycoord.eucord.euccond, kls.maxmin.eucord.euccond, kls.maxmin.eucord.corcond, kls.maxmin.corord.euccond, kls.maxmin.corord.corcond)
 vis.dat1 <- vis.dat1[, order(colnames(vis.dat1))]
 head(vis.dat1)
 
@@ -277,13 +277,13 @@ max(err.modifying1)
 
 plot(cand.m, log10(vis.dat1$kls.maxmin.eucord.euccond), type = "o", col = 1, lty = 1, lwd = 3, ylim = c(min(log10(vis.dat1)), max(log10(vis.dat1))), xlab = "m", ylab = "log10(KL)", main = NULL)
 lines(cand.m, log10(vis.dat1$kls.maxmin.corord.corcond), type = "o", col = 2, lty = 2, lwd = 3)
-lines(cand.m, log10(vis.dat1$kls.xycoord.eucord.corcond), type = "o", col = 3, lty = 3, lwd = 3)
+lines(cand.m, log10(vis.dat1$kls.maxmin.eucord.corcond), type = "o", col = 3, lty = 3, lwd = 3)
 lines(cand.m, log10(vis.dat1$kls.maxmin.corord.euccond), type = "o", col = 4, lty = 4, lwd = 3)
 lines(cand.m, log10(vis.dat1$kls.xcoord.eucord.euccond), type = "o", col = 5, lty = 5, lwd = 3)
 lines(cand.m, log10(vis.dat1$kls.ycoord.eucord.euccond), type = "o", col = 6, lty = 6, lwd = 3)
-legend("topright", legend=c("E-Maxmin + E-NN", "C-Maxmin + C-NN", "(X+Y)-Coord + C-NN", "C-Maxmin + E-NN", "X-coord + E-NN", "Y-coord + E-NN"), col=1:6, lty=1:6, lwd = 3, cex=1)
+legend("topright", legend=c("E-Maxmin + E-NN", "C-Maxmin + C-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "X-coord + E-NN", "Y-coord + E-NN"), col=1:6, lty=1:6, lwd = 3, cex=1)
 
-# save(sim1, cand.m, vis.dat1, err.modifying1, file='2_corrvecchia/sim_nonstationarity_1.RData')
+# save(sim1, cand.m, n.cand.m, vis.dat1, err.modifying1, file='2_corrvecchia/sim_nonstationarity_1.RData')
 # rm(sim1, cand.m)
 # load(file='2_corrvecchia/sim_nonstationarity_1.RData')
 
@@ -341,7 +341,7 @@ for(i in 1:n.cand.m) {
 sqrt(sum((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2))
 sqrt(sum((kls.xycoord.eucord.euccond.ref - kls.xycoord.eucord.euccond)^2))
 
-vis.dat2 <- data.frame(kls.xcoord.eucord.euccond, kls.ycoord.eucord.euccond, kls.maxmin.eucord.euccond, kls.xycoord.eucord.corcond, kls.maxmin.corord.euccond, kls.maxmin.corord.corcond)
+vis.dat2 <- data.frame(kls.xcoord.eucord.euccond, kls.ycoord.eucord.euccond, kls.maxmin.eucord.euccond, kls.maxmin.eucord.corcond, kls.maxmin.corord.euccond, kls.maxmin.corord.corcond)
 vis.dat2 <- vis.dat2[, order(colnames(vis.dat2))]
 head(vis.dat2)
 
@@ -351,13 +351,13 @@ max(err.modifying2)
 
 plot(cand.m, log10(vis.dat2$kls.maxmin.eucord.euccond), type = "o", col = 1, lty = 1, lwd = 3, ylim = c(min(log10(vis.dat2)), max(log10(vis.dat2))), xlab = "m", ylab = "log10(KL)", main = NULL)
 lines(cand.m, log10(vis.dat2$kls.maxmin.corord.corcond), type = "o", col = 2, lty = 2, lwd = 3)
-lines(cand.m, log10(vis.dat2$kls.xycoord.eucord.corcond), type = "o", col = 3, lty = 3, lwd = 3)
+lines(cand.m, log10(vis.dat2$kls.maxmin.eucord.corcond), type = "o", col = 3, lty = 3, lwd = 3)
 lines(cand.m, log10(vis.dat2$kls.maxmin.corord.euccond), type = "o", col = 4, lty = 4, lwd = 3)
 lines(cand.m, log10(vis.dat2$kls.xcoord.eucord.euccond), type = "o", col = 5, lty = 5, lwd = 3)
 lines(cand.m, log10(vis.dat2$kls.ycoord.eucord.euccond), type = "o", col = 6, lty = 6, lwd = 3)
-legend("topright", legend=c("E-Maxmin + E-NN", "C-Maxmin + C-NN", "(X+Y)-Coord + C-NN", "C-Maxmin + E-NN", "X-coord + E-NN", "Y-coord + E-NN"), col=1:6, lty=1:6, lwd = 3, cex=1)
+legend("topright", legend=c("E-Maxmin + E-NN", "C-Maxmin + C-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "X-coord + E-NN", "Y-coord + E-NN"), col=1:6, lty=1:6, lwd = 3, cex=1)
 
-# save(sim2, cand.m, vis.dat2, err.modifying2, file='2_corrvecchia/sim_nonstationarity_2.RData')
+# save(sim2, cand.m, n.cand.m, vis.dat2, err.modifying2, file='2_corrvecchia/sim_nonstationarity_2.RData')
 # rm(sim2, cand.m)
 # load(file='2_corrvecchia/sim_nonstationarity_2.RData')
 
@@ -415,7 +415,7 @@ for(i in 1:n.cand.m) {
 sqrt(sum((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2))
 sqrt(sum((kls.xycoord.eucord.euccond.ref - kls.xycoord.eucord.euccond)^2))
 
-vis.dat3 <- data.frame(kls.xcoord.eucord.euccond, kls.ycoord.eucord.euccond, kls.maxmin.eucord.euccond, kls.xycoord.eucord.corcond, kls.maxmin.corord.euccond, kls.maxmin.corord.corcond)
+vis.dat3 <- data.frame(kls.xcoord.eucord.euccond, kls.ycoord.eucord.euccond, kls.maxmin.eucord.euccond, kls.maxmin.eucord.corcond, kls.maxmin.corord.euccond, kls.maxmin.corord.corcond)
 vis.dat3 <- vis.dat3[, order(colnames(vis.dat3))]
 head(vis.dat3)
 
@@ -425,13 +425,13 @@ max(err.modifying3)
 
 plot(cand.m, log10(vis.dat3$kls.maxmin.eucord.euccond), type = "o", col = 1, lty = 1, lwd = 3, ylim = c(min(log10(vis.dat3)), max(log10(vis.dat3))), xlab = "m", ylab = "log10(KL)", main = NULL)
 lines(cand.m, log10(vis.dat3$kls.maxmin.corord.corcond), type = "o", col = 2, lty = 2, lwd = 3)
-lines(cand.m, log10(vis.dat3$kls.xycoord.eucord.corcond), type = "o", col = 3, lty = 3, lwd = 3)
+lines(cand.m, log10(vis.dat3$kls.maxmin.eucord.corcond), type = "o", col = 3, lty = 3, lwd = 3)
 lines(cand.m, log10(vis.dat3$kls.maxmin.corord.euccond), type = "o", col = 4, lty = 4, lwd = 3)
 lines(cand.m, log10(vis.dat3$kls.xcoord.eucord.euccond), type = "o", col = 5, lty = 5, lwd = 3)
 lines(cand.m, log10(vis.dat3$kls.ycoord.eucord.euccond), type = "o", col = 6, lty = 6, lwd = 3)
-legend("topright", legend=c("E-Maxmin + E-NN", "C-Maxmin + C-NN", "(X+Y)-Coord + C-NN", "C-Maxmin + E-NN", "X-coord + E-NN", "Y-coord + E-NN"), col=1:6, lty=1:6, lwd = 3, cex=1)
+legend("topright", legend=c("E-Maxmin + E-NN", "C-Maxmin + C-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "X-coord + E-NN", "Y-coord + E-NN"), col=1:6, lty=1:6, lwd = 3, cex=1)
 
-# save(sim3, cand.m, vis.dat3, err.modifying3, file='2_corrvecchia/sim_nonstationarity_3.RData')
+# save(sim3, cand.m, n.cand.m, vis.dat3, err.modifying3, file='2_corrvecchia/sim_nonstationarity_3.RData')
 # rm(sim3, cand.m)
 # load(file='2_corrvecchia/sim_nonstationarity_3.RData')
 
@@ -489,7 +489,7 @@ for(i in 1:n.cand.m) {
 sqrt(sum((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2))
 sqrt(sum((kls.xycoord.eucord.euccond.ref - kls.xycoord.eucord.euccond)^2))
 
-vis.dat4 <- data.frame(kls.xcoord.eucord.euccond, kls.ycoord.eucord.euccond, kls.maxmin.eucord.euccond, kls.xycoord.eucord.corcond, kls.maxmin.corord.euccond, kls.maxmin.corord.corcond)
+vis.dat4 <- data.frame(kls.xcoord.eucord.euccond, kls.ycoord.eucord.euccond, kls.maxmin.eucord.euccond, kls.maxmin.eucord.corcond, kls.maxmin.corord.euccond, kls.maxmin.corord.corcond)
 vis.dat4 <- vis.dat4[, order(colnames(vis.dat4))]
 head(vis.dat4)
 
@@ -499,13 +499,13 @@ max(err.modifying4)
 
 plot(cand.m, log10(vis.dat4$kls.maxmin.eucord.euccond), type = "o", col = 1, lty = 1, lwd = 3, ylim = c(min(log10(vis.dat4)), max(log10(vis.dat4))), xlab = "m", ylab = "log10(KL)", main = NULL)
 lines(cand.m, log10(vis.dat4$kls.maxmin.corord.corcond), type = "o", col = 2, lty = 2, lwd = 3)
-lines(cand.m, log10(vis.dat4$kls.xycoord.eucord.corcond), type = "o", col = 3, lty = 3, lwd = 3)
+lines(cand.m, log10(vis.dat4$kls.maxmin.eucord.corcond), type = "o", col = 3, lty = 3, lwd = 3)
 lines(cand.m, log10(vis.dat4$kls.maxmin.corord.euccond), type = "o", col = 4, lty = 4, lwd = 3)
 lines(cand.m, log10(vis.dat4$kls.xcoord.eucord.euccond), type = "o", col = 5, lty = 5, lwd = 3)
 lines(cand.m, log10(vis.dat4$kls.ycoord.eucord.euccond), type = "o", col = 6, lty = 6, lwd = 3)
-legend("topright", legend=c("E-Maxmin + E-NN", "C-Maxmin + C-NN", "(X+Y)-Coord + C-NN", "C-Maxmin + E-NN", "X-coord + E-NN", "Y-coord + E-NN"), col=1:6, lty=1:6, lwd = 3, cex=1)
+legend("topright", legend=c("E-Maxmin + E-NN", "C-Maxmin + C-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "X-coord + E-NN", "Y-coord + E-NN"), col=1:6, lty=1:6, lwd = 3, cex=1)
 
-# save(sim4, cand.m, vis.dat4, err.modifying4, file='2_corrvecchia/sim_nonstationarity_4.RData')
+# save(sim4, cand.m, n.cand.m, vis.dat4, err.modifying4, file='2_corrvecchia/sim_nonstationarity_4.RData')
 # rm(sim4, cand.m)
 # load(file='2_corrvecchia/sim_nonstationarity_4.RData')
 
@@ -536,6 +536,6 @@ vis.dat4    <- cbind(rep(cand.m, times = ncol(vis.dat4)), tidyr::gather(vis.dat4
 colnames(vis.dat4) <- c("m", "method", "KL")
 head(vis.dat4)
 
-kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + E-NN", "X-Coord + E-NN", "(X+Y)-Coord + C-NN", "Y-Coord + E-NN")
+kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + C-NN", "E-Maxmin + E-NN", "X-Coord + E-NN", "Y-Coord + E-NN")
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat3, combined.legend = kls.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(16, 17, 15, 18, 8, 13), alpha.value = 0.7, size.legend = 14, size.lab = 14, size.text = 12)
 

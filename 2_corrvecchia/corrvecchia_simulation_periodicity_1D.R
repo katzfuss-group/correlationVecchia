@@ -290,7 +290,7 @@ max(err.modifying1)
 
 set.period  <- 0.05
 ind         <- cand.all$period == set.period
-vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.xycoord.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
+vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat1    <- vis.dat1[, order(colnames(vis.dat1))]
 vis.dat1    <- cbind(rep(cand.m, times = ncol(vis.dat1)), tidyr::gather(vis.dat1))
 colnames(vis.dat1) <- c("m", "method", "KL")
@@ -298,16 +298,16 @@ head(vis.dat1)
 
 set.m       <- 30
 ind         <- cand.all$m == set.m
-vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.xycoord.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
+vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat2    <- vis.dat2[, order(colnames(vis.dat2))]
 vis.dat2    <- cbind(rep(cand.period, times = ncol(vis.dat2)), tidyr::gather(vis.dat2))
 colnames(vis.dat2) <- c("period", "method", "KL")
 head(vis.dat2)
 
-kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + E-NN", "X-Coord + E-NN", "(X+Y)-Coord + C-NN", "Y-Coord + E-NN")
+kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + C-NN", "E-Maxmin + E-NN", "X-Coord + E-NN", "Y-Coord + E-NN")
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(16, 17, 15, 18, 8, 13), alpha.value = 0.7, size.legend = 14, size.lab = 14, size.text = 12)
 
-# save(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying1, file='2_corrvecchia/sim_periodicity_1D_1.RData')
+# save(sim1, cand.all, set.period, set.m, vis.dat1, vis.dat2, kls.legend, err.modifying1, vis_arrange, file='2_corrvecchia/sim_periodicity_1D_1.RData')
 # rm(sim1, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying1)
 # load(file='2_corrvecchia/sim_periodicity_1D_1.RData')
 
@@ -368,12 +368,12 @@ sqrt(sum((kls.maxmin.eucord.euccond.ref - kls.maxmin.eucord.euccond)^2))
 sqrt(sum((kls.xycoord.eucord.euccond.ref - kls.xycoord.eucord.euccond)^2))
 
 err.modifying2 <- c()
-for(i in 1:length(sim2)) err.modifying1[i] <- sqrt(sum((sim2[[i]]$Sigma - sim2[[i]]$Sigma.modified))^2)
+for(i in 1:length(sim2)) err.modifying2[i] <- sqrt(sum((sim2[[i]]$Sigma - sim2[[i]]$Sigma.modified))^2)
 max(err.modifying2)
 
 set.period  <- 0.05
 ind         <- cand.all$period == set.period
-vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.xycoord.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
+vis.dat1    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat1    <- vis.dat1[, order(colnames(vis.dat1))]
 vis.dat1    <- cbind(rep(cand.m, times = ncol(vis.dat1)), tidyr::gather(vis.dat1))
 colnames(vis.dat1) <- c("m", "method", "KL")
@@ -381,15 +381,15 @@ head(vis.dat1)
 
 set.m       <- 30
 ind         <- cand.all$m == set.m
-vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.xycoord.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
+vis.dat2    <- data.frame(kls.xcoord.eucord.euccond[ind], kls.ycoord.eucord.euccond[ind], kls.maxmin.eucord.euccond[ind], kls.maxmin.eucord.corcond[ind], kls.maxmin.corord.euccond[ind], kls.maxmin.corord.corcond[ind])
 vis.dat2    <- vis.dat2[, order(colnames(vis.dat2))]
 vis.dat2    <- cbind(rep(cand.period, times = ncol(vis.dat2)), tidyr::gather(vis.dat2))
 colnames(vis.dat2) <- c("period", "method", "KL")
 head(vis.dat2)
 
-kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + E-NN", "X-Coord + E-NN", "(X+Y)-Coord + C-NN", "Y-Coord + E-NN")
+kls.legend <- c("C-Maxmin + C-NN", "C-Maxmin + E-NN", "E-Maxmin + C-NN", "E-Maxmin + E-NN", "X-Coord + E-NN", "Y-Coord + E-NN")
 vis_arrange(vdat1 = vis.dat1, vdat2 = vis.dat2, combined.legend = kls.legend, color.pal = brewer.pal(6, "Set1"), shape.pal = c(16, 17, 15, 18, 8, 13), alpha.value = 0.7, size.legend = 14, size.lab = 14, size.text = 12)
 
-# save(sim2, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying2, file='2_corrvecchia/sim_periodicity_1D_2.RData')
+# save(sim2, cand.all, set.period, set.m, vis.dat1, vis.dat2, kls.legend, err.modifying2, vis_arrange, file='2_corrvecchia/sim_periodicity_1D_2.RData')
 # rm(sim2, cand.all, vis.dat1, vis.dat2, kls.legend, err.modifying2)
 # load(file='2_corrvecchia/sim_periodicity_1D_2.RData')
