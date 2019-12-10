@@ -3,14 +3,14 @@ cov_flexMatern_bruteforce <- function(locs, sigma.mat, nu.mat, alpha.mat) {
   n <- nrow(locs)
   p <- nrow(sigma.mat)
   
-  cov.mat <- matrix(NA, n*p, n*p)
+  cov.mat <- matrix(NA, n * p, n * p)
   for(r in 1:n) {
     for(s in 1:n) {
       
       block.rs <- matrix(NA, p, p)
       for(i in 1:p) {
         for(j in 1:p) {
-          block.rs[i, j] <- c_ij_fields_1(loc1 = locs[r, ], loc2 = locs[s, ], sigma = sigma.mat[i, j], nu = nu.mat[i, j], alpha = alpha.mat[i, j])
+          block.rs[i, j] <- c_ij_fields_2(loc1 = locs[r, ], loc2 = locs[s, ], sigma = sigma.mat[i, j], nu = nu.mat[i, j], alpha = alpha.mat[i, j])
         }
       }
       cov.mat[seq(from = 1 + p * (r - 1), to = p * r, by = 1), seq(from = 1 + p * (s - 1), to = p * s, by = 1)] <- block.rs
@@ -60,4 +60,39 @@ c_ij_fields_2 <- function(loc1, loc2, sigma, nu, alpha) { # is equivalent to the
 
 
 
+cov_flexMatern <- function(locs, sigma.mat, nu.mat, alpha.mat) {
+  
+  n <- nrow(locs)
+  p <- nrow(sigma.mat)
+  
+  cov.mat <- matrix(NA, n*p, n*p)
+  for(i in 1:p) {
+    for(j in 1:p) {
+      ind.row     <- seq(from = i, by = p, length.out = n)
+      ind.col     <- seq(from = j, by = p, length.out = n)
+      
+      cov.mat[ind.row, ind.col]   <- c_ij(locs, sigma = sigma.mat[i, j], nu = nu.mat[i, j], alpha = alpha.mat[i, j])
+    }
+  }
+  
+  return(cov.mat)
+}
 
+c_ij <- function(locs, sigma, nu, alpha) {
+  return(  sigma * fields::Matern(fields::rdist(locs), alpha = alpha, nu = nu)  )
+}
+
+# n <- 100 ; d <- 2 ; p <- 5
+# locs <- matrix(runif(n * d), n, d)
+# sigma.mat <- diag(p)
+# nu.mat <- matrix(0.5, p, p)
+# alpha.mat <- matrix(1, p, p)
+# covmat_bruteforce <- cov_flexMatern_bruteforce(locs = locs, sigma.mat = sigma.mat, nu.mat = nu.mat, alpha.mat = alpha.mat)
+# covmat <- cov_flexMatern(locs = locs, sigma.mat = sigma.mat, nu.mat = nu.mat, alpha.mat = alpha.mat)
+# sqrt(sum((covmat - covmat_bruteforce)^2))
+# 
+# microbenchmark::microbenchmark(
+#   cov_flexMatern_bruteforce(locs = locs, sigma.mat = sigma.mat, nu.mat = nu.mat, alpha.mat = alpha.mat),
+#   cov_flexMatern(locs = locs, sigma.mat = sigma.mat, nu.mat = nu.mat, alpha.mat = alpha.mat),
+#   times = 10
+# )
