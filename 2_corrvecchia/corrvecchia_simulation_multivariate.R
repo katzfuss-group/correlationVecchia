@@ -186,74 +186,161 @@ cov_flexMatern <- function(locs, locs2 = NULL, p = NULL, rho = NULL, sigma.mat =
 #### how to generate and plot it
 ####################################################################
 
-### full bivariate Matern model (p = 2)
-n <- 20^2 ; p <- 2
-
-locs        <- matrix(runif(n*2, 0, 1), n, 2)
-sigma.mat   <- matrix(c(1, 0.5, 0.5, 1), 2, 2)
-nu.vec      <- c(1.5, 0.5)
-alpha       <- 1
-
-Sigma       <- cov_flexMatern(locs = locs, locs2 = NULL, sigma.mat = sigma.mat, nu.vec = nu.vec, nu.mat = NULL, alpha = 1, alpha.mat = NULL)
-# min(eigen(Sigma)$values)
-
-y.full      <- as.numeric(t(chol(Sigma)) %*% rnorm(n * p))
-y1          <- y.full[seq(from = 1, to = n*p, by = p)]
-y2          <- y.full[seq(from = 2, to = n*p, by = p)]
-
-par(mfrow = c(1, 2))
-fields::quilt.plot(locs[, 1], locs[, 2], y1, main = 'GP 1') # smooth
-fields::quilt.plot(locs[, 1], locs[, 2], y2, main = 'GP 2') # rough
-par(mfrow = c(1, 1))
-
-### parsimonious multivariate Matern covariance model (p = 4)
-n <- 20^2 ; p <- 4
-
-locs        <- matrix(runif(n*2, 0, 1), n, 2)
-rho         <- 0.5
-nu.vec      <- c(1.5, 1, 0.5, 0.1)
-alpha       <- 1
-
-Sigma       <- cov_flexMatern(locs = locs, locs2 = NULL, p = p, rho = rho, nu.vec = nu.vec, nu.mat = NULL, alpha = 1, alpha.mat = NULL)
-# min(eigen(Sigma)$values)
-
-y.full      <- as.numeric(t(chol(Sigma)) %*% rnorm(n * p))
-y1          <- y.full[seq(from = 1, to = n*p, by = p)]
-y2          <- y.full[seq(from = 2, to = n*p, by = p)]
-y3          <- y.full[seq(from = 3, to = n*p, by = p)]
-y4          <- y.full[seq(from = 4, to = n*p, by = p)]
-
-par(mfrow = c(2, 2))
-fields::quilt.plot(locs[, 1], locs[, 2], y1, main = 'GP 1')
-fields::quilt.plot(locs[, 1], locs[, 2], y2, main = 'GP 2') 
-fields::quilt.plot(locs[, 1], locs[, 2], y3, main = 'GP 3') 
-fields::quilt.plot(locs[, 1], locs[, 2], y4, main = 'GP 4') 
-par(mfrow = c(1, 1))
+# ### full bivariate Matern model (p = 2)
+# n <- 20^2 ; p <- 2
+# 
+# locs        <- matrix(runif(n*2, 0, 1), n, 2)
+# sigma.mat   <- matrix(c(1, 0.5, 0.5, 1), 2, 2)
+# nu.vec      <- c(1.5, 0.5)
+# alpha       <- 1
+# 
+# Sigma       <- cov_flexMatern(locs = locs, locs2 = NULL, sigma.mat = sigma.mat, nu.vec = nu.vec, nu.mat = NULL, alpha = 1, alpha.mat = NULL)
+# # min(eigen(Sigma)$values)
+# 
+# y.full      <- as.numeric(t(chol(Sigma)) %*% rnorm(n * p))
+# y1          <- y.full[seq(from = 1, to = n*p, by = p)]
+# y2          <- y.full[seq(from = 2, to = n*p, by = p)]
+# 
+# par(mfrow = c(1, 2))
+# fields::quilt.plot(locs[, 1], locs[, 2], y1, main = 'GP 1') # smooth
+# fields::quilt.plot(locs[, 1], locs[, 2], y2, main = 'GP 2') # rough
+# par(mfrow = c(1, 1))
+# 
+# ### parsimonious multivariate Matern covariance model (p = 4)
+# n <- 20^2 ; p <- 4
+# 
+# locs        <- matrix(runif(n*2, 0, 1), n, 2)
+# rho         <- 0.5
+# nu.vec      <- c(1.5, 1, 0.5, 0.1)
+# alpha       <- 1
+# 
+# Sigma       <- cov_flexMatern(locs = locs, locs2 = NULL, p = p, rho = rho, nu.vec = nu.vec, nu.mat = NULL, alpha = 1, alpha.mat = NULL)
+# # min(eigen(Sigma)$values)
+# 
+# y.full      <- as.numeric(t(chol(Sigma)) %*% rnorm(n * p))
+# y1          <- y.full[seq(from = 1, to = n*p, by = p)]
+# y2          <- y.full[seq(from = 2, to = n*p, by = p)]
+# y3          <- y.full[seq(from = 3, to = n*p, by = p)]
+# y4          <- y.full[seq(from = 4, to = n*p, by = p)]
+# 
+# par(mfrow = c(2, 2))
+# fields::quilt.plot(locs[, 1], locs[, 2], y1, main = 'GP 1')
+# fields::quilt.plot(locs[, 1], locs[, 2], y2, main = 'GP 2') 
+# fields::quilt.plot(locs[, 1], locs[, 2], y3, main = 'GP 3') 
+# fields::quilt.plot(locs[, 1], locs[, 2], y4, main = 'GP 4') 
+# par(mfrow = c(1, 1))
 
 
 ####################################################################
 #### simulation function
 ####################################################################
 
-# positive_def <- function(Sigma, tol){
-#   eig.decomp  <- eigen(Sigma)
-#   diagvec     <- ifelse(eig.decomp$values < tol, tol, eig.decomp$values)
-#   
-#   Sigma.modified <- eig.decomp$vectors %*% diag(diagvec) %*% t(eig.decomp$vectors)
-#   return(Sigma.modified)
-# }
-# 
-# simulation <- function(n = 15^2, p = 2, m = 10, sigma.mat = diag(2), nu.vec = NULL, nu.mat = NULL, alpha = NULL, alpha.mat = NULL, tol = 1e-6) {
-#   
-#   locs      <- matrix(runif(n * 2, 0, 1), n, 2)
-#   Sigma     <- matern_ns(locs)
-#   
-#   Sigma.modified <- positive_def(Sigma, tol)
-#   
-#   y         <- as.numeric(t(chol(Sigma.modified)) %*% rnorm(n * p))
-#   
-#   return(y)
-# }
+positive_def <- function(Sigma, tol){
+  eig.decomp  <- eigen(Sigma)
+  diagvec     <- ifelse(eig.decomp$values < tol, tol, eig.decomp$values)
+
+  Sigma.modified <- eig.decomp$vectors %*% diag(diagvec) %*% t(eig.decomp$vectors)
+  return(Sigma.modified)
+}
+
+simulation <- function(n = 15^2, m = 10, p = 2, rho = 0.5, sigma.mat = NULL, nu.vec = 0.5, nu.mat = NULL, alpha = 1, alpha.mat = NULL, tol = 1e-6) {
+
+  locs      <- matrix(runif(n * 2, 0, 1), n, 2)
+  Sigma     <- cov_flexMatern(locs = locs, locs2 = NULL, p = p, rho = rho, sigma.mat = sigma.mat, nu.vec = nu.vec, nu.mat = nu.mat, alpha = alpha, alpha.mat = alpha.mat)
+
+  Sigma.modified <- positive_def(Sigma, tol)
+
+  y         <- as.numeric(t(chol(Sigma.modified)) %*% rnorm(n * p))
+
+  # locs
+  locs <- locs[rep(1:n, times = p), ]
+  
+  ### specify vecchia approximations
+  approx <- list()
+  
+  # standard vecchia with maxmin ordering
+  approx[[1]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "maxmin", which.coord = NULL, cond.yz='y', conditioning = "NN")
+  # standard vecchia with x coord ordering
+  approx[[2]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "coord", which.coord = 1, cond.yz='y', conditioning = "NN")
+  # standard vecchia with y coord ordering
+  approx[[3]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "coord", which.coord = 2, cond.yz='y', conditioning = "NN")
+  # euclidean-based ordering + euclidean-based NN conditioning
+  approx[[4]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma.modified, covparms = c(1))
+  # euclidean-based ordering + correlation-based NN conditioning
+  approx[[5]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma.modified, covparms = c(1))
+  # correlation-based ordering + euclidean-based NN conditioning
+  approx[[6]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, def.dist = NULL, ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma.modified, covparms = c(1))
+  # correlation-based ordering + correlation-based NN conditioning
+  approx[[7]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "maxmin", coordinate = NULL, def.dist = NULL, ordering.method = "correlation", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma.modified, covparms = c(1))
+  # x-coordinate-based ordering + correlation-based NN conditioning
+  approx[[8]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1), def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma.modified, covparms = c(1))
+  # y-coordinate-based ordering + correlation-based NN conditioning
+  approx[[9]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(2), def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma.modified, covparms = c(1))
+  # (x+y)-coordinate-based ordering + correlation-based NN conditioning
+  approx[[10]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1, 2), def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = Sigma.modified, covparms = c(1))
+  # (x+y)-coordinate-based ordering + euclidean-based NN conditioning
+  approx[[11]]           <- corrvecchia_knownCovparms(locs = locs, m = m, ordering = "coord", coordinate = c(1, 2), def.dist = NULL, ordering.method = "euclidean", initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = Sigma.modified, covparms = c(1))
+  # standard vecchia with coord ordering
+  approx[[12]]           <- vecchia_specify_adjusted(locs = locs, m = m, ordering = "coord", which.coord = c(1, 2), cond.yz='y', conditioning = "NN")
+  
+  ### compute approximate covariance matrices
+  n.approx    <- length(approx)
+  Sigma.hat   <- list()
+  kls         <- rep(NA, n.approx)
+  for(i in 1:n.approx){
+    
+    # true cov in appropriate ordering
+    Sigma.ord       <- cov_flexMatern(locs = approx[[i]]$locsord, locs2 = NULL, p = p, rho = rho, sigma.mat = sigma.mat, nu.vec = nu.vec, nu.mat = nu.mat, alpha = alpha, alpha.mat = alpha.mat)
+
+    Sigma.ord.modified <- positive_def(Sigma.ord, tol)
+    
+    U               <- createU(approx[[i]], c(1, 1, 1), 0, covmodel = Sigma.ord.modified)$U
+    revord          <- order(approx[[i]]$ord)
+    Sigma.hat[[i]]  <- as.matrix(solve(Matrix::tcrossprod(U)))[revord,revord]
+    
+    kls[i]          <- kldiv(Sigma.modified, Sigma.hat[[i]])
+  }
+  
+  result                  <- list()
+  result$n                <- n
+  result$m                <- m
+  result$p                <- p
+  result$rho              <- rho
+  result$sigma.mat        <- sigma.mat
+  result$nu.vec           <- nu.vec
+  result$nu.mat           <- nu.mat
+  result$alpha            <- alpha
+  result$alpha.mat        <- alpha.mat
+  result$tol              <- tol
+  
+  result$locs             <- locs[1:n, ]
+  result$Sigma            <- Sigma
+  result$Sigma.modified   <- Sigma.modified
+  result$approx           <- approx
+  result$Sigma.hat        <- Sigma.hat
+  result$kls              <- kls
+  
+  return(result)  
+}
+
+out <- simulation(n = 15^2, m = 10, p = 2, rho = 0.5, sigma.mat = NULL, nu.vec = 0.5, nu.mat = NULL, alpha = 1, alpha.mat = NULL, tol = 1e-6)
+plot(log(out$kls), col = c(3, 1, 1, 3, 3, 2, 2, 1, 1, 1, 1, 1), lwd = 2, main = 'Log-scale KL divergence', ylab = 'KL divergence', xlab = 'method')
+# green = Euclidean-based ordering (does not make sense but work much better)
+# red = correlation-based ordering
+# black = others (does not make sense)
+
+# 01 = standard vecchia with maxmin ordering
+# 02 = standard vecchia with x coord ordering
+# 03 = standard vecchia with y coord ordering
+# 04 = euclidean-based ordering + euclidean-based NN conditioning
+# 05 = euclidean-based ordering + correlation-based NN conditioning
+# 06 = correlation-based ordering + euclidean-based NN conditioning
+# 07 = correlation-based ordering + correlation-based NN conditioning
+# 08 = x-coordinate-based ordering + correlation-based NN conditioning
+# 09 = y-coordinate-based ordering + correlation-based NN conditioning
+# 10 = (x+y)-coordinate-based ordering + correlation-based NN conditioning
+# 11 = (x+y)-coordinate-based ordering + euclidean-based NN conditioning
+# 12 = standard vecchia with coord ordering
 
 
 ####################################################################
