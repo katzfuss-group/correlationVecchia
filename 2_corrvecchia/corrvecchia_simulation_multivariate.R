@@ -22,6 +22,7 @@ source("2_corrvecchia/kldiv.R")
 
 set.seed(10102019)
 
+
 ####################################################################
 #### Flexible multivariate Matern covariance model 
 #### (Genton and Kleiber, 2015; Apanasovich, Genton, and Sun, 2012; Gneiting, Kleiber, and Schlather, 2010)
@@ -87,7 +88,6 @@ c_ij_fields_2 <- function(loc1, loc2, sigma, nu, alpha) { # is equivalent to the
 # isSymmetric(covmat)
 # matrixcalc::is.positive.definite(covmat)
 
-
 cov_flexMatern_old <- function(locs, sigma.mat, nu.mat, alpha.mat) {
   
   n <- nrow(locs)
@@ -110,11 +110,20 @@ c_ij <- function(locs, sigma, nu, alpha) {
   return(  sigma * fields::Matern(fields::rdist(locs), alpha = alpha, nu = nu)  )
 }
 
-
-cov_flexMatern <- function(locs, locs2 = NULL, sigma.mat, nu.vec = NULL, nu.mat = NULL, alpha = NULL, alpha.mat = NULL) {
+cov_flexMatern <- function(locs, locs2 = NULL, p = NULL, rho = NULL, sigma.mat = NULL, nu.vec = NULL, nu.mat = NULL, alpha = NULL, alpha.mat = NULL) {
   
   n         <- nrow(locs)
   m         <- ifelse(is.null(locs2), n, nrow(locs2))
+  
+  if( !is.null(sigma.mat) & !is.null(rho) ) {
+    stop("Please use only one argument specifying the collocated covariance coefficient sigma.")
+  } else if( is.null(sigma.mat) & is.null(rho) ) {
+    stop("Please specify the collocated covariance coefficient sigma.")
+  } else if( is.null(sigma.mat) & !is.null(rho) ) {
+    if(is.null(p)) stop("Please specify the number of GPs.")
+    sigma.mat <- rho^fields::rdist(seq(p))
+  }
+  
   p         <- nrow(sigma.mat)
   
   if( !is.null(nu.mat) & !is.null(nu.vec) ) {
@@ -146,7 +155,6 @@ cov_flexMatern <- function(locs, locs2 = NULL, sigma.mat, nu.vec = NULL, nu.mat 
   return(cov.mat)
 }
 
-
 # n <- 30 ; d <- 2 ; p <- 5
 # locs <- matrix(runif(n * d), n, d)
 # sigma.mat <- diag(p) ; nu.mat <- matrix(0.5, p, p) ; alpha.mat <- matrix(1, p, p)
@@ -154,22 +162,21 @@ cov_flexMatern <- function(locs, locs2 = NULL, sigma.mat, nu.vec = NULL, nu.mat 
 # covmat_bruteforce <- cov_flexMatern_bruteforce(locs = locs, sigma.mat = sigma.mat, nu.mat = nu.mat, alpha.mat = alpha.mat)
 # covmat_old <- cov_flexMatern_old(locs = locs, sigma.mat = sigma.mat, nu.mat = nu.mat, alpha.mat = alpha.mat)
 # covmat_new <- cov_flexMatern(locs = locs, sigma.mat = sigma.mat, nu.mat = nu.mat, alpha.mat = alpha.mat)
-# covmat_cross <- cov_flexMatern(locs = locs, locs2 = locs, sigma.mat = sigma.mat, nu.mat = nu.mat, alpha.mat = alpha.mat)
+# covmat_rho <- cov_flexMatern(locs = locs, p = 5, rho = 0, sigma.mat = NULL, nu.mat = nu.mat, alpha.mat = alpha.mat)
 # sqrt(sum((covmat_old - covmat_bruteforce)^2))
 # sqrt(sum((covmat_new - covmat_bruteforce)^2))
-# sqrt(sum((covmat_cross - covmat_bruteforce)^2))
+# sqrt(sum((covmat_rho - covmat_bruteforce)^2))
 # 
 # microbenchmark::microbenchmark(
 #   cov_flexMatern_bruteforce(locs = locs, sigma.mat = sigma.mat, nu.mat = nu.mat, alpha.mat = alpha.mat),
 #   cov_flexMatern_old(locs = locs, sigma.mat = sigma.mat, nu.mat = nu.mat, alpha.mat = alpha.mat),
 #   cov_flexMatern(locs = locs, sigma.mat = sigma.mat, nu.mat = nu.mat, alpha.mat = alpha.mat),
-#   cov_flexMatern(locs = locs, locs2 = locs, sigma.mat = sigma.mat, nu.mat = nu.mat, alpha.mat = alpha.mat),
 #   times = 10
 # )
 # 
 # n1 <- 3 ; n2 <- 4 ; d <- 2 ; p <- 2
 # locs1 <- matrix(runif(n1 * d), n1, d) ; locs2 <- matrix(runif(n2 * d), n2, d) ; locs <- rbind(locs1, locs2)
-# sigma.mat <- diag(p) ; nu.mat <- matrix(0.5, p, p) ; alpha.mat <- matrix(1, p, p)
+# sigma.mat <- diag(0.5, 2) + 0.5 ; nu.mat <- matrix(0.5, p, p) ; alpha.mat <- matrix(1, p, p)
 # 
 # round(cov_flexMatern(locs = locs, sigma.mat = sigma.mat, nu.mat = nu.mat, alpha.mat = alpha.mat), 3)[seq(1, n1*p), seq(n1*p+1, (n1+n2)*p)]
 # round(cov_flexMatern(locs = locs1, locs2 = locs2, sigma.mat = sigma.mat, nu.mat = nu.mat, alpha.mat = alpha.mat), 3)
