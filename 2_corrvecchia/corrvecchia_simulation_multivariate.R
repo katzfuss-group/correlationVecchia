@@ -210,20 +210,18 @@ par(mfrow = c(1, 1))
 n <- 20^2 ; p <- 4
 
 locs        <- matrix(runif(n*2, 0, 1), n, 2)
-sigma.mat   <- matrix(NA, p, p)
-for(i in 1:p) for(j in 1:p) sigma.mat[i, j] <- 0.5^abs(i-j)
-nu.vec <- c(1.5, 1, 0.5, 0.1)
-alpha <- 1
+rho         <- 0.5
+nu.vec      <- c(1.5, 1, 0.5, 0.1)
+alpha       <- 1
 
-Sigma <- cov_flexMatern(locs = locs, locs2 = NULL, sigma.mat = sigma.mat, nu.vec = nu.vec, nu.mat = NULL, alpha = 1, alpha.mat = NULL)
+Sigma       <- cov_flexMatern(locs = locs, locs2 = NULL, p = p, rho = rho, nu.vec = nu.vec, nu.mat = NULL, alpha = 1, alpha.mat = NULL)
 # min(eigen(Sigma)$values)
 
-y.full <- as.numeric(t(chol(Sigma)) %*% rnorm(n * p))
-
-y1 <- y.full[seq(from = 1, to = n*p, by = p)]
-y2 <- y.full[seq(from = 2, to = n*p, by = p)]
-y3 <- y.full[seq(from = 3, to = n*p, by = p)]
-y4 <- y.full[seq(from = 4, to = n*p, by = p)]
+y.full      <- as.numeric(t(chol(Sigma)) %*% rnorm(n * p))
+y1          <- y.full[seq(from = 1, to = n*p, by = p)]
+y2          <- y.full[seq(from = 2, to = n*p, by = p)]
+y3          <- y.full[seq(from = 3, to = n*p, by = p)]
+y4          <- y.full[seq(from = 4, to = n*p, by = p)]
 
 par(mfrow = c(2, 2))
 fields::quilt.plot(locs[, 1], locs[, 2], y1, main = 'GP 1')
