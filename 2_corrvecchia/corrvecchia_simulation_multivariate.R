@@ -20,7 +20,7 @@ source("2_corrvecchia/vecchia_specify_adjusted.R")
 source("2_corrvecchia/corrvecchia.R")
 source("2_corrvecchia/kldiv.R")
 
-set.seed(10102019)
+set.seed(12172019)
 
 
 ####################################################################
@@ -249,6 +249,10 @@ simulation <- function(n = 15^2, m = 10, p = 2, rho = 0.5, sigma.mat = NULL, nu.
   Sigma     <- cov_flexMatern(locs = locs, locs2 = NULL, p = p, rho = rho, sigma.mat = sigma.mat, nu.vec = nu.vec, nu.mat = nu.mat, alpha = alpha, alpha.mat = alpha.mat)
 
   Sigma.modified <- positive_def(Sigma, tol)
+  
+  err.decomp <- sqrt(sum( (Sigma - Sigma.modified)^2 ))
+  
+  message("The decomposition error of the covariance matrix is ", err.decomp, " in the Frobenius norm.")
 
   y         <- as.numeric(t(chol(Sigma.modified)) %*% rnorm(n * p))
 
@@ -323,11 +327,7 @@ simulation <- function(n = 15^2, m = 10, p = 2, rho = 0.5, sigma.mat = NULL, nu.
   return(result)  
 }
 
-out <- simulation(n = 15^2, m = 10, p = 2, rho = 0.5, sigma.mat = NULL, nu.vec = 0.5, nu.mat = NULL, alpha = 1, alpha.mat = NULL, tol = 1e-6)
-plot(log(out$kls), col = c(3, 1, 1, 3, 3, 2, 2, 1, 1, 1, 1, 1), lwd = 2, main = 'Log-scale KL divergence', ylab = 'KL divergence', xlab = 'method')
-# green = Euclidean-based ordering (does not make sense but work much better)
-# red = correlation-based ordering
-# black = others (does not make sense)
+### Pilot study
 
 # 01 = standard vecchia with maxmin ordering
 # 02 = standard vecchia with x coord ordering
@@ -341,6 +341,89 @@ plot(log(out$kls), col = c(3, 1, 1, 3, 3, 2, 2, 1, 1, 1, 1, 1), lwd = 2, main = 
 # 10 = (x+y)-coordinate-based ordering + correlation-based NN conditioning
 # 11 = (x+y)-coordinate-based ordering + euclidean-based NN conditioning
 # 12 = standard vecchia with coord ordering
+
+# green = Euclidean-based ordering (does not make sense but work much better)
+# red = correlation-based ordering
+# black = others (does not make sense)
+
+# out1 <- simulation(n = 15^2, m = 10, p = 2, rho = 0.5, sigma.mat = NULL, nu.vec = 0.5, nu.mat = NULL, alpha = 1, alpha.mat = NULL, tol = 1e-4)
+# 
+# plot(log(out1$kls), col = c(3, 1, 1, 3, 3, 2, 2, 1, 1, 1, 1, 1), lwd = 2, main = 'Example 01', ylab = 'log(KL)', xlab = 'method')
+# 
+# out2 <- simulation(n = 15^2, m = 10, p = 2, rho = 0.5, sigma.mat = NULL, nu.vec = c(1.5, 0.5), nu.mat = NULL, alpha = 1, alpha.mat = NULL, tol = 1e-4)
+# out3 <- simulation(n = 15^2, m = 10, p = 2, rho = 0.25, sigma.mat = NULL, nu.vec = c(1.5, 0.5), nu.mat = NULL, alpha = 1, alpha.mat = NULL, tol = 1e-4)
+# out4 <- simulation(n = 15^2, m = 10, p = 2, rho = 0, sigma.mat = NULL, nu.vec = c(1.5, 0.5), nu.mat = NULL, alpha = 1, alpha.mat = NULL, tol = 1e-4)
+# 
+# par(mfrow = c(1, 3))
+# plot(log(out2$kls), col = c(3, 1, 1, 3, 3, 2, 2, 1, 1, 1, 1, 1), lwd = 2, main = 'Example 02', ylab = 'log(KL)', xlab = 'method')
+# plot(log(out3$kls), col = c(3, 1, 1, 3, 3, 2, 2, 1, 1, 1, 1, 1), lwd = 2, main = 'Example 03', ylab = 'log(KL)', xlab = 'method')
+# plot(log(out4$kls), col = c(3, 1, 1, 3, 3, 2, 2, 1, 1, 1, 1, 1), lwd = 2, main = 'Example 04', ylab = 'log(KL)', xlab = 'method')
+# par(mfrow = c(1, 1))
+# 
+# out5 <- simulation(n = 15^2, m = 10, p = 2, rho = 0.5, sigma.mat = NULL, nu.vec = c(1.5, 0.5), nu.mat = NULL, alpha = NULL, alpha.mat = matrix(c(0.02, 0.02, 0.02, 0.01), 2, 2), tol = 1e-4)
+# out6 <- simulation(n = 15^2, m = 10, p = 2, rho = 0.25, sigma.mat = NULL, nu.vec = c(1.5, 0.5), nu.mat = NULL, alpha = NULL, alpha.mat = matrix(c(0.02, 0.02, 0.02, 0.01), 2, 2), tol = 1e-4)
+# out7 <- simulation(n = 15^2, m = 10, p = 2, rho = 0, sigma.mat = NULL, nu.vec = c(1.5, 0.5), nu.mat = NULL, alpha = NULL, alpha.mat = matrix(c(0.02, 0.02, 0.02, 0.01), 2, 2), tol = 1e-4)
+# 
+# par(mfrow = c(1, 3))
+# plot(log(out5$kls), col = c(3, 1, 1, 3, 3, 2, 2, 1, 1, 1, 1, 1), lwd = 2, main = 'Example 05', ylab = 'log(KL)', xlab = 'method')
+# plot(log(out6$kls), col = c(3, 1, 1, 3, 3, 2, 2, 1, 1, 1, 1, 1), lwd = 2, main = 'Example 06', ylab = 'log(KL)', xlab = 'method')
+# plot(log(out7$kls), col = c(3, 1, 1, 3, 3, 2, 2, 1, 1, 1, 1, 1), lwd = 2, main = 'Example 07', ylab = 'log(KL)', xlab = 'method')
+# par(mfrow = c(1, 1))
+# 
+# out8 <- simulation(n = 15^2, m = 10, p = 2, rho = 0.5, sigma.mat = NULL, nu.vec = c(1.5, 0.5), nu.mat = NULL, alpha = NULL, alpha.mat = matrix(c(0.02, sqrt((0.02^2+0.01^2)/2), sqrt((0.02^2+0.01^2)/2), 0.01), 2, 2), tol = 1e-4)
+# out9 <- simulation(n = 15^2, m = 10, p = 2, rho = 0.25, sigma.mat = NULL, nu.vec = c(1.5, 0.5), nu.mat = NULL, alpha = NULL, alpha.mat = matrix(c(0.02, sqrt((0.02^2+0.01^2)/2), sqrt((0.02^2+0.01^2)/2), 0.01), 2, 2), tol = 1e-4)
+# out10 <- simulation(n = 15^2, m = 10, p = 2, rho = 0, sigma.mat = NULL, nu.vec = c(1.5, 0.5), nu.mat = NULL, alpha = NULL, alpha.mat = matrix(c(0.02, sqrt((0.02^2+0.01^2)/2), sqrt((0.02^2+0.01^2)/2), 0.01), 2, 2), tol = 1e-4)
+# 
+# par(mfrow = c(1, 3))
+# plot(log(out8$kls), col = c(3, 1, 1, 3, 3, 2, 2, 1, 1, 1, 1, 1), lwd = 2, main = 'Example 08', ylab = 'log(KL)', xlab = 'method')
+# plot(log(out9$kls), col = c(3, 1, 1, 3, 3, 2, 2, 1, 1, 1, 1, 1), lwd = 2, main = 'Example 09', ylab = 'log(KL)', xlab = 'method')
+# plot(log(out10$kls), col = c(3, 1, 1, 3, 3, 2, 2, 1, 1, 1, 1, 1), lwd = 2, main = 'Example 10', ylab = 'log(KL)', xlab = 'method')
+# par(mfrow = c(1, 1))
+# 
+# par(mfrow = c(1, 3), las = 2, mar = c(10, 4, 4, 2))
+# barplot(height = log(out2$kls)[c(1, 5, 6, 7)], 
+#         names.arg = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN"),
+#         col = c("black", "green", "blue", "red"), 
+#         main = "rho = 0.5, nu = (1.5, 0.5), and a = 1", xlab = "", ylab = "log(KL)")
+# barplot(height = log(out3$kls)[c(1, 5, 6, 7)], 
+#         names.arg = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN"),
+#         col = c("black", "green", "blue", "red"), 
+#         main = "rho = 0.25, nu = (1.5, 0.5), and a = 1", xlab = "", ylab = "log(KL)", las = 2)
+# barplot(height = log(out4$kls)[c(1, 5, 6, 7)], 
+#         names.arg = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN"),
+#         col = c("black", "green", "blue", "red"), 
+#         main = "rho = 0, nu = (1.5, 0.5), and a = 1", xlab = "", ylab = "log(KL)", las = 2)
+# par(mfrow = c(1, 1), las = 0, mar = c(5, 4, 4, 2) + 0.1)
+# 
+# par(mfrow = c(1, 3), las = 2, mar = c(10, 4, 4, 2))
+# barplot(height = log(out5$kls)[c(1, 5, 6, 7)], 
+#         names.arg = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN"),
+#         col = c("black", "green", "blue", "red"), 
+#         main = "rho=0.5, nu=(1.5,0.5), a=0.01*(2,2 / 2,1)", xlab = "", ylab = "log(KL)")
+# barplot(height = log(out6$kls)[c(1, 5, 6, 7)], 
+#         names.arg = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN"),
+#         col = c("black", "green", "blue", "red"), 
+#         main = "rho=0.25, nu=(1.5,0.5), a=0.01*(2,2 / 2,1)", xlab = "", ylab = "log(KL)", las = 2)
+# barplot(height = log(out7$kls)[c(1, 5, 6, 7)], 
+#         names.arg = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN"),
+#         col = c("black", "green", "blue", "red"), 
+#         main = "rho=0, nu=(1.5,0.5), a=0.01*(2,2 / 2,1)", xlab = "", ylab = "log(KL)", las = 2)
+# par(mfrow = c(1, 1), las = 0, mar = c(5, 4, 4, 2) + 0.1)
+# 
+# par(mfrow = c(1, 3), las = 2, mar = c(10, 4, 4, 2))
+# barplot(height = log(out8$kls)[c(1, 5, 6, 7)], 
+#         names.arg = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN"),
+#         col = c("black", "green", "blue", "red"), 
+#         main = "rho=0.5, nu=(1.5,0.5), a=0.01*(2,1.6/1.6,1)", xlab = "", ylab = "log(KL)")
+# barplot(height = log(out9$kls)[c(1, 5, 6, 7)], 
+#         names.arg = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN"),
+#         col = c("black", "green", "blue", "red"), 
+#         main = "rho=0.25,nu=(1.5,0.5),a=0.01*(2,1.6/1.6,1)", xlab = "", ylab = "log(KL)", las = 2)
+# barplot(height = log(out10$kls)[c(1, 5, 6, 7)], 
+#         names.arg = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN"),
+#         col = c("black", "green", "blue", "red"), 
+#         main = "rho=0, nu=(1.5,0.5), a=0.01*(2,1.6/1.6,1)", xlab = "", ylab = "log(KL)", las = 2)
+# par(mfrow = c(1, 1), las = 0, mar = c(5, 4, 4, 2) + 0.1)
 
 
 ####################################################################
