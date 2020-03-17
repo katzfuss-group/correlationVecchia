@@ -1,0 +1,31 @@
+---
+output:
+  md_document:
+    variant: markdown_github
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+# correlationVecchia
+code for nonstationary Vecchia based on correlation with MJ
+
+## Installation
+
+```{install}
+# install.packages("devtools")
+devtools::install_github("myeongjong/correlationVecchia")
+```
+
+
+## Example
+
+## License
+
