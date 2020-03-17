@@ -1,8 +1,8 @@
-Package: 2019_correlationVecchia
+Package: correlationVecchia
 Type: Package
 Title: What the package does (short line)
 Version: 1.0
-Date: 2020-03-16
+Date: 2020-03-17
 Author: Who wrote it
 Maintainer: Who to complain to <yourfault@somewhere.net>
 Description: More about what it does (maybe more than one line)

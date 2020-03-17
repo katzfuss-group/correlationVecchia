@@ -1,24 +1,24 @@
-\name{2019_correlationVecchia-package}
-\alias{2019_correlationVecchia-package}
-\alias{2019_correlationVecchia}
+\name{correlationVecchia-package}
+\alias{correlationVecchia-package}
+\alias{correlationVecchia}
 \docType{package}
 \title{
-\packageTitle{2019_correlationVecchia}
+\packageTitle{correlationVecchia}
 }
 \description{
-\packageDescription{2019_correlationVecchia}
+\packageDescription{correlationVecchia}
 }
 \details{
 
 The DESCRIPTION file:
-\packageDESCRIPTION{2019_correlationVecchia}
-\packageIndices{2019_correlationVecchia}
+\packageDESCRIPTION{correlationVecchia}
+\packageIndices{correlationVecchia}
 ~~ An overview of how to use the package, including the most important functions ~~
 }
 \author{
-\packageAuthor{2019_correlationVecchia}
+\packageAuthor{correlationVecchia}
 
-Maintainer: \packageMaintainer{2019_correlationVecchia}
+Maintainer: \packageMaintainer{correlationVecchia}
 }
 \references{
 ~~ Literature or other references for background information ~~

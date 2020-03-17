@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // rcpparma_hello_world
 arma::mat rcpparma_hello_world();
-RcppExport SEXP _2019_correlationVecchia_rcpparma_hello_world() {
+RcppExport SEXP _correlationVecchia_rcpparma_hello_world() {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -18,7 +18,7 @@ END_RCPP
 }
 // rcpparma_outerproduct
 arma::mat rcpparma_outerproduct(const arma::colvec& x);
-RcppExport SEXP _2019_correlationVecchia_rcpparma_outerproduct(SEXP xSEXP) {
+RcppExport SEXP _correlationVecchia_rcpparma_outerproduct(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -29,7 +29,7 @@ END_RCPP
 }
 // rcpparma_innerproduct
 double rcpparma_innerproduct(const arma::colvec& x);
-RcppExport SEXP _2019_correlationVecchia_rcpparma_innerproduct(SEXP xSEXP) {
+RcppExport SEXP _correlationVecchia_rcpparma_innerproduct(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -40,7 +40,7 @@ END_RCPP
 }
 // rcpparma_bothproducts
 Rcpp::List rcpparma_bothproducts(const arma::colvec& x);
-RcppExport SEXP _2019_correlationVecchia_rcpparma_bothproducts(SEXP xSEXP) {
+RcppExport SEXP _correlationVecchia_rcpparma_bothproducts(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -51,14 +51,14 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_2019_correlationVecchia_rcpparma_hello_world", (DL_FUNC) &_2019_correlationVecchia_rcpparma_hello_world, 0},
-    {"_2019_correlationVecchia_rcpparma_outerproduct", (DL_FUNC) &_2019_correlationVecchia_rcpparma_outerproduct, 1},
-    {"_2019_correlationVecchia_rcpparma_innerproduct", (DL_FUNC) &_2019_correlationVecchia_rcpparma_innerproduct, 1},
-    {"_2019_correlationVecchia_rcpparma_bothproducts", (DL_FUNC) &_2019_correlationVecchia_rcpparma_bothproducts, 1},
+    {"_correlationVecchia_rcpparma_hello_world", (DL_FUNC) &_correlationVecchia_rcpparma_hello_world, 0},
+    {"_correlationVecchia_rcpparma_outerproduct", (DL_FUNC) &_correlationVecchia_rcpparma_outerproduct, 1},
+    {"_correlationVecchia_rcpparma_innerproduct", (DL_FUNC) &_correlationVecchia_rcpparma_innerproduct, 1},
+    {"_correlationVecchia_rcpparma_bothproducts", (DL_FUNC) &_correlationVecchia_rcpparma_bothproducts, 1},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_2019_correlationVecchia(DllInfo *dll) {
+RcppExport void R_init_correlationVecchia(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }
