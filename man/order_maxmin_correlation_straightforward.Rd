@@ -23,7 +23,7 @@ Straightforward maximum-minimum (maxmin) ordering of locations with respect to a
 covparms <- c(1, 0.1)
 locs <- matrix(runif(100 * 2), 100, 2)
 
-rho <- vecchia:::.correlation(locs, cov_expo_iso, covparms, FALSE)
+rho <- correlationVecchia:::.correlation(locs, cov_expo_iso, covparms, FALSE)
 identical(order_maxmin_euclidean(locs), 
           order_maxmin_correlation_straightforward(locs, 1 - rho, 
                                                    initial.pt = order_maxmin_euclidean(locs)[1]))

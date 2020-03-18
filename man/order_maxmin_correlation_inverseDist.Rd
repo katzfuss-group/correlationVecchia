@@ -23,7 +23,7 @@ Reversely implemented Maximum-minimum (maxmin) ordering of locations with respec
 covparms <- c(1, 0.1)
 locs <- matrix(runif(100 * 2), 100, 2)
 
-rho <- vecchia:::.correlation(locs, cov_expo_iso, covparms, FALSE)
+rho <- correlationVecchia:::.correlation(locs, cov_expo_iso, covparms, FALSE)
 identical(order_maxmin_correlation_inverseDist(locs, rho, 
                        initial.pt = GPvecchia::order_maxmin_exact(locs)[1]), 
           order_maxmin_correlation_straightforward(locs, 1 - rho, 
@@ -32,7 +32,7 @@ identical(order_maxmin_correlation_inverseDist(locs, rho,
 covparms <- c(1, 0.1, 10)
 locs.trans <- cbind(locs[ ,1] * covparms[3], locs[,2]) / covparms[2]
 
-rho.new <- vecchia:::.correlation(locs, cov_expo_aniso, covparms, FALSE)
+rho.new <- correlationVecchia:::.correlation(locs, cov_expo_aniso, covparms, FALSE)
 identical(order_maxmin_euclidean(locs.trans),
           order_maxmin_correlation_inverseDist(locs, rho.new, 
                        initial.pt = order_maxmin_euclidean(locs.trans)[1]))
