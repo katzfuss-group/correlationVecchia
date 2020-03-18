@@ -9,26 +9,26 @@
 \packageDescription{correlationVecchia}
 }
 \details{
-
-The DESCRIPTION file:
-\packageDESCRIPTION{correlationVecchia}
-\packageIndices{correlationVecchia}
-~~ An overview of how to use the package, including the most important functions ~~
+This is a private R package for research.
+% The DESCRIPTION file:
+% \packageDESCRIPTION{vecchia}
+% \packageIndices{vecchia}
+% ~~ An overview of how to use the package, including the most important functions ~~
 }
 \author{
-\packageAuthor{correlationVecchia}
-
-Maintainer: \packageMaintainer{correlationVecchia}
+Myeongjong Kang and Matthias Katzfuss\cr Maintainer: NA
 }
 \references{
-~~ Literature or other references for background information ~~
+This is a private R package for research.
 }
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~
+% ~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~
 \keyword{ package }
 \seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
+This is a private R package for research.
+% ~~ Optional links to other man pages, e.g. ~~
+% ~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
 }
 \examples{
-~~ simple examples of the most important functions ~~
+1 + 1
+% ~~ simple examples of the most important functions ~~
 }

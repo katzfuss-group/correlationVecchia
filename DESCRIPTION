@@ -1,11 +1,21 @@
 Package: correlationVecchia
 Type: Package
-Title: What the package does (short line)
-Version: 1.0
+Title: Research Package for Correlation-based Vecchia Approximation
+Version: 0.0.1
 Date: 2020-03-17
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
-Imports: Rcpp (>= 1.0.3)
+Authors@R: c(person("Myeongjong", "Kang", role=c("aut"), email = "kmj.stat@gmail.com"),
+	           person("Matthias", "Katzfuss", role=c("aut", "cre"), email = "katzfuss@gmail.com"))
+Description: This is so far a private research R package for implementing the correlation-based Vecchia approximation.
+License: GPL-2
+Depends: 
+    R (>= 3.6.0)
+Imports:
+    Rcpp (>= 1.0.3)
+Suggests: 
 LinkingTo: Rcpp, RcppArmadillo
+Encoding: UTF-8
+LazyData: yes
+Roxygen: list(markdown = TRUE, roclets = c("rd", "namespace", "collate", "vignette"))
+RoxygenNote: 7.0.2
+Remotes: 
+

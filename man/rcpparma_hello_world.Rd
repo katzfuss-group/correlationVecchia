@@ -41,10 +41,12 @@ rcpparma_bothproducts(x)
 \references{
   See the documentation for Armadillo, and RcppArmadillo, for more details.
 }
-\examples{
-  x <- sqrt(1:4)
-  rcpparma_innerproduct(x)
-  rcpparma_outerproduct(x)
+\examples{ 
+  \dontrun{
+    x <- sqrt(1:4)
+    rcpparma_innerproduct(x)
+    rcpparma_outerproduct(x)
+  }
 }
 \author{Dirk Eddelbuettel}
 
