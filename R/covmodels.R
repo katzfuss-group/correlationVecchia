@@ -19,6 +19,8 @@
 ###       FTN - cov_multivariate_flexMatern_GK()
 ###       FTN - cov_multivariate_flexMatern_GK_bruteforce() consisting of .c_ij_bruteforce(), .c_ij_fields_1(), and .c_ij_fields_2()
 ###
+###       FTN - cov_spacetime_expo()
+###
 ####################################################################################
 
 #' @title Isotropic exponential covariance function
@@ -936,4 +938,36 @@ cov_multivariate_flexMatern_GK_bruteforce <- function(locs, sigma.mat = NULL, p 
   h <- sqrt(sum((loc1 - loc2)^2))
   
   return(  sigma * fields::Matern(h, alpha = alpha, nu = nu)  )
+}
+
+
+
+#' @title Non-separable spatio-temporal covariance function
+#'
+#' @param locs A matrix of locations = (1st coordinate of spatial location, 2nd coordinate of spatial location, temporal location)
+#' @param covparms A numeric vector of covariance parameters = (sigma^2, kappa, a, c)
+#'
+#' @return A matrix with \code{n} rows and \code{n} columns, with the \code{(i, j)} entry containing the non-separable spatio-temporal covariance between observations \code{locs[i, ]} and \code{locs[j, ]} described in the paper below
+#' 
+#' @references Datta, Abhirup, et al. "Nonseparable dynamic nearest neighbor Gaussian process models for large spatio-temporal data with an application to particulate matter analysis." The annals of applied statistics 10.3 (2016): 1286.
+#' 
+#' @export
+#'
+#' @examples
+#' locs <- matrix(runif(30), 10, 3)
+#' locs
+#' 
+#' covmat <- cov_spacetime_expo(locs = locs, covparms = c(1, 0.75, 50, 25))
+#' fields::image.plot(covmat)
+#' 
+#' covmat <- cov_spacetime_expo(locs = locs, covparms = c(1, 0.75, 500, 2.5))
+#' fields::image.plot(covmat)
+cov_spacetime_expo <- function(locs, covparms)
+{
+  if(ncol(locs) != 3) stop("This covariance function only consider 2 dimensional space and 1 dimensional time.")
+  
+  h <- fields::rdist(x1 = locs[, 1:2, drop = FALSE])
+  u <- fields::rdist(x1 = locs[, 3, drop = FALSE])
+  
+  return( covparms[1] / (covparms[3] * u^2 + 1)^covparms[2] * exp(- covparms[4] * h / (covparms[3] * u^2 + 1)^(covparms[2]/2) ) )
 }
