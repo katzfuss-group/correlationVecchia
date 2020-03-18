@@ -358,8 +358,9 @@ cov_wave <- function(locs, covparms, method = "Dampedsine", tol = 1e-8) {
 
 #' @title Flexible Matern covariance function for bivariate Gaussian Processes
 #'
-#' @param locs1 A numerical matrix with \code{n1} rows and \code{d} columns. Each row of locs1 gives a point of the first set in R^d
-#' @param locs2 A numerical matrix with \code{n2} rows and \code{d} columns. Each row of locs2 gives a point of the second set in R^d
+#' @param locs At \code{NULL} by default. When used, it must be a list of two location matrices which is list(locs1 = locs1, locs2 = locs2)
+#' @param locs1 At \code{NULL} by default. When used, it must be a numerical matrix with \code{n1} rows and \code{d} columns. Each row of locs1 gives a point of the first set in R^d
+#' @param locs2 At \code{NULL} by default. When used, it must be a numerical matrix with \code{n2} rows and \code{d} columns. Each row of locs2 gives a point of the second set in R^d
 #' @param sigma.mat A numerical 2 by 2 matrix of collocated covariance coefficients
 #' @param nu.mat A numerical 2 by 2 matrix of smoothness parameters
 #' @param alpha.mat A numerical 2 by 2 matrix of scale parameters
@@ -372,40 +373,57 @@ cov_wave <- function(locs, covparms, method = "Dampedsine", tol = 1e-8) {
 #' locs1 <- matrix(runif(8, 0, 1), 4, 2)
 #' locs2 <- matrix(runif(6, 0, 1), 3, 2)
 #' 
-#' cov_bivariate_flexMatern(locs1 = locs1, locs2 = locs2, 
-#'                          sigma.mat = matrix(c(1, 0.5, 0.5, 1), 2, 2), 
-#'                          nu.mat = matrix(0.5, 2, 2), 
-#'                          alpha.mat = matrix(1, 2, 2))
-cov_bivariate_flexMatern <- function(locs1, locs2, sigma.mat, nu.mat, alpha.mat)
+#' covmat1 <- cov_bivariate_flexMatern(locs1 = locs1, locs2 = locs2, 
+#'                                     sigma.mat = matrix(c(1, 0.5, 0.5, 1), 2, 2), 
+#'                                     nu.mat = matrix(0.5, 2, 2), 
+#'                                     alpha.mat = matrix(1, 2, 2))
+#' 
+#' covmat2 <- cov_bivariate_flexMatern(locs = list(locs1 = locs1, locs2 = locs2), 
+#'                                     sigma.mat = matrix(c(1, 0.5, 0.5, 1), 2, 2), 
+#'                                     nu.mat = matrix(0.5, 2, 2), 
+#'                                     alpha.mat = matrix(1, 2, 2))
+#' 
+#' sqrt(sum((covmat1 - covmat2)^2))
+cov_bivariate_flexMatern <- function(locs = NULL, locs1 = NULL, locs2 = NULL, sigma.mat, nu.mat, alpha.mat)
 {
-  # checkargs: locs
-  if(!is.matrix(locs1) & !is.data.frame(locs1)) stop("The argument locs1 is neither matrix nor data.frame.")
-  if(!is.numeric(locs1)) stop("The argument locs1 is not numeric.")
+  ### checkargs: locs
+  if(is.null(locs) & is.null(locs1) & is.null(locs2)) stop("Please specify the location matrix using locs xor locs1&2.")
+  if(is.null(locs) & !is.null(locs1) & is.null(locs2)) stop("Please specify the location matrix using locs xor locs1&2.")
+  if(is.null(locs) & is.null(locs1) & !is.null(locs2)) stop("Please specify the location matrix using locs xor locs1&2.")
+  if(!is.null(locs) & !is.null(locs1) & is.null(locs2)) stop("Please specify the location matrix using locs xor locs1&2.")
+  if(!is.null(locs) & is.null(locs1) & !is.null(locs2)) stop("Please specify the location matrix using locs xor locs1&2.")
+
+  if(is.null(locs) & !is.null(locs1) & !is.null(locs2)) locs <- list(locs1 = locs1, locs2 = locs2)
+  if(!is.null(locs) & is.null(locs1) & is.null(locs2)) {
+    locs1 <- locs[[1]]
+    locs2 <- locs[[2]]
+  }
   
-  if(!is.matrix(locs2) & !is.data.frame(locs2)) stop("The argument locs2 is neither matrix nor data.frame.")
-  if(!is.numeric(locs2)) stop("The argument locs2 is not numeric.")
+  if(!is.matrix(locs1) & !is.data.frame(locs1)) stop("The first location object is neither matrix nor data.frame.")
+  if(!is.numeric(locs1)) stop("TThe first location object is not numeric.")
   
-  # checkargs: sigma.mat
+  if(!is.matrix(locs2) & !is.data.frame(locs2)) stop("The second location object is neither matrix nor data.frame.")
+  if(!is.numeric(locs2)) stop("The second location object is not numeric.")
+    
+  ### checkargs: sigma.mat
   if(!is.matrix(sigma.mat)) stop("The argument sigma.mat must be a matrix.")
   if(!all(dim(sigma.mat) == c(2, 2))) stop("The argument sigma.mat must be a 2 by 2 matrix.")
   if(!is.numeric(sigma.mat)) stop("The argument sigma.mat must be numeric.")
   
-  # checkargs: nu.mat
+  ### checkargs: nu.mat
   if(!is.matrix(nu.mat)) stop("The argument nu.mat must be a matrix.")
   if(!all(dim(nu.mat) == c(2, 2))) stop("The argument nu.mat must be a 2 by 2 matrix.")
   if(!is.numeric(nu.mat)) stop("The argument nu.mat must be numeric.")
   
-  # checkargs: alpha.mat
+  ### checkargs: alpha.mat
   if(!is.matrix(alpha.mat)) stop("The argument alpha.mat must be a matrix.")
   if(!all(dim(alpha.mat) == c(2, 2))) stop("The argument alpha.mat must be a 2 by 2 matrix.")
   if(!is.numeric(alpha.mat)) stop("The argument alpha.mat must be numeric.")
   
+  n         <- c(nrow(locs1), nrow(locs2))
   p         <- nrow(sigma.mat)
   
   if(p != 2) stop("This functions is only for computing covariance matrices of bivariate processes.")
-  
-  locs      <- list(locs1 = locs1, locs2 = locs2)
-  n         <- c(nrow(locs1), nrow(locs2))
   
   covmat <- matrix(NA, sum(n), sum(n))
   for(i in 1:p) {
@@ -424,8 +442,9 @@ cov_bivariate_flexMatern <- function(locs1, locs2, sigma.mat, nu.mat, alpha.mat)
 
 #' @title Isotropic exponontial covariance function for bivariate Gaussian Processes using latent coordinate
 #'
-#' @param locs1 A numerical matrix with \code{n1} rows and \code{d} columns. Each row of locs1 gives a point of the first set in R^d
-#' @param locs2 A numerical matrix with \code{n2} rows and \code{d} columns. Each row of locs2 gives a point of the second set in R^d
+#' @param locs At \code{NULL} by default. When used, it must be a list of two location matrices which is list(locs1 = locs1, locs2 = locs2)
+#' @param locs1 At \code{NULL} by default. When used, it must be a numerical matrix with \code{n1} rows and \code{d} columns. Each row of locs1 gives a point of the first set in R^d
+#' @param locs2 At \code{NULL} by default. When used, it must be a numerical matrix with \code{n2} rows and \code{d} columns. Each row of locs2 gives a point of the second set in R^d
 #' @param covparms A numerical vector with covariance parameters. Its form must be (variance, range, distance between two processes in latent coordinate).
 #'
 #' @return An isotropic exponential covariance matrix with \code{n1 + n2} rows and \code{n1 + n2} columns
@@ -438,17 +457,34 @@ cov_bivariate_flexMatern <- function(locs1, locs2, sigma.mat, nu.mat, alpha.mat)
 #' covparms <- c(1, 0.1)
 #' d.latent <- 1
 #' 
-#' cov_bivariate_expo_latDim(locs1 = locs1, locs2 = locs2, covparms = c(covparms, d.latent))
-cov_bivariate_expo_latDim <- function(locs1, locs2, covparms)
+#' covmat1 <- cov_bivariate_expo_latDim(locs1 = locs1, locs2 = locs2, 
+#'                                      covparms = c(covparms, d.latent))
+#' covmat2 <- cov_bivariate_expo_latDim(locs = list(locs1 = locs1, locs2 = locs2), 
+#'                                      covparms = c(covparms, d.latent))
+#' 
+#' sqrt(sum((covmat1 - covmat2)^2))
+cov_bivariate_expo_latDim <- function(locs = NULL, locs1 = NULL, locs2 = NULL, covparms)
 {
-  # checkargs: locs
-  if(!is.matrix(locs1) & !is.data.frame(locs1)) stop("The argument locs1 is neither matrix nor data.frame.")
-  if(!is.numeric(locs1)) stop("The argument locs1 is not numeric.")
+  ### checkargs: locs
+  if(is.null(locs) & is.null(locs1) & is.null(locs2)) stop("Please specify the location matrix using locs xor locs1&2.")
+  if(is.null(locs) & !is.null(locs1) & is.null(locs2)) stop("Please specify the location matrix using locs xor locs1&2.")
+  if(is.null(locs) & is.null(locs1) & !is.null(locs2)) stop("Please specify the location matrix using locs xor locs1&2.")
+  if(!is.null(locs) & !is.null(locs1) & is.null(locs2)) stop("Please specify the location matrix using locs xor locs1&2.")
+  if(!is.null(locs) & is.null(locs1) & !is.null(locs2)) stop("Please specify the location matrix using locs xor locs1&2.")
   
-  if(!is.matrix(locs2) & !is.data.frame(locs2)) stop("The argument locs2 is neither matrix nor data.frame.")
-  if(!is.numeric(locs2)) stop("The argument locs2 is not numeric.")
+  if(is.null(locs) & !is.null(locs1) & !is.null(locs2)) locs <- list(locs1 = locs1, locs2 = locs2)
+  if(!is.null(locs) & is.null(locs1) & is.null(locs2)) {
+    locs1 <- locs[[1]]
+    locs2 <- locs[[2]]
+  }
   
-  locs <- list(locs1 = locs1, locs2 = locs2)
+  if(!is.matrix(locs1) & !is.data.frame(locs1)) stop("The first location object is neither matrix nor data.frame.")
+  if(!is.numeric(locs1)) stop("TThe first location object is not numeric.")
+  
+  if(!is.matrix(locs2) & !is.data.frame(locs2)) stop("The second location object is neither matrix nor data.frame.")
+  if(!is.numeric(locs2)) stop("The second location object is not numeric.")
+  
+  ### Calculation
   for(i in 1:length(locs)) {
     locs[[i]] <- cbind( locs[[i]], (i-1) * covparms[3] )
   }

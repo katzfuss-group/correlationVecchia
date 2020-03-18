@@ -4,12 +4,21 @@
 \alias{cov_bivariate_flexMatern}
 \title{Flexible Matern covariance function for bivariate Gaussian Processes}
 \usage{
-cov_bivariate_flexMatern(locs1, locs2, sigma.mat, nu.mat, alpha.mat)
+cov_bivariate_flexMatern(
+  locs = NULL,
+  locs1 = NULL,
+  locs2 = NULL,
+  sigma.mat,
+  nu.mat,
+  alpha.mat
+)
 }
 \arguments{
-\item{locs1}{A numerical matrix with \code{n1} rows and \code{d} columns. Each row of locs1 gives a point of the first set in R^d}
+\item{locs}{At \code{NULL} by default. When used, it must be a list of two location matrices which is list(locs1 = locs1, locs2 = locs2)}
 
-\item{locs2}{A numerical matrix with \code{n2} rows and \code{d} columns. Each row of locs2 gives a point of the second set in R^d}
+\item{locs1}{At \code{NULL} by default. When used, it must be a numerical matrix with \code{n1} rows and \code{d} columns. Each row of locs1 gives a point of the first set in R^d}
+
+\item{locs2}{At \code{NULL} by default. When used, it must be a numerical matrix with \code{n2} rows and \code{d} columns. Each row of locs2 gives a point of the second set in R^d}
 
 \item{sigma.mat}{A numerical 2 by 2 matrix of collocated covariance coefficients}
 
@@ -27,8 +36,15 @@ Flexible Matern covariance function for bivariate Gaussian Processes
 locs1 <- matrix(runif(8, 0, 1), 4, 2)
 locs2 <- matrix(runif(6, 0, 1), 3, 2)
 
-cov_bivariate_flexMatern(locs1 = locs1, locs2 = locs2, 
-                         sigma.mat = matrix(c(1, 0.5, 0.5, 1), 2, 2), 
-                         nu.mat = matrix(0.5, 2, 2), 
-                         alpha.mat = matrix(1, 2, 2))
+covmat1 <- cov_bivariate_flexMatern(locs1 = locs1, locs2 = locs2, 
+                                    sigma.mat = matrix(c(1, 0.5, 0.5, 1), 2, 2), 
+                                    nu.mat = matrix(0.5, 2, 2), 
+                                    alpha.mat = matrix(1, 2, 2))
+
+covmat2 <- cov_bivariate_flexMatern(locs = list(locs1 = locs1, locs2 = locs2), 
+                                    sigma.mat = matrix(c(1, 0.5, 0.5, 1), 2, 2), 
+                                    nu.mat = matrix(0.5, 2, 2), 
+                                    alpha.mat = matrix(1, 2, 2))
+
+sqrt(sum((covmat1 - covmat2)^2))
 }

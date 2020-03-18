@@ -4,12 +4,14 @@
 \alias{cov_bivariate_expo_latDim}
 \title{Isotropic exponontial covariance function for bivariate Gaussian Processes using latent coordinate}
 \usage{
-cov_bivariate_expo_latDim(locs1, locs2, covparms)
+cov_bivariate_expo_latDim(locs = NULL, locs1 = NULL, locs2 = NULL, covparms)
 }
 \arguments{
-\item{locs1}{A numerical matrix with \code{n1} rows and \code{d} columns. Each row of locs1 gives a point of the first set in R^d}
+\item{locs}{At \code{NULL} by default. When used, it must be a list of two location matrices which is list(locs1 = locs1, locs2 = locs2)}
 
-\item{locs2}{A numerical matrix with \code{n2} rows and \code{d} columns. Each row of locs2 gives a point of the second set in R^d}
+\item{locs1}{At \code{NULL} by default. When used, it must be a numerical matrix with \code{n1} rows and \code{d} columns. Each row of locs1 gives a point of the first set in R^d}
+
+\item{locs2}{At \code{NULL} by default. When used, it must be a numerical matrix with \code{n2} rows and \code{d} columns. Each row of locs2 gives a point of the second set in R^d}
 
 \item{covparms}{A numerical vector with covariance parameters. Its form must be (variance, range, distance between two processes in latent coordinate).}
 }
@@ -25,5 +27,10 @@ locs2 <- matrix(runif(8), 4, 2)
 covparms <- c(1, 0.1)
 d.latent <- 1
 
-cov_bivariate_expo_latDim(locs1 = locs1, locs2 = locs2, covparms = c(covparms, d.latent))
+covmat1 <- cov_bivariate_expo_latDim(locs1 = locs1, locs2 = locs2, 
+                                     covparms = c(covparms, d.latent))
+covmat2 <- cov_bivariate_expo_latDim(locs = list(locs1 = locs1, locs2 = locs2), 
+                                     covparms = c(covparms, d.latent))
+
+sqrt(sum((covmat1 - covmat2)^2))
 }
