@@ -29,6 +29,7 @@
 #'                      Correction method \code{"nearPD"} use a built-in function nearPD() in the R package Matrix.
 #' @param pivot Logical indicating if pivoting is to be used when factorizing a covariance matrix.  At \code{FALSE} by default
 #' @param tol Numerical tolerance. At \code{.Machine$double.eps} by default
+#' @param verbose Logical at \code{TRUE} by default. If verbose is \code{TRUE}, then this function prints out all messages
 #' @param ... Covariance parameters
 #'
 #' @return \code{generate_gp} returns
@@ -110,7 +111,7 @@
 #' points((as.data.frame(out$sim$sim1$locs[[2]])), col = 'blue')
 #' 
 #' par(mfrow = c(1, 1))
-generate_gp_space <- function(nsim, n, d, p, method.locs, covmodel, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ...)
+generate_gp_space <- function(nsim, n, d, p, method.locs, covmodel, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = TRUE, ...)
 {
   ### location
   if(method.locs == "random") {
@@ -172,7 +173,7 @@ generate_gp_space <- function(nsim, n, d, p, method.locs, covmodel, method.modif
       locs          <- locs.full[ind, ]
       
       covmat        <- covmodel(locs, ...)
-      covfac        <- factorize(covmat = covmat, pivot = pivot, method = method.modify, tol = tol, return.err = TRUE, verbose = TRUE)
+      covfac        <- factorize(covmat = covmat, pivot = pivot, method = method.modify, tol = tol, return.err = TRUE, verbose = verbose)
       
       y             <- as.numeric(t(covfac$covfactor) %*% noise.full[ind])
       decomp.err    <- covfac$decomp.err
@@ -194,7 +195,7 @@ generate_gp_space <- function(nsim, n, d, p, method.locs, covmodel, method.modif
       names(locs)   <- paste0("locs", seq(p))
       
       covmat        <- covmodel(locs, ...)
-      covfac        <- factorize(covmat = covmat, pivot = pivot, method = method.modify, tol = tol, return.err = TRUE, verbose = TRUE)
+      covfac        <- factorize(covmat = covmat, pivot = pivot, method = method.modify, tol = tol, return.err = TRUE, verbose = verbose)
       
       ind           <- seq(from = 1 + (k - 1) * n * p, to = k * n * p, by = 1)
       # y <- ind
@@ -230,6 +231,7 @@ generate_gp_space <- function(nsim, n, d, p, method.locs, covmodel, method.modif
 #'                      Correction method \code{"nearPD"} use a built-in function nearPD() in the R package Matrix.
 #' @param pivot Logical indicating if pivoting is to be used when factorizing a covariance matrix.  At \code{FALSE} by default
 #' @param tol Numerical tolerance. At \code{.Machine$double.eps} by default
+#' @param verbose Logical at \code{TRUE} by default. If verbose is \code{TRUE}, then this function prints out all messages
 #' @param ... Covariance parameters
 #' 
 #' @return \code{generate_gp_spacetime} returns
@@ -279,7 +281,7 @@ generate_gp_space <- function(nsim, n, d, p, method.locs, covmodel, method.modif
 #' plot(out$sim$sim1$locs[, 3], main = "time location against index")
 #' 
 #' par(mfrow = c(1, 1))
-generate_gp_spacetime <- function(nsim, n, d, t.len, method.locs, covmodel, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ...)
+generate_gp_spacetime <- function(nsim, n, d, t.len, method.locs, covmodel, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = TRUE, ...)
 {
   ### location
   if(method.locs == "all.random") {
@@ -345,7 +347,7 @@ generate_gp_spacetime <- function(nsim, n, d, t.len, method.locs, covmodel, meth
     locs          <- locs.full[ind, ]
     
     covmat        <- covmodel(locs, ...)
-    covfac        <- factorize(covmat = covmat, pivot = pivot, method = method.modify, tol = tol, return.err = TRUE, verbose = TRUE)
+    covfac        <- factorize(covmat = covmat, pivot = pivot, method = method.modify, tol = tol, return.err = TRUE, verbose = verbose)
     
     y             <- as.numeric(t(covfac$covfactor) %*% noise.full[ind])
     decomp.err    <- covfac$decomp.err

@@ -14,6 +14,7 @@ generate_gp_space(
   method.modify = NULL,
   pivot = FALSE,
   tol = .Machine$double.eps,
+  verbose = TRUE,
   ...
 )
 }
@@ -40,6 +41,8 @@ Correction method \code{"nearPD"} use a built-in function nearPD() in the R pack
 \item{pivot}{Logical indicating if pivoting is to be used when factorizing a covariance matrix.  At \code{FALSE} by default}
 
 \item{tol}{Numerical tolerance. At \code{.Machine$double.eps} by default}
+
+\item{verbose}{Logical at \code{TRUE} by default. If verbose is \code{TRUE}, then this function prints out all messages}
 
 \item{...}{Covariance parameters}
 }
