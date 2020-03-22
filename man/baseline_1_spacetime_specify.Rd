@@ -4,12 +4,14 @@
 \alias{baseline_1_spacetime_specify}
 \title{The first baseline approximation for spatio-temporal cases}
 \usage{
-baseline_1_spacetime_specify(locs, m)
+baseline_1_spacetime_specify(locs, m, coordinate = NULL)
 }
 \arguments{
 \item{locs}{A matrix of spatio-temporal locations}
 
 \item{m}{A size of conditioning sets}
+
+\item{coordinate}{integer or vector of integers in \code{1,...,d}}
 }
 \value{
 list

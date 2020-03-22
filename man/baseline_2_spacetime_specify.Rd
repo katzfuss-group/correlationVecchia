@@ -4,12 +4,14 @@
 \alias{baseline_2_spacetime_specify}
 \title{The second baseline approximation for spatio-temporal cases}
 \usage{
-baseline_2_spacetime_specify(locs, m, theta = 1)
+baseline_2_spacetime_specify(locs, m, coordinate = NULL, theta = 1)
 }
 \arguments{
 \item{locs}{A matrix of spatio-temporal locations}
 
 \item{m}{A size of conditioning sets}
+
+\item{coordinate}{integer or vector of integers in \code{1,...,d}}
 
 \item{theta}{space distance + theta * time distance}
 }

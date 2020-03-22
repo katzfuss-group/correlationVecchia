@@ -387,6 +387,7 @@ baseline_4_multivariate_specify <- function(locs, m, covmodel, ...)
 #'
 #' @param locs A matrix of spatio-temporal locations
 #' @param m A size of conditioning sets
+#' @param coordinate integer or vector of integers in \code{1,...,d}
 #'
 #' @return list
 #' 
@@ -422,11 +423,11 @@ baseline_4_multivariate_specify <- function(locs, m, covmodel, ...)
 #' cond1
 #' cond2 
 #' cond3
-baseline_1_spacetime_specify <- function(locs, m)
+baseline_1_spacetime_specify <- function(locs, m, coordinate = NULL)
 {
   if( any(duplicated(locs)) ) stop("Time location is duplicated.")
   
-  ord         <- order_coordinate(locs, coordinate = 3)
+  ord         <- order_time(locs = locs, coordinate = coordinate)
   locsord     <- locs[ord, , drop = FALSE]
   
   cond.sets   <- matrix(NA, nrow = nrow(locsord), ncol = m + 1)
@@ -449,6 +450,7 @@ baseline_1_spacetime_specify <- function(locs, m)
 #'
 #' @param locs A matrix of spatio-temporal locations
 #' @param m A size of conditioning sets 
+#' @param coordinate integer or vector of integers in \code{1,...,d}
 #' @param theta space distance + theta * time distance
 #'
 #' @return list
@@ -485,11 +487,11 @@ baseline_1_spacetime_specify <- function(locs, m)
 #' cond1
 #' cond2 
 #' cond3
-baseline_2_spacetime_specify <- function(locs, m, theta = 1)
+baseline_2_spacetime_specify <- function(locs, m, coordinate = NULL, theta = 1)
 {
   if( any(duplicated(locs)) ) stop("Time location is duplicated.")
   
-  ord         <- order_coordinate(locs, coordinate = 3)
+  ord         <- order_time(locs = locs, coordinate = coordinate)
   locsord     <- locs[ord, , drop = FALSE]
   
   d.spacetime <- fields::rdist(x1 = locs[, 1:2, drop = FALSE]) + theta * fields::rdist(x1 = locs[, 3, drop = FALSE])
@@ -510,6 +512,7 @@ baseline_2_spacetime_specify <- function(locs, m, theta = 1)
 #'
 #' @param locs A matrix of spatio-temporal locations
 #' @param m A size of conditioning sets  
+#' @param coordinate integer or vector of integers in \code{1,...,d}
 #' @param covmodel covariance function
 #' @param covparms A numeric vector of covariance parameters
 #'
@@ -547,9 +550,9 @@ baseline_2_spacetime_specify <- function(locs, m, theta = 1)
 #' cond1
 #' cond2 
 #' cond3
-baseline_3_spacetime_specify <- function(locs, m, covmodel, covparms)
+baseline_3_spacetime_specify <- function(locs, m, coordinate = NULL, covmodel, covparms)
 {
-  ord         <- order_coordinate(locs, coordinate = 3)
+  ord         <- order_time(locs = locs, coordinate = coordinate)
   locsord     <- locs[ord, , drop = FALSE]
   
   covmat      <- covmodel(locs = locs, covparms = covparms) / covparms[1]
@@ -564,4 +567,104 @@ baseline_3_spacetime_specify <- function(locs, m, covmodel, covparms)
   vecchia.approx  <- list(locsord = locsord, obs = obs, ord = ord, ord.z = ord, ord.pred = 'general', U.prep = U.prep, cond.yz = 'false', ordering = 'coordinate', ordering.method = 'time', conditioning = 'NN', conditioning.method = 'spacetime')
   
   return(vecchia.approx)
+}
+
+
+
+#' @title Straightforward time-based ordering of spatio-temporal locations
+#'
+#' @param locs A matrix of spatio-temporal locations
+#' @param coordinate integer or vector of integers in \code{1,...,d}. At \code{NULL} by default
+#'
+#' @return A vector of indices giving the time-based ordering. If two observations are measured at the same time, then they are ordered with respect to their spatial locations.
+#' 
+#' @export
+#'
+#' @examples
+#' # all random
+#' locs <- matrix(runif(30), 10, 3)
+#' locs[order_coordinate(locs, coordinate = 3), ]
+#' locs[order_time(locs, coordinate = NULL), ] # different
+#' 
+#' # repeated measurement
+#' locs <- matrix(runif(20), 10, 2)
+#' locs <- cbind(locs, sample(1:4, 10, replace = TRUE))
+#' locs[order_coordinate(locs, coordinate = 3), ]
+#' locs[order_time(locs, coordinate = NULL), ] # different
+#' 
+#' # In detail,
+#' locs <- as.matrix(expand.grid(seq(4), seq(4), seq(4)))[sample(4^3), ]
+#' all.equal(do.call(order, data.frame(locs)[, 3:1]), order(locs[, 3], locs[, 2], locs[, 1])) # same
+order_time <- function(locs, coordinate = NULL)
+{
+  d         <- ncol(locs) - 1
+  if(d < 1) stop("The number of columns of the locs must be greater than 1.")
+  
+  if(is.null(coordinate)) {
+    coordinate <- seq(from = d+1, to = 1, by = -1)
+  } else {
+    coordinate <- c(d+1, coordinate)
+    coordinate <- unique(coordinate)
+  }
+  
+  ord <- do.call(order, data.frame(locs)[, coordinate, drop = FALSE]) # If d = 2 and coordinate = c(3, 2, 1), then ord = order(locs[, 3], locs[, 2], locs[, 1])
+  return(ord)
+}
+
+
+#' @title Straightforward time-based ordering of spatio-temporal locations (old version)
+#'
+#' @param locs A matrix of spatio-temporal locations
+#' @param coordinate integer or vector of integers in \code{1,...,d}. At \code{NULL} by default
+#'
+#' @return A vector of indices giving the time-based ordering. If two observations are measured at the same time, then they are ordered with respect to their spatial locations.
+#' 
+#' @export
+#'
+#' @examples
+#' locs <- generate_gp_spacetime(nsim = 1, n = 100, d = 2, t.len = 3, 
+#'                               method.locs = 'all.random', 
+#'                               covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 50, 25))
+#' locs <- locs$sim$sim1$locs
+#' 
+#' all.equal(order_time(locs), order_time_old(locs)) # same
+#' 
+#' locs <- generate_gp_spacetime(nsim = 1, n = 100, d = 2, t.len = 3, 
+#'                               method.locs = 'space.random.time.grid', 
+#'                               covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 50, 25))
+#' locs <- locs$sim$sim1$locs
+#' 
+#' all.equal(order_time(locs), order_time_old(locs)) # same
+#' 
+#' locs <- generate_gp_spacetime(nsim = 1, n = 100, d = 2, t.len = 3, 
+#'                               method.locs = 'all.grid', 
+#'                               covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 50, 25))
+#' locs <- locs$sim$sim1$locs
+#' 
+#' all.equal(order_time(locs), order_time_old(locs)) # same
+#' 
+#' locs <- generate_gp_spacetime(nsim = 1, n = 100, d = 2, t.len = 3, 
+#'                               method.locs = 'satellite', 
+#'                               covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 50, 25))
+#' locs <- locs$sim$sim1$locs
+#' 
+#' all.equal(order_time(locs), order_time_old(locs)) # same
+#' 
+#' # However...
+#' locs <- as.matrix(expand.grid(seq(4), seq(4)))[sample(4^2), ]
+#' all.equal(order_time(locs), order_time_old(locs)) # same
+#' 
+#' locs <- as.matrix(expand.grid(seq(4), seq(4), seq(4)))[sample(4^3), ]
+#' all.equal(order_time(locs), order_time_old(locs)) # different!
+order_time_old <- function(locs, coordinate = NULL)
+{
+  d         <- ncol(locs) - 1
+  if(d < 1) stop("The number of columns of the locs must be greater than 1.")
+  
+  if(is.null(coordinate)) coordinate <- d
+  
+  t.coord <- locs[, d+1]
+  s.coord <- rowSums(locs[, coordinate, drop = FALSE])
+  
+  return( order(t.coord, s.coord) )
 }
