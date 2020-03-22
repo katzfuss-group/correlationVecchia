@@ -56,5 +56,10 @@ list
 Conducting simulation on vecchia approximations for spacetime GPs with known covariance parameters
 }
 \examples{
-1 + 1
+out <- simulate_spacetime_knownCovparms(nsim = 2, n = 10^2, d = 2, 
+                                        t.len = 2, m = 5, 
+                                        method.locs = 'all.random', 
+                                        covmodel = cov_spacetime_expo, 
+                                        covparms = c(1, 0.75, 50, 25))
+out$kls.average
 }

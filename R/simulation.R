@@ -350,7 +350,12 @@ simulate_multivariate_knownCovparms <- function(nsim, n, d, p, m, method.locs, m
 #' @export
 #'
 #' @examples
-#' 1 + 1
+#' out <- simulate_spacetime_knownCovparms(nsim = 2, n = 10^2, d = 2, 
+#'                                         t.len = 2, m = 5, 
+#'                                         method.locs = 'all.random', 
+#'                                         covmodel = cov_spacetime_expo, 
+#'                                         covparms = c(1, 0.75, 50, 25))
+#' out$kls.average
 simulate_spacetime_knownCovparms <- function(nsim, n, d, t.len, m, method.locs, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = TRUE, covmodel, ...)
 {
   time.tot      <- proc.time()
