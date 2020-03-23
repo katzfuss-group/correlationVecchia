@@ -105,7 +105,8 @@ baseline_1_multivariate_specify <- function(locs, m)
         }
       }
       
-      cond.sets[j, ] <- unlist(cond.ind)[order(distance[unlist(cond.ind)])]
+      cond.sets[j, ] <- unlist(cond.ind)[order(rank(distance[unlist(cond.ind)], ties.method = "last"))]
+      # cond.sets[j, ] <- unlist(cond.ind)[order(distance[unlist(cond.ind)])]
     }
   }
   
