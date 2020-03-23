@@ -176,7 +176,7 @@ generate_gp_space <- function(nsim, n, d, p, method.locs, covmodel, method.modif
       covfac        <- factorize(covmat = covmat, pivot = pivot, method = method.modify, tol = tol, return.err = TRUE, verbose = verbose)
       
       y             <- as.numeric(t(covfac$covfactor) %*% noise.full[ind])
-      decomp.err    <- covfac$decomp.err
+      covmat        <- crossprod(covfac$covfactor)  
       
       # sim[[k]] <- ind
       sim[[k]]      <- list(locs = locs, y = y, covmat = covmat, covfac = covfac)
@@ -200,6 +200,7 @@ generate_gp_space <- function(nsim, n, d, p, method.locs, covmodel, method.modif
       ind           <- seq(from = 1 + (k - 1) * n * p, to = k * n * p, by = 1)
       # y <- ind
       y             <- as.numeric(t(covfac$covfactor) %*% noise.full[ind])
+      covmat        <- crossprod(covfac$covfactor)
       
       sim[[k]]      <- list(locs = locs, y = y, covmat = covmat, covfac = covfac)
     }
@@ -350,7 +351,7 @@ generate_gp_spacetime <- function(nsim, n, d, t.len, method.locs, covmodel, meth
     covfac        <- factorize(covmat = covmat, pivot = pivot, method = method.modify, tol = tol, return.err = TRUE, verbose = verbose)
     
     y             <- as.numeric(t(covfac$covfactor) %*% noise.full[ind])
-    decomp.err    <- covfac$decomp.err
+    covmat        <- crossprod(covfac$covfactor)
     
     # sim[[k]] <- ind
     sim[[k]]      <- list(locs = locs, y = y, covmat = covmat, covfac = covfac)
