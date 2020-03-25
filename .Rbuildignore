@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 ^README.Rmd
 ^README-.*\.png$
+^R/output/simulation_knownCovparms\.R$
