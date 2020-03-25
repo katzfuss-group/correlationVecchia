@@ -3,3 +3,4 @@
 ^README.Rmd
 ^README-.*\.png$
 ^R/output/simulation_knownCovparms\.R$
+^R/output/visualization_processes\.R$
