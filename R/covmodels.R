@@ -1112,7 +1112,7 @@ cov_matern_simple <- function(d, nu, alpha = 1, tol = .Machine$double.eps)
   if(any(d.scaled < 0)) stop("distance argument must be nonnegative!")
   d.scaled[d.scaled < tol] <- 1e-10
   
-  const <- (2^(nu - 1)) * gamma(nu) # If not (i.e., const == 1), then covmat --> inf when d.scaled == 0 and nu --> inf.
+  const <- (2^(nu - 1)) * gamma(nu) # If not (i.e., const == 1), then covmat --> inf when d.scaled == 0 and nu --> inf. Employing this constant guarantees that covmat = 1 when d.scaled == 0.
   
   covmat <- d.scaled^nu * besselK(d.scaled, nu = nu) / const
   
