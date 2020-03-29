@@ -2,7 +2,7 @@
 % Please edit documentation in R/covmodels.R
 \name{cov_matern}
 \alias{cov_matern}
-\title{Matern covariance function with smoothness parameter of 2.5}
+\title{Matern covariance function}
 \usage{
 cov_matern(locs, covparms, tol = .Machine$double.eps)
 }
@@ -17,7 +17,7 @@ cov_matern(locs, covparms, tol = .Machine$double.eps)
 A matrix with \code{n} rows and \code{n} columns, with the \code{(i, j)} entry containing the matern covariance between observations \code{locs[i, ]} and \code{locs[j, ]}
 }
 \description{
-Matern covariance function with smoothness parameter of 2.5
+Matern covariance function
 }
 \examples{
 cov_matern(locs = matrix(c(1, 0), 2, 1), covparms = c(1, 1, 2.5))[2, 1]
