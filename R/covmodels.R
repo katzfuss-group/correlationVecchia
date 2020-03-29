@@ -1007,3 +1007,83 @@ cov_spacetime_expo <- function(locs, covparms)
   
   return( covparms[1] / (covparms[3] * u^2 + 1)^covparms[2] * exp(- covparms[4] * h / (covparms[3] * u^2 + 1)^(covparms[2]/2) ) )
 }
+
+
+
+#' @title Squared exponential covariance function
+#'
+#' @param locs A matrix of locations
+#' @param covparms A numerical vector with covariance parameters
+#'
+#' @return A matrix with \code{n} rows and \code{n} columns, with the \code{(i, j)} entry containing the squared exponential covariance between observations \code{locs[i, ]} and \code{locs[j, ]}
+#' 
+#' @export
+#'
+#' @examples
+#' locs <- matrix(runif(10), 5, 2)
+#' all.equal(cov_squared_expo(locs = locs, covparms = c(1, 1)), dnorm(fields::rdist(locs)) * sqrt(2 * pi))
+cov_squared_expo <- function(locs, covparms)
+{
+  D2 <- fields::rdist(x1 = locs, x2 = NULL)^2
+  
+  return( covparms[1] * exp(- D2 / 2 / covparms[2]^2) )
+}
+
+
+
+#' @title Matern covariance function with smoothness parameter of 2.5
+#'
+#' @param locs A matrix of locations
+#' @param covparms A numerical vector with covariance parameters = (sigma2, range)
+#'
+#' @return A matrix with \code{n} rows and \code{n} columns, with the \code{(i, j)} entry containing the matern covariance with smoothness parameter of 2.5 between observations \code{locs[i, ]} and \code{locs[j, ]}
+#' 
+#' @export
+#'
+#' @examples
+#' locs <- matrix(runif(10), 5, 2)
+#' fields::Matern(d = fields::rdist(locs), range = 1, smoothness = 2.5)
+#' cov_matern_2.5(locs, covparms = c(1, 1))
+#' 
+#' locs <- matrix(runif(10), 5, 2)
+#' fields::Matern(d = fields::rdist(locs), range = 1, smoothness = 2.5)
+#' cov_matern_2.5(locs / sqrt(5), covparms = c(1, 1))
+cov_matern_2.5 <- function(locs, covparms)
+{
+  D.scaled <- fields::rdist(x1 = locs, x2 = NULL) / covparms[2]
+  
+  return( covparms[1] * (1 + sqrt(5) * D.scaled + 5/3 * D.scaled^2) * exp(- sqrt(5) * D.scaled) )
+}
+
+
+
+#' @title Matern covariance function with smoothness parameter of 2.5
+#'
+#' @param locs A matrix of locations
+#' @param covparms A numerical vector with covariance parameters = (sigma2, range)
+#' @param tol A numerical tolerance for the damped sine function. At \code{.Machine$double.eps} by default
+#'
+#' @return A matrix with \code{n} rows and \code{n} columns, with the \code{(i, j)} entry containing the matern covariance between observations \code{locs[i, ]} and \code{locs[j, ]}
+#' 
+#' @export
+#'
+#' @examples
+#' cov_matern(locs = matrix(c(1, 0), 2, 1), covparms = c(1, 1, 2.5))[2, 1]
+#' cov_matern_2.5(locs = matrix(c(1, 0), 2, 1), covparms = c(1, 1))[2, 1]
+#' fields::Matern(d = 1, range = 1, nu = 2.5)
+#' fields::Matern(d = sqrt(5), range = 1, nu = 2.5)
+cov_matern <- function(locs, covparms, tol = .Machine$double.eps)
+{
+  D.scaled <- fields::rdist(x1 = locs, x2 = NULL) / covparms[2]
+  
+  if(any(D.scaled < 0)) stop("distance argument must be nonnegative!")
+  D.scaled[D.scaled < tol] <- 1e-10
+  
+  covmat <- covparms[1] * 2^(1-covparms[3]) / gamma(covparms[3]) * (sqrt(2 * covparms[3]) * D.scaled)^covparms[3] * besselK(sqrt(2 * covparms[3]) * D.scaled, nu = covparms[3])
+  diag(covmat) <- covparms[1]
+  
+  return(covmat)
+}
+
+
+
