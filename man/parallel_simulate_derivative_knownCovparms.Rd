@@ -11,7 +11,7 @@ parallel_simulate_derivative_knownCovparms(
   n,
   d,
   covmodel = cov_derivative_matern_2.5_2d,
-  covparms = c(1, 1),
+  covparms = c(1, NA),
   method.locs = "random",
   method.modify = NULL,
   pivot = FALSE,
@@ -32,7 +32,7 @@ parallel_simulate_derivative_knownCovparms(
 
 \item{covmodel}{A covariance function}
 
-\item{covparms}{A numeric vector of covariance parameters}
+\item{covparms}{A numeric vector of covariance parameters = c(sigma2, range = NA)}
 
 \item{method.locs}{random or grid}
 

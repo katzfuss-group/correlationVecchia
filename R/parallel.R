@@ -520,7 +520,7 @@ parallel_simulate_spacetime_knownCovparms <- function(cand.m, nsim, n, d, t.len,
 #' @param n A number of locations
 #' @param d A dimension of domain. It must be 2 for now
 #' @param covmodel A covariance function
-#' @param covparms A numeric vector of covariance parameters 
+#' @param covparms A numeric vector of covariance parameters = c(sigma2, range = NA)
 #' @param method.locs random or grid 
 #' @param method.modify An argument specifying a correction method for the cholesky factorization of a covariance matrix. At \code{NULL} by default.
 #'                      If correction is \code{NULL}, then the built-in R function \code{chol} is used.
@@ -548,7 +548,7 @@ parallel_simulate_spacetime_knownCovparms <- function(cand.m, nsim, n, d, t.len,
 #'                                                   tol = 1e-6)
 #' out$kldiv
 #' }
-parallel_simulate_derivative_knownCovparms <- function(cand.m, cand.r, nsim, n, d, covmodel = cov_derivative_matern_2.5_2d, covparms = c(1, 1), method.locs = 'random', method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+parallel_simulate_derivative_knownCovparms <- function(cand.m, cand.r, nsim, n, d, covmodel = cov_derivative_matern_2.5_2d, covparms = c(1, NA), method.locs = 'random', method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 {
   time.tot <- proc.time()
   
@@ -572,7 +572,7 @@ parallel_simulate_derivative_knownCovparms <- function(cand.m, cand.r, nsim, n, 
   cl                    <- parallel::makeCluster(no_cores)
   
   doParallel::registerDoParallel(cl)
-  sim <- foreach::foreach(m = cand.all$m, r = cand.all$r, .packages = c("correlationVecchia", "GPvecchia")) %dopar% simulate_derivative_knownCovparms(nsim = nsim, n = n, d = d, m = m, method.locs = method.locs, method.modify = method.modify, pivot = pivot, tol = tol, verbose = FALSE, covmodel = covmodel, covparms = c(1, r))
+  sim <- foreach::foreach(m = cand.all$m, r = cand.all$r, .packages = c("correlationVecchia", "GPvecchia")) %dopar% simulate_derivative_knownCovparms(nsim = nsim, n = n, d = d, m = m, method.locs = method.locs, method.modify = method.modify, pivot = pivot, tol = tol, verbose = FALSE, covmodel = covmodel, covparms = c(covparms[1], r))
   parallel::stopCluster(cl)
   
   ### KL divergence
