@@ -19,5 +19,6 @@ Squared exponential covariance function
 }
 \examples{
 locs <- matrix(runif(10), 5, 2)
-all.equal(cov_squared_expo(locs = locs, covparms = c(1, 1)), dnorm(fields::rdist(locs)) * sqrt(2 * pi))
+all.equal(cov_squared_expo(locs = locs, covparms = c(1, 1)), 
+          dnorm(fields::rdist(locs)) * sqrt(2 * pi))
 }

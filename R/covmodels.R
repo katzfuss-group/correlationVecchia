@@ -1021,7 +1021,8 @@ cov_spacetime_expo <- function(locs, covparms)
 #'
 #' @examples
 #' locs <- matrix(runif(10), 5, 2)
-#' all.equal(cov_squared_expo(locs = locs, covparms = c(1, 1)), dnorm(fields::rdist(locs)) * sqrt(2 * pi))
+#' all.equal(cov_squared_expo(locs = locs, covparms = c(1, 1)), 
+#'           dnorm(fields::rdist(locs)) * sqrt(2 * pi))
 cov_squared_expo <- function(locs, covparms)
 {
   D2 <- fields::rdist(x1 = locs, x2 = NULL)^2
