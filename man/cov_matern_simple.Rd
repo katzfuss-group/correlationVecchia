@@ -7,13 +7,13 @@
 cov_matern_simple(d, nu, alpha = 1, tol = .Machine$double.eps)
 }
 \arguments{
+\item{d}{A numeric vector or matrix of distances}
+
 \item{nu}{smootheness parameter}
 
 \item{alpha}{scale = 1/range}
 
 \item{tol}{A numerical tolerance for the damped sine function. At \code{.Machine$double.eps} by default}
-
-\item{locs}{A matrix of locations}
 }
 \value{
 A matrix with \code{n} rows and \code{n} columns, with the \code{(i, j)} entry containing the simplifed matern covariance between observations \code{locs[i, ]} and \code{locs[j, ]}
@@ -23,6 +23,8 @@ Simplifed Matern covariance function
 }
 \examples{
 cov_matern_simple(d = sqrt(5), nu = 2.5, alpha = 1)
-cov_matern(locs = matrix(c(1, 0), 2, 1), 
-           covparms = c(1, 1, 2.5)) * gamma(2.5) * 2^1.5 # see the (2,1)-entry
+cov_matern(locs = matrix(c(1, 0), 2, 1), covparms = c(1, 1, 2.5))
+
+besselK(1, nu = 0.5)
+integrate(function(x) exp(-cosh(x)) * cosh(x/2), lower = 0, upper = 1000)
 }

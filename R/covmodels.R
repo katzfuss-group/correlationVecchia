@@ -1090,7 +1090,7 @@ cov_matern <- function(locs, covparms, tol = .Machine$double.eps)
 
 #' @title Simplifed Matern covariance function
 #'
-#' @param locs A matrix of locations
+#' @param d A numeric vector or matrix of distances
 #' @param nu smootheness parameter
 #' @param alpha scale = 1/range
 #' @param tol A numerical tolerance for the damped sine function. At \code{.Machine$double.eps} by default
@@ -1101,8 +1101,10 @@ cov_matern <- function(locs, covparms, tol = .Machine$double.eps)
 #'
 #' @examples
 #' cov_matern_simple(d = sqrt(5), nu = 2.5, alpha = 1)
-#' cov_matern(locs = matrix(c(1, 0), 2, 1), 
-#'            covparms = c(1, 1, 2.5)) * gamma(2.5) * 2^1.5 # see the (2,1)-entry
+#' cov_matern(locs = matrix(c(1, 0), 2, 1), covparms = c(1, 1, 2.5))
+#' 
+#' besselK(1, nu = 0.5)
+#' integrate(function(x) exp(-cosh(x)) * cosh(x/2), lower = 0, upper = 1000)
 cov_matern_simple <- function(d, nu, alpha = 1, tol = .Machine$double.eps)
 {
   d.scaled <- d * alpha
@@ -1110,7 +1112,13 @@ cov_matern_simple <- function(d, nu, alpha = 1, tol = .Machine$double.eps)
   if(any(d.scaled < 0)) stop("distance argument must be nonnegative!")
   d.scaled[d.scaled < tol] <- 1e-10
   
-  covmat <- d.scaled^nu * besselK(d.scaled, nu = nu)
+  const <- (2^(nu - 1)) * gamma(nu) # If not (i.e., const == 1), then covmat --> inf when d.scaled == 0 and nu --> inf.
+  
+  covmat <- d.scaled^nu * besselK(d.scaled, nu = nu) / const
   
   return(covmat)
 }
+
+
+
+
