@@ -247,3 +247,26 @@ ggplot2::ggsave("spti2_sprand.pdf", vis_sprand, width = 15.2, height = 5.7)
 ggplot2::ggsave("spti2_spgrid.pdf", vis_spgrid, width = 15.2, height = 5.7)
 
 rm(list = ls())
+
+
+### derivative case #############################################################################################
+
+cand.m  <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+cand.r  <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+
+cand.m  <- c(5, 10, 15, 20, 25, 30, 35, 40, 45)
+cand.r  <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+
+out <- parallel_simulate_derivative_knownCovparms(cand.m = cand.m, cand.r = cand.r, nsim = 2, n = 15^2, d = 2, covmodel = cov_derivative_matern_2.5_2d, covparms = c(1, NA), method.locs = "random", method.modify = "eigen-I", pivot = FALSE, tol = 1e-4)
+
+save(out, file = "deriv.RData")
+
+vdat1   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(r == 10) %>% select(-r)
+vdat2   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
+vis     <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+
+ggplot2::ggsave("deriv.pdf", vis, width = 15.2, height = 5.7)
+
+rm(list = ls())
+
+

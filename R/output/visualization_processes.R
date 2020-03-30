@@ -79,3 +79,26 @@ vis.all   <- arrangeGrob(grobs = p1, nrow = 2, ncol = 4)
 p1        <- grid.arrange(vis.all)
 
 ggplot2::ggsave("p1_spacetime.pdf", p1, width = 15.2, height = 5.7)
+
+### derivative case #############################################################################################
+
+cand.r  <- c(1, 2, 3, 4, 5, 6)
+
+locs <- matrix(runif(20), 10, 2)
+
+p1        <- list()
+mypal     <- brewer.pal(10, "RdYlBu")
+mypal     <- mypal[seq(from = length(mypal), to = 1, by = -1)]
+for(i in 1:length(cand.r)) {
+  covmat <- cov_derivative_matern_2.5_2d(locs = locs, covparms = c(1, cand.r[i]))
+  covmat <- 1 - (covmat - min(covmat))/(max(covmat) - min(covmat))
+  p1[[i]]   <- covmat %>% melt() %>% ggplot(aes(x = Var2, y = Var1)) + geom_raster(aes(fill=value)) + theme_void() + theme(legend.position="none", plot.title = element_text(hjust=0.5)) + ggtitle(label = paste0("Distance matrix with range parameter = ", cand.r[i])) + scale_fill_gradientn(colours = mypal, limits = c(0,1))
+}
+
+vis.all   <- arrangeGrob(grobs = p1, nrow = 2, ncol = 3)
+leg       <- get_legend(covmat %>% melt() %>% ggplot(aes(x = Var2, y = Var1)) + geom_raster(aes(fill=value)) +  scale_fill_gradientn(colours = mypal, limits = c(0,1)))
+
+p1        <- grid.arrange(vis.all, leg, nrow = 1, ncol = 2, widths = c(6, 1), heights = c(1))
+
+ggplot2::ggsave("p1_deriv.pdf", p1, width = 15.2, height = 5.7)
+
