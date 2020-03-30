@@ -565,6 +565,7 @@ simulate_derivative_knownCovparms <- function(nsim, n, d, m, method.locs, method
     covmat.modified   <- modify(covmat.modified, pivot = pivot, method = method.modify, tol = tol, return.err = TRUE, verbose = verbose)
     covmat.modified   <- covmat.modified$covmat.modified
     
+    covmat.unitized   <- abs(covmat.modified)
     covmat.unitized   <- (covmat.modified - min(covmat.modified)) / (max(covmat.modified) - min(covmat.modified))
       
     ## specify vecchia approximations
