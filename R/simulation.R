@@ -564,6 +564,8 @@ simulate_derivative_knownCovparms <- function(nsim, n, d, m, method.locs, method
     covmat.modified   <- covmodel(locs = realization$sim[[k]]$locs, ...)
     covmat.modified   <- modify(covmat.modified, pivot = pivot, method = method.modify, tol = tol, return.err = TRUE, verbose = verbose)
     covmat.modified   <- covmat.modified$covmat.modified
+    
+    covmat.unitized   <- (covmat.modified - min(covmat.modified)) / (max(covmat.modified) - min(covmat.modified))
       
     ## specify vecchia approximations
     approx        <- list()
@@ -576,7 +578,7 @@ simulate_derivative_knownCovparms <- function(nsim, n, d, m, method.locs, method
     if(verbose == TRUE) message(paste0("System: The third baseline approximation is accomplished. [", Sys.time(), "]"))
     approx[[4]] <- baseline_4_multivariate_specify(locs = locs, m = m, covmodel = covmodel, ...)
     if(verbose == TRUE) message(paste0("System: The fourth baseline approximation is accomplished. [", Sys.time(), "]"))
-    approx[[5]] <- corrvecchia_specify_knownCovparms(locs = locs.all, m = m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, abs.corr = FALSE, initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat.modified, covparms = max(diag(covmat.modified)))
+    approx[[5]] <- corrvecchia_specify_knownCovparms(locs = locs.all, m = m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, abs.corr = FALSE, initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat.unitized, covparms = c(1))
     if(verbose == TRUE) message(paste0("System: C-Maxmin + C-NN Vecchia approximation is accomplished. [", Sys.time(), "]"))
     
     ## compute approximate covariance matrices
