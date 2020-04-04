@@ -501,23 +501,11 @@ simulate_spacetime_knownCovparms <- function(nsim, n, d, t.len, m, method.locs, 
 #' @export
 #'
 #' @examples
-#' par(mfrow = c(2, 1))
-#' 
-#' locs <- matrix(runif(10), 5, 2)
-#' covmat <- cov_derivative_matern_2.5_2d(locs = locs, covparms = c(1, 0.1))
-#' fields::image.plot(1 - covmat / max(diag(covmat)), main = "distance matrix with range = 0.1")
-#' 
-#' locs <- matrix(runif(10), 5, 2)
-#' covmat <- cov_derivative_matern_2.5_2d(locs = locs, covparms = c(1, 4))
-#' fields::image.plot(1 - covmat / max(diag(covmat)), main = "distance matrix with range = 4")
-#' 
-#' par(mfrow = c(1, 1))
-#' 
 #' out <- simulate_derivative_knownCovparms(nsim = 1, n = 10^2, d = 2, m = 10, 
 #'                                          method.locs = 'random', 
-#'                                          covmodel = cov_derivative_matern_2.5_2d, 
-#'                                          covparms = c(1, 4), pivot = FALSE, 
-#'                                          method.modify = "eigen-I", tol = 1e-6)
+#'                                          covmodel = corr_derivative_matern_2.5_2d, 
+#'                                          covparms = c(1, 0.1), pivot = FALSE, 
+#'                                          method.modify = NULL, tol = .Machine$double.eps)
 #' 
 #' out$kls.average
 simulate_derivative_knownCovparms <- function(nsim, n, d, m, method.locs, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = TRUE, covmodel, ...)
@@ -564,9 +552,6 @@ simulate_derivative_knownCovparms <- function(nsim, n, d, m, method.locs, method
     covmat.modified   <- covmodel(locs = realization$sim[[k]]$locs, ...)
     covmat.modified   <- modify(covmat.modified, pivot = pivot, method = method.modify, tol = tol, return.err = TRUE, verbose = verbose)
     covmat.modified   <- covmat.modified$covmat.modified
-    
-    covmat.unitized   <- abs(covmat.modified)
-    covmat.unitized   <- (covmat.modified - min(covmat.modified)) / (max(covmat.modified) - min(covmat.modified))
       
     ## specify vecchia approximations
     approx        <- list()
@@ -579,7 +564,7 @@ simulate_derivative_knownCovparms <- function(nsim, n, d, m, method.locs, method
     if(verbose == TRUE) message(paste0("System: The third baseline approximation is accomplished. [", Sys.time(), "]"))
     approx[[4]] <- baseline_4_multivariate_specify(locs = locs, m = m, covmodel = covmodel, ...)
     if(verbose == TRUE) message(paste0("System: The fourth baseline approximation is accomplished. [", Sys.time(), "]"))
-    approx[[5]] <- corrvecchia_specify_knownCovparms(locs = locs.all, m = m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, abs.corr = FALSE, initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat.unitized, covparms = c(1))
+    approx[[5]] <- corrvecchia_specify_knownCovparms(locs = locs.all, m = m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, abs.corr = FALSE, initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat.modified, covparms = c(1))
     if(verbose == TRUE) message(paste0("System: C-Maxmin + C-NN Vecchia approximation is accomplished. [", Sys.time(), "]"))
     
     ## compute approximate covariance matrices

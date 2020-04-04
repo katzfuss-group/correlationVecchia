@@ -53,23 +53,11 @@ list
 Conducting simulation on vecchia approximations for (GP, dGP/dx, dGP/dy) with known covariance parameters
 }
 \examples{
-par(mfrow = c(2, 1))
-
-locs <- matrix(runif(10), 5, 2)
-covmat <- cov_derivative_matern_2.5_2d(locs = locs, covparms = c(1, 0.1))
-fields::image.plot(1 - covmat / max(diag(covmat)), main = "distance matrix with range = 0.1")
-
-locs <- matrix(runif(10), 5, 2)
-covmat <- cov_derivative_matern_2.5_2d(locs = locs, covparms = c(1, 4))
-fields::image.plot(1 - covmat / max(diag(covmat)), main = "distance matrix with range = 4")
-
-par(mfrow = c(1, 1))
-
 out <- simulate_derivative_knownCovparms(nsim = 1, n = 10^2, d = 2, m = 10, 
                                          method.locs = 'random', 
-                                         covmodel = cov_derivative_matern_2.5_2d, 
-                                         covparms = c(1, 4), pivot = FALSE, 
-                                         method.modify = "eigen-I", tol = 1e-6)
+                                         covmodel = corr_derivative_matern_2.5_2d, 
+                                         covparms = c(1, 0.1), pivot = FALSE, 
+                                         method.modify = NULL, tol = .Machine$double.eps)
 
 out$kls.average
 }
