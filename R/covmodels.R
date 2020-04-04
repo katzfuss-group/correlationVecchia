@@ -1216,7 +1216,106 @@ cov_derivative_matern_2.5_2d <- function(locs, covparms, tol = .Machine$double.e
 
 
 
-
+#' @title Matern correlation matrix of (GP, dGP/dx, dGP/dy) with respect to the smoothness parameter of 2.5 in 2 - dimensional domain
+#'
+#' @param locs A matrix of locations
+#' @param covparms A numerical vector with covariance parameters = c(sigma2, range)
+#' @param tol A numerical tolerance for the damped sine function. At \code{.Machine$double.eps} by default
+#'
+#' @return A matrix with \code{3*n} rows and \code{3*n} columns
+#' 
+#' @export
+#'
+#' @examples
+#' locs <- matrix(runif(6), 3, 2)
+#' covparms <- c(1, 0.1)
+#' coord <- 1
+#' tol <- .Machine$double.eps
+#' 
+#' cormat <- corr_derivative_matern_2.5_2d(locs = locs, covparms = covparms, tol = tol)
+#' 
+#' eigen(cormat)$values
+#' 
+#' fields::image.plot(cormat)
+corr_derivative_matern_2.5_2d <- function(locs, covparms, tol = .Machine$double.eps)
+{
+  if(is.list(locs)) locs <- locs[[1]]
+  
+  if(ncol(locs) != 2) stop("This function is only for 2-dimensional domain.")
+  
+  n         <- nrow(locs)
+  cormat    <- matrix(NA, nrow = 3 * n, ncol = 3 * n)
+  
+  ## If covmat is a blockwise matrix, then ...
+  
+  # (1, 1) - block = cov(GP, GP)
+  cormat[1:n, 1:n] <- cov_matern_2.5(locs = locs, covparms = covparms)
+  
+  # (2, 1) - block = cov(dGP/dx, GP)
+  cormat[1:n + n, 1:n] <- .partial_cov_matern_2.5(locs, covparms, coord = 1, tol = tol)
+  
+  # (3, 1) - block = cov(dGP/dy, GP)
+  cormat[1:n + 2*n, 1:n] <- .partial_cov_matern_2.5(locs, covparms, coord = 2, tol = tol)
+  
+  # (1, 2) - block = cov(GP, dGP/dx) = t( cov(dGP/dx, GP) )
+  cormat[1:n, 1:n + n] <- t( cormat[1:n + n, 1:n] )
+  
+  # (2, 2) - block = cov(dGP/dx, dGP/dx)
+  cormat[1:n + n, 1:n + n] <- .double_partial_cov_matern_2.5(locs = locs, covparms = covparms, coord = 1, tol = tol)
+  
+  # (3, 2) - block = cov(dGP/dy, dGP/dx)
+  cormat[1:n + 2*n, 1:n + n] <- .crossdouble_partial_cov_matern_2.5(locs = locs, covparms = covparms, tol = tol)
+  
+  # (1, 3) - block = cov(GP, dGP/dy) = t( cov(dGP/dy, GP) )
+  cormat[1:n, 1:n + 2*n] <- t( cormat[1:n + 2*n, 1:n] )
+  
+  # (2, 3) - block = cov(dGP/dx, dGP/dy) = t( cov(dGP/dy, dGP/dx) )
+  cormat[1:n + n, 1:n + 2*n] <- t( cormat[1:n + 2*n, 1:n + n] )
+  
+  # (3, 3) - block = cov(dGP/dy, dGP/dy)
+  cormat[1:n + 2*n, 1:n + 2*n] <- .double_partial_cov_matern_2.5(locs = locs, covparms = covparms, coord = 2, tol = tol)
+  
+  # sigma.gp / sigma.dxgp / sigma.dygp
+  sigma.gp    <- sqrt(cormat[1, 1])
+  sigma.dxgp  <- sqrt(cormat[1 + n, 1 + n])
+  sigma.dygp  <- sqrt(cormat[1 + 2*n, 1 + 2*n])
+  
+  if(sigma.gp == 0) stop("Diagonal entries of the covariance matrix of the GP is zero!")
+  if(sigma.dxgp == 0) stop("Diagonal entries of the covariance matrix of the dGP/dx is zero!")
+  if(sigma.dygp == 0) stop("Diagonal entries of the covariance matrix of the dGP/dy is zero!")
+  
+  ## corr ...
+  
+  # (1, 1) - block
+  cormat[1:n, 1:n] <- cormat[1:n, 1:n] / sigma.gp^2
+  
+  # (2, 1) - block
+  cormat[1:n + n, 1:n] <- cormat[1:n + n, 1:n] / sigma.gp / sigma.dxgp
+  
+  # (3, 1) - block 
+  cormat[1:n + 2*n, 1:n] <- cormat[1:n + 2*n, 1:n] / sigma.gp / sigma.dygp
+  
+  # (1, 2) - block 
+  cormat[1:n, 1:n + n] <- cormat[1:n, 1:n + n] / sigma.gp / sigma.dxgp
+  
+  # (2, 2) - block
+  cormat[1:n + n, 1:n + n] <- cormat[1:n + n, 1:n + n] / sigma.dxgp^2
+  
+  # (3, 2) - block
+  cormat[1:n + 2*n, 1:n + n] <- cormat[1:n + 2*n, 1:n + n] / sigma.dygp / sigma.dxgp
+  
+  # (1, 3) - block
+  cormat[1:n, 1:n + 2*n] <- cormat[1:n, 1:n + 2*n] / sigma.gp / sigma.dygp
+  
+  # (2, 3) - block
+  cormat[1:n + n, 1:n + 2*n] <- cormat[1:n + n, 1:n + 2*n] / sigma.dxgp / sigma.dygp
+  
+  # (3, 3) - block
+  cormat[1:n + 2*n, 1:n + 2*n] <- cormat[1:n + 2*n, 1:n + 2*n] / sigma.dygp^2
+  
+  ## return
+  return(cormat)
+}
 
 
 
