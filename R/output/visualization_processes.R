@@ -82,7 +82,7 @@ ggplot2::ggsave("p1_spacetime.pdf", p1, width = 15.2, height = 5.7)
 
 ### derivative case #############################################################################################
 
-cand.r  <- c(1, 2, 3, 4, 5, 6)
+cand.r  <- c(0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0)
 
 locs <- matrix(runif(20), 10, 2)
 
@@ -90,32 +90,92 @@ p1        <- list()
 mypal     <- brewer.pal(10, "RdYlBu")
 mypal     <- mypal[seq(from = length(mypal), to = 1, by = -1)]
 for(i in 1:length(cand.r)) {
-  covmat <- cov_derivative_matern_2.5_2d(locs = locs, covparms = c(1, cand.r[i]))
-  covmat <- 1 - (covmat - min(covmat))/(max(covmat) - min(covmat))
-  p1[[i]]   <- covmat %>% melt() %>% ggplot(aes(x = Var2, y = Var1)) + geom_raster(aes(fill=value)) + theme_void() + theme(legend.position="none", plot.title = element_text(hjust=0.5)) + ggtitle(label = paste0("Distance matrix with range parameter = ", cand.r[i])) + scale_fill_gradientn(colours = mypal, limits = c(0,1))
+  cormat <- corr_derivative_matern_2.5_2d(locs = locs, covparms = c(1, cand.r[i])) ; diag(cormat) <- 1
+  p1[[i]]   <- cormat %>% melt() %>% ggplot(aes(x = Var2, y = Var1)) + geom_raster(aes(fill=value)) + theme_void() + theme(legend.position="none", plot.title = element_text(hjust=0.5)) + ggtitle(label = paste0("Distance matrix with range parameter = ", cand.r[i])) + scale_fill_gradientn(colours = mypal, limits = c(-1,1))
 }
 
-vis.all   <- arrangeGrob(grobs = p1, nrow = 2, ncol = 3)
-leg       <- get_legend(covmat %>% melt() %>% ggplot(aes(x = Var2, y = Var1)) + geom_raster(aes(fill=value)) +  scale_fill_gradientn(colours = mypal, limits = c(0,1)))
+vis.all   <- arrangeGrob(grobs = p1, nrow = 2, ncol = 4)
+leg       <- get_legend(cormat %>% melt() %>% ggplot(aes(x = Var2, y = Var1)) + geom_raster(aes(fill=value)) +  scale_fill_gradientn(colours = mypal, limits = c(-1,1)))
 
-p1        <- grid.arrange(vis.all, leg, nrow = 1, ncol = 2, widths = c(6, 1), heights = c(1))
+p1        <- grid.arrange(vis.all, leg, nrow = 1, ncol = 2, widths = c(9, 1), heights = c(1))
 
 ggplot2::ggsave("p1_deriv.pdf", p1, width = 15.2, height = 5.7)
+
 
 p2        <- list()
 mypal     <- brewer.pal(10, "RdYlBu")
 mypal     <- mypal[seq(from = length(mypal), to = 1, by = -1)]
 for(i in 1:length(cand.r)) {
-  covmat <- cov_derivative_matern_2.5_2d(locs = locs, covparms = c(1, cand.r[i]))
-  covmat <- abs(covmat)
-  covmat <- 1 - (covmat - min(covmat))/(max(covmat) - min(covmat))
-  p2[[i]]   <- covmat %>% melt() %>% ggplot(aes(x = Var2, y = Var1)) + geom_raster(aes(fill=value)) + theme_void() + theme(legend.position="none", plot.title = element_text(hjust=0.5)) + ggtitle(label = paste0("Distance matrix with range parameter = ", cand.r[i])) + scale_fill_gradientn(colours = mypal, limits = c(0,1))
+  cormat <- corr_derivative_matern_2.5_2d(locs = locs, covparms = c(1, cand.r[i])) ; diag(cormat) <- 1
+  cormat <- abs(cormat)
+  p2[[i]]   <- cormat %>% melt() %>% ggplot(aes(x = Var2, y = Var1)) + geom_raster(aes(fill=value)) + theme_void() + theme(legend.position="none", plot.title = element_text(hjust=0.5)) + ggtitle(label = paste0("Distance matrix with range parameter = ", cand.r[i])) + scale_fill_gradientn(colours = mypal, limits = c(-1,1))
 }
 
-vis.all   <- arrangeGrob(grobs = p2, nrow = 2, ncol = 3)
-leg       <- get_legend(covmat %>% melt() %>% ggplot(aes(x = Var2, y = Var1)) + geom_raster(aes(fill=value)) +  scale_fill_gradientn(colours = mypal, limits = c(0,1)))
+vis.all   <- arrangeGrob(grobs = p2, nrow = 2, ncol = 4)
+leg       <- get_legend(cormat %>% melt() %>% ggplot(aes(x = Var2, y = Var1)) + geom_raster(aes(fill=value)) +  scale_fill_gradientn(colours = mypal, limits = c(-1,1)))
 
-p2        <- grid.arrange(vis.all, leg, nrow = 1, ncol = 2, widths = c(6, 1), heights = c(1))
+p2        <- grid.arrange(vis.all, leg, nrow = 1, ncol = 2, widths = c(9, 1), heights = c(1))
 
 ggplot2::ggsave("p2_deriv.pdf", p2, width = 15.2, height = 5.7)
 
+
+par(mfrow = c(1, 2))
+
+locs <- seq(from = 0, to = 0.6, by = 0.01)
+locs <- matrix(locs, nrow = length(locs), ncol = 1)
+locs <- cbind(locs, 0)
+
+covparms = c(1, 0.1)
+
+covvec.gp <- correlationVecchia::cov_matern_2.5(locs = locs, covparms = covparms)[1, ]
+covvec.dgp <- correlationVecchia:::.partial_cov_matern_2.5(locs = locs, covparms = covparms, coord = 1)[1, ]
+covvec.d2gp <- correlationVecchia:::.double_partial_cov_matern_2.5(locs = locs, covparms = covparms, coord = 1)[1, ]
+
+plot(locs[, 1], covvec.gp, ylim = c(-40, 170), type = 'l', col = 'black', xlab = 'distance', ylab = 'cov', lwd = 2)
+lines(locs[, 1], covvec.dgp, col = 'red', lwd = 2)
+lines(locs[, 1], covvec.d2gp, col = 'blue', lwd = 2)
+abline(h = 0, v = 0, col = 'gray', lwd = 2)
+legend("topright", legend = c("cov(GP, GP)", "cov(GP', GP)", "cov(GP', GP')"), lty = 1, lwd = 2, col = c("black", "red", "blue"))
+
+corvec.gp <- covvec.gp / covvec.gp[1]
+corvec.dgp <- covvec.dgp / sqrt(covvec.gp[1] * covvec.d2gp[1])
+corvec.d2gp <- covvec.d2gp / covvec.d2gp[1]
+
+plot(locs[, 1], corvec.gp, ylim = c(-0.5, 1), type = 'l', col = 'black', xlab = 'distance', ylab = 'corr', lwd = 2)
+lines(locs[, 1], corvec.dgp, col = 'red', lwd = 2)
+lines(locs[, 1], corvec.d2gp, col = 'blue', lwd = 2)
+abline(h = 0, v = 0, col = 'gray', lwd = 2)
+legend("topright", legend = c("corr(GP, GP)", "corr(GP', GP)", "corr(GP', GP')"), lty = 1, lwd = 2, col = c("black", "red", "blue"))
+
+par(mfrow = c(1, 1))
+
+
+par(mfrow = c(1, 2))
+
+locs <- seq(from = 0, to = 3, by = 0.1)
+locs <- matrix(locs, nrow = length(locs), ncol = 1)
+locs <- cbind(locs, 0)
+
+covparms = c(1, 1)
+
+covvec.gp <- correlationVecchia::cov_matern_2.5(locs = locs, covparms = covparms)[1, ]
+covvec.dgp <- correlationVecchia:::.partial_cov_matern_2.5(locs = locs, covparms = covparms, coord = 1)[1, ]
+covvec.d2gp <- correlationVecchia:::.double_partial_cov_matern_2.5(locs = locs, covparms = covparms, coord = 1)[1, ]
+
+plot(locs[, 1], covvec.gp, ylim = c(-0.5, 1.7), type = 'l', col = 'black', xlab = 'distance', ylab = 'cov', lwd = 2)
+lines(locs[, 1], covvec.dgp, col = 'red', lwd = 2)
+lines(locs[, 1], covvec.d2gp, col = 'blue', lwd = 2)
+abline(h = 0, v = 0, col = 'gray', lwd = 2)
+legend("topright", legend = c("cov(GP, GP)", "cov(GP', GP)", "cov(GP', GP')"), lty = 1, lwd = 2, col = c("black", "red", "blue"))
+
+corvec.gp <- covvec.gp / covvec.gp[1]
+corvec.dgp <- covvec.dgp / sqrt(covvec.gp[1] * covvec.d2gp[1])
+corvec.d2gp <- covvec.d2gp / covvec.d2gp[1]
+
+plot(locs[, 1], corvec.gp, ylim = c(-0.5, 1), type = 'l', col = 'black', xlab = 'distance', ylab = 'corr', lwd = 2)
+lines(locs[, 1], corvec.dgp, col = 'red', lwd = 2)
+lines(locs[, 1], corvec.d2gp, col = 'blue', lwd = 2)
+abline(h = 0, v = 0, col = 'gray', lwd = 2)
+legend("topright", legend = c("corr(GP, GP)", "corr(GP', GP)", "corr(GP', GP')"), lty = 1, lwd = 2, col = c("black", "red", "blue"))
+
+par(mfrow = c(1, 1))

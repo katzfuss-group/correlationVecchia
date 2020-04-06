@@ -251,17 +251,27 @@ rm(list = ls())
 
 ### derivative case #############################################################################################
 
-cand.m  <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
-cand.r  <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+# cand.m  <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+# cand.r  <- c(0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0)
 
 cand.m  <- c(5, 10, 15, 20, 25, 30, 35, 40, 45)
-cand.r  <- c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+cand.r  <- c(0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0)
 
-out <- parallel_simulate_derivative_knownCovparms(cand.m = cand.m, cand.r = cand.r, nsim = 2, n = 15^2, d = 2, covmodel = cov_derivative_matern_2.5_2d, covparms = c(1, NA), method.locs = "random", method.modify = "eigen-I", pivot = FALSE, tol = 1e-4)
+# cand.m  <- c(10, 20, 30, 40)
+# cand.r  <- c(0.1, 1.0)
+
+# cand.m  <- c(10, 20, 30, 40)
+# cand.r  <- c(0.1, 0.3, 0.5, 0.7, 0.9, 1.0)
+
+cand.m  <- c(5, 10, 15, 20, 25, 30, 35, 40, 45)
+cand.r  <- c(0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75)
+
+
+out <- parallel_simulate_derivative_knownCovparms(cand.m = cand.m, cand.r = cand.r, nsim = 2, n = 20^2, d = 2, covmodel = corr_derivative_matern_2.5_2d, covparms = c(1, NA), method.locs = "random", method.modify = "eigen-I", pivot = FALSE, tol = 1e-6)
 
 save(out, file = "deriv.RData")
 
-vdat1   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(r == 10) %>% select(-r)
+vdat1   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(r == 0.1) %>% select(-r)
 vdat2   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
 vis     <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
