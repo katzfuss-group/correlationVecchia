@@ -477,7 +477,7 @@ simulate_spacetime_knownCovparms <- function(nsim, n, d, t.len, m, method.locs, 
 
 
 
-#' @title Conducting simulation on vecchia approximations for (GP, dGP/dx, dGP/dy) with known covariance parameters
+#' @title Conducting simulation on vecchia approximations for (GP, dGP/dx1 dGP/dx2) with known covariance parameters
 #'
 #' @param nsim A number of realizations of the GP
 #' @param n A number of locations
@@ -501,17 +501,27 @@ simulate_spacetime_knownCovparms <- function(nsim, n, d, t.len, m, method.locs, 
 #' @export
 #'
 #' @examples
-#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 10^2, d = 2, m = 10, 
-#'                                          method.locs = 'random', 
-#'                                          covmodel = corr_derivative_matern_2.5_2d, 
-#'                                          covparms = c(1, 0.1), pivot = FALSE, 
-#'                                          method.modify = NULL, tol = .Machine$double.eps)
-#' 
+#' \dontrun{
+#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, method.locs = 'random', covmodel = corr_derivative_matern_2.5_1d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
 #' out$kls.average
+#' 
+#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, method.locs = 'random', covmodel = corr_derivative_matern_2.5_2d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+#' out$kls.average
+#' 
+#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, method.locs = 'random', covmodel = corr_derivative_matern_4.5_1d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+#' out$kls.average
+#' 
+#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, method.locs = 'random', covmodel = corr_derivative_matern_4.5_2d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+#' out$kls.average
+#' 
+#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, method.locs = 'random', covmodel = corr_derivative_squared_expo_1d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+#' out$kls.average
+#' 
+#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, method.locs = 'random', covmodel = corr_derivative_squared_expo_2d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+#' out$kls.average
+#' }
 simulate_derivative_knownCovparms <- function(nsim, n, d, m, method.locs, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = TRUE, covmodel, ...)
 {
-  if(d != 2) stop("The dimension of the domain must be 2 for now.")
-  
   time.tot      <- proc.time()
   time.sim      <- list()
   time.gen      <- proc.time()
@@ -547,8 +557,12 @@ simulate_derivative_knownCovparms <- function(nsim, n, d, m, method.locs, method
     }
     
     ## basic information
-    locs              <- list(locs1 = realization$sim[[k]]$locs, locs2 = realization$sim[[k]]$locs, locs3 = realization$sim[[k]]$locs)
+    if(d == 1) locs <- list(locs1 = realization$sim[[k]]$locs, locs2 = realization$sim[[k]]$locs)
+    if(d == 2) locs <- list(locs1 = realization$sim[[k]]$locs, locs2 = realization$sim[[k]]$locs, locs3 = realization$sim[[k]]$locs)
+    if(d  > 2) stop("Not yet!")
+    
     locs.all          <- do.call(rbind, locs)
+    
     covmat.modified   <- covmodel(locs = realization$sim[[k]]$locs, ...)
     covmat.modified   <- modify(covmat.modified, pivot = pivot, method = method.modify, tol = tol, return.err = TRUE, verbose = verbose)
     covmat.modified   <- covmat.modified$covmat.modified
