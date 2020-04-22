@@ -1640,3 +1640,234 @@ corr_derivative_matern_4.5_2d <- function(locs, covparms, tol = .Machine$double.
   return( const * xterm * yterm * polyq * exp(- sqrt(5) * D.scaled) )
 }
 
+
+
+#' @title Squared exponential covariance matrix of (GP, dGP/dx) in 1-dimensional domain
+#'
+#' @param locs A matrix of locations
+#' @param covparms A numerical vector with covariance parameters = c(sigma2, range)
+#' @param tol A numerical tolerance for the damped sine function. At \code{.Machine$double.eps} by default
+#'
+#' @return A matrix with \code{2*n} rows and \code{2*n} columns
+#' 
+#' @export
+#'
+#' @examples
+#' locs <- matrix(runif(4), 4, 1)
+#' covparms <- c(1, 0.1)
+#' tol <- .Machine$double.eps
+#' 
+#' M <- cov_derivative_squared_expo_1d(locs, covparms, tol)
+#' 
+#' t(M) == M # M is symmetric
+#' eigen(M)$values # M is positive definite
+cov_derivative_squared_expo_1d <- function(locs, covparms, tol = .Machine$double.eps)
+{
+  if(is.list(locs)) locs <- locs[[1]]
+  
+  if(ncol(locs) != 1) stop("This function is only for 1-dimensional domain.")
+  
+  n         <- nrow(locs)
+  covmat    <- matrix(NA, nrow = 2 * n, ncol = 2 * n)
+  
+  ## If covmat is a blockwise matrix, then ...
+  
+  # (1, 1) - block = cov(GP, GP)
+  covmat[1:n, 1:n] <- cov_squared_expo(locs = locs, covparms = covparms)
+  
+  # (1, 2) - block = cov(GP, GP')
+  covmat[1:n, 1:n + n] <- - .partial_cov_squared_expo(locs = locs, covparms = covparms, coord = c(1), tol = tol)
+  
+  # (2, 1) - block = cov(GP', GP)
+  covmat[1:n + n, 1:n] <- .partial_cov_squared_expo(locs = locs, covparms = covparms, coord = c(1), tol = tol)
+  
+  # (2, 2) - block = cov(GP', GP')
+  covmat[1:n + n, 1:n + n] <- .double_partial_cov_squared_expo(locs = locs, covparms = covparms, coord = c(1), tol = tol)
+  
+  return(covmat)
+}
+
+
+
+#' @title Squared exponential correlation matrix of (GP, dGP/dx) in 1-dimensional domain
+#'
+#' @param locs A matrix of locations
+#' @param covparms A numerical vector with covariance parameters = c(sigma2, range)
+#' @param tol A numerical tolerance for the damped sine function. At \code{.Machine$double.eps} by default
+#'
+#' @return A matrix with \code{2*n} rows and \code{2*n} columns
+#' 
+#' @export
+#'
+#' @examples
+#' locs <- matrix(runif(4), 4, 1)
+#' covparms <- c(1, 0.1)
+#' tol <- .Machine$double.eps
+#' 
+#' M <- corr_derivative_squared_expo_1d(locs, covparms, tol)
+#' 
+#' t(M) == M # M is symmetric
+#' eigen(M)$values # M is positive definite
+corr_derivative_squared_expo_1d <- function(locs, covparms, tol = .Machine$double.eps)
+{
+  # covariance matrix
+  n           <- nrow(locs)
+  cormat      <- cov_derivative_squared_expo_1d(locs = locs, covparms = covparms, tol = tol)
+  
+  # sigma.gp / sigma.dxgp
+  sigma.gp    <- sqrt(cormat[1, 1])
+  sigma.dxgp  <- sqrt(cormat[1 + n, 1 + n])
+  
+  if(sigma.gp == 0) stop("Diagonal entries of the covariance matrix of the GP is zero!")
+  if(sigma.dxgp == 0) stop("Diagonal entries of the covariance matrix of the dGP/dx is zero!")
+  
+  cormat[1:n, 1:n] <- cormat[1:n, 1:n] / sigma.gp^2
+  cormat[1:n, 1:n + n] <- cormat[1:n, 1:n + n] / sigma.gp / sigma.dxgp
+  cormat[1:n + n, 1:n] <- cormat[1:n + n, 1:n] / sigma.gp / sigma.dxgp
+  cormat[1:n + n, 1:n + n] <- cormat[1:n + n, 1:n + n] / sigma.dxgp^2
+  
+  return(cormat)
+}
+
+
+
+#' @title Squared exponential covariance matrix of (GP, dGP/dx1, dGP/dx2) in 2-dimensional domain
+#'
+#' @param locs A matrix of locations
+#' @param covparms A numerical vector with covariance parameters = c(sigma2, range)
+#' @param tol A numerical tolerance for the damped sine function. At \code{.Machine$double.eps} by default
+#'
+#' @return A matrix with \code{3*n} rows and \code{3*n} columns
+#' 
+#' @export
+#'
+#' @examples
+#' locs <- matrix(runif(8), 4, 2)
+#' covparms <- c(1, 0.1)
+#' tol <- .Machine$double.eps
+#' 
+#' M <- cov_derivative_squared_expo_2d(locs = locs, covparms = covparms, tol = tol)
+#' 
+#' t(M) == M # M is symmetric
+#' eigen(M)$values # M is positive definite
+cov_derivative_squared_expo_2d <- function(locs, covparms, tol = .Machine$double.eps)
+{
+  if(is.list(locs)) locs <- locs[[1]]
+  
+  if(ncol(locs) != 2) stop("This function is only for 2-dimensional domain.")
+  
+  n         <- nrow(locs)
+  covmat    <- matrix(NA, nrow = 3 * n, ncol = 3 * n)
+  
+  ## If covmat is a blockwise matrix, then ...
+  
+  # (1, 1) - block = cov(GP, GP)
+  covmat[1:n, 1:n] <- cov_squared_expo(locs = locs, covparms = covparms)
+  
+  # (2, 1) - block = cov(dGP/dx, GP)
+  covmat[1:n + n, 1:n] <- .partial_cov_squared_expo(locs, covparms, coord = 1, tol = tol)
+  
+  # (3, 1) - block = cov(dGP/dy, GP)
+  covmat[1:n + 2*n, 1:n] <- .partial_cov_squared_expo(locs, covparms, coord = 2, tol = tol)
+  
+  # (1, 2) - block = cov(GP, dGP/dx) = t( cov(dGP/dx, GP) )
+  covmat[1:n, 1:n + n] <- - covmat[1:n + n, 1:n]
+  
+  # (2, 2) - block = cov(dGP/dx, dGP/dx)
+  covmat[1:n + n, 1:n + n] <- .double_partial_cov_squared_expo(locs = locs, covparms = covparms, coord = 1, tol = tol)
+  
+  # (3, 2) - block = cov(dGP/dy, dGP/dx)
+  covmat[1:n + 2*n, 1:n + n] <- .crossdouble_partial_cov_squared_expo(locs = locs, covparms = covparms, tol = tol)
+  
+  # (1, 3) - block = cov(GP, dGP/dy) = t( cov(dGP/dy, GP) )
+  covmat[1:n, 1:n + 2*n] <- - covmat[1:n + 2*n, 1:n]
+  
+  # (2, 3) - block = cov(dGP/dx, dGP/dy) = t( cov(dGP/dy, dGP/dx) )
+  covmat[1:n + n, 1:n + 2*n] <- covmat[1:n + 2*n, 1:n + n]
+  
+  # (3, 3) - block = cov(dGP/dy, dGP/dy)
+  covmat[1:n + 2*n, 1:n + 2*n] <- .double_partial_cov_squared_expo(locs = locs, covparms = covparms, coord = 2, tol = tol)
+  
+  return(covmat)
+}
+
+
+
+#' @title Squared exponential correlation matrix of (GP, dGP/dx1, dGP/dx2) in 2-dimensional domain
+#'
+#' @param locs A matrix of locations
+#' @param covparms A numerical vector with covariance parameters = c(sigma2, range)
+#' @param tol A numerical tolerance for the damped sine function. At \code{.Machine$double.eps} by default
+#'
+#' @return A matrix with \code{3*n} rows and \code{3*n} columns
+#' 
+#' @export
+#'
+#' @examples
+#' locs <- matrix(runif(8), 4, 2)
+#' covparms <- c(1, 0.1)
+#' tol <- .Machine$double.eps
+#' 
+#' M <- corr_derivative_squared_expo_2d(locs = locs, covparms = covparms, tol = tol)
+#' 
+#' t(M) == M # M is symmetric
+#' eigen(M)$values # M is positive definite
+corr_derivative_squared_expo_2d <- function(locs, covparms, tol = .Machine$double.eps)
+{
+  # covariance matrix
+  n           <- nrow(locs)
+  cormat      <- cov_derivative_squared_expo_2d(locs = locs, covparms = covparms, tol = tol)
+  
+  # sigma.gp / sigma.dxgp / sigma.dygp
+  sigma.gp    <- sqrt(cormat[1, 1])
+  sigma.dxgp  <- sqrt(cormat[1 + n, 1 + n])
+  sigma.dygp  <- sqrt(cormat[1 + 2*n, 1 + 2*n])
+  
+  if(sigma.gp == 0) stop("Diagonal entries of the covariance matrix of the GP is zero!")
+  if(sigma.dxgp == 0) stop("Diagonal entries of the covariance matrix of the dGP/dx1 is zero!")
+  if(sigma.dygp == 0) stop("Diagonal entries of the covariance matrix of the dGP/dx2 is zero!")
+  
+  cormat[1:n, 1:n] <- cormat[1:n, 1:n] / sigma.gp^2
+  cormat[1:n + n, 1:n] <- cormat[1:n + n, 1:n] / sigma.gp / sigma.dxgp
+  cormat[1:n + 2*n, 1:n] <- cormat[1:n + 2*n, 1:n] / sigma.gp / sigma.dygp
+  cormat[1:n, 1:n + n] <- cormat[1:n, 1:n + n] / sigma.gp / sigma.dxgp
+  cormat[1:n + n, 1:n + n] <- cormat[1:n + n, 1:n + n] / sigma.dxgp^2
+  cormat[1:n + 2*n, 1:n + n] <- cormat[1:n + 2*n, 1:n + n] / sigma.dygp / sigma.dxgp
+  cormat[1:n, 1:n + 2*n] <- cormat[1:n, 1:n + 2*n] / sigma.gp / sigma.dygp
+  cormat[1:n + n, 1:n + 2*n] <- cormat[1:n + n, 1:n + 2*n] / sigma.dxgp / sigma.dygp
+  cormat[1:n + 2*n, 1:n + 2*n] <- cormat[1:n + 2*n, 1:n + 2*n] / sigma.dygp^2
+  
+  ## return
+  return(cormat)
+}
+
+.partial_cov_squared_expo <- function(locs, covparms, coord, tol = .Machine$double.eps)
+{
+  D.scaled  <- fields::rdist(x1 = locs, x2 = NULL) / covparms[2]
+  
+  const     <- - covparms[1] / covparms[2]^2
+  xterm     <- matrix(locs[, coord], nrow = nrow(locs), ncol = nrow(locs), byrow = FALSE) - matrix(locs[, coord], nrow = nrow(locs), ncol = nrow(locs), byrow = TRUE)
+  
+  return( const * xterm * exp(- 0.5 * D.scaled^2) )
+}
+
+.double_partial_cov_squared_expo <- function(locs, covparms, coord, tol = .Machine$double.eps)
+{
+  D.scaled  <- fields::rdist(x1 = locs, x2 = NULL) / covparms[2]
+  
+  const     <- covparms[1] / covparms[2]^2
+  xterm     <- matrix(locs[, coord], nrow = nrow(locs), ncol = nrow(locs), byrow = FALSE) - matrix(locs[, coord], nrow = nrow(locs), ncol = nrow(locs), byrow = TRUE)
+  
+  return( const * (1 - (xterm / covparms[2])^2) * exp(- 0.5 * D.scaled^2) )
+}
+
+.crossdouble_partial_cov_squared_expo <- function(locs, covparms, tol = .Machine$double.eps)
+{
+  D.scaled  <- fields::rdist(x1 = locs, x2 = NULL) / covparms[2]
+  
+  const     <- - covparms[1] / covparms[2]^4
+  xterm     <- matrix(locs[, 1], nrow = nrow(locs), ncol = nrow(locs), byrow = FALSE) - matrix(locs[, 1], nrow = nrow(locs), ncol = nrow(locs), byrow = TRUE)
+  yterm     <- matrix(locs[, 2], nrow = nrow(locs), ncol = nrow(locs), byrow = FALSE) - matrix(locs[, 2], nrow = nrow(locs), ncol = nrow(locs), byrow = TRUE)
+  
+  return( const * xterm * yterm * exp(- 0.5 * D.scaled^2) )
+}
