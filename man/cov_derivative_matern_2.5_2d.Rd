@@ -2,7 +2,7 @@
 % Please edit documentation in R/covmodels.R
 \name{cov_derivative_matern_2.5_2d}
 \alias{cov_derivative_matern_2.5_2d}
-\title{Matern covariance matrix of (GP, dGP/dx, dGP/dy) with respect to the smoothness parameter of 2.5 in 2 - dimensional domain}
+\title{Matern covariance matrix of (GP, dGP/dx1, dGP/dx2) with respect to the smoothness parameter of 2.5 in 2-dimensional domain}
 \usage{
 cov_derivative_matern_2.5_2d(locs, covparms, tol = .Machine$double.eps)
 }
@@ -17,15 +17,15 @@ cov_derivative_matern_2.5_2d(locs, covparms, tol = .Machine$double.eps)
 A matrix with \code{3*n} rows and \code{3*n} columns
 }
 \description{
-Matern covariance matrix of (GP, dGP/dx, dGP/dy) with respect to the smoothness parameter of 2.5 in 2 - dimensional domain
+Matern covariance matrix of (GP, dGP/dx1, dGP/dx2) with respect to the smoothness parameter of 2.5 in 2-dimensional domain
 }
 \examples{
-locs <- matrix(runif(6), 3, 2)
-covparms <- c(1, 1)
-coord <- 1
+locs <- matrix(runif(8), 4, 2)
+covparms <- c(1, 0.1)
 tol <- .Machine$double.eps
 
-covmat <- cov_derivative_matern_2.5_2d(locs = locs, covparms = covparms, tol = tol)
+M <- cov_derivative_matern_2.5_2d(locs = locs, covparms = covparms, tol = tol)
 
-eigen(covmat)$values
+t(M) == M # M is symmetric
+eigen(M)$values # M is positive definite
 }
