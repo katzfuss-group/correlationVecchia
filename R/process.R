@@ -134,7 +134,7 @@ generate_gp_space <- function(nsim, n, d, p, method.locs, covmodel, method.modif
     } else if(p > 1) {
       locs.full     <- matrix(runif(nsim * n * d, 0, 1), nsim * n, d)
       ind           <- unlist(rep(split(seq(nsim * n), rep(seq(nsim), each = n)), each = p))
-      locs.full     <- locs.full[ind, ]
+      locs.full     <- locs.full[ind, , drop = FALSE]
       noise.full    <- rnorm(nsim * n * p)
     } else {
       stop("The argument p is invalid.")
@@ -147,14 +147,14 @@ generate_gp_space <- function(nsim, n, d, p, method.locs, covmodel, method.modif
       n             <- ni^d
       
       locs.full     <- as.matrix(expand.grid(split(rep(seq(from = 0, to = 1, length.out = ni), each = d), seq(d))))
-      locs.full     <- locs.full[rep(seq(nrow(locs.full)), times = nsim), ]
+      locs.full     <- locs.full[rep(seq(nrow(locs.full)), times = nsim), , drop = FALSE]
       noise.full    <- rnorm(nsim * n)
     } else if(p > 1) {
       ni            <- as.integer(n^(1/d)) ; if(ni^d != n) message(paste0("Note: the effective sample size is ", ni^d, " but not ", n, "."))
       n             <- ni^d
       
       locs.full     <- as.matrix(expand.grid(split(rep(seq(from = 0, to = 1, length.out = ni), each = d), seq(d))))
-      locs.full     <- locs.full[rep(seq(nrow(locs.full)), times = nsim * p), ]
+      locs.full     <- locs.full[rep(seq(nrow(locs.full)), times = nsim * p), , drop = FALSE]
       noise.full    <- rnorm(nsim * n * p)
     } else {
       stop("The argument p is invalid.")
@@ -170,7 +170,7 @@ generate_gp_space <- function(nsim, n, d, p, method.locs, covmodel, method.modif
     
     for(k in 1:nsim) {
       ind           <- seq(from = 1 + (k - 1) * n, to = k * n, by = 1)
-      locs          <- locs.full[ind, ]
+      locs          <- locs.full[ind, , drop = FALSE]
       
       covmat        <- covmodel(locs, ...)
       covfac        <- factorize(covmat = covmat, pivot = pivot, method = method.modify, tol = tol, return.err = TRUE, verbose = verbose)
@@ -190,7 +190,7 @@ generate_gp_space <- function(nsim, n, d, p, method.locs, covmodel, method.modif
         ind           <- seq(from = 1 + (k - 1) * n * p + (i - 1) * n, to = (k - 1) * n * p + i * n, by = 1)
         
         # locs[[i]] <- ind
-        locs[[i]]     <- locs.full[ind, ]
+        locs[[i]]     <- locs.full[ind, , drop = FALSE]
       }
       names(locs)   <- paste0("locs", seq(p))
       
@@ -318,7 +318,7 @@ generate_gp_spacetime <- function(nsim, n, d, t.len, method.locs, covmodel, meth
     ind.time      <- rep(seq(t.len), times = n)
     
     locs.full     <- cbind(locs.space[ind.space, ], locs.time[ind.time])
-    locs.full     <- locs.full[rep(seq(nrow(locs.full)), times = nsim), ]
+    locs.full     <- locs.full[rep(seq(nrow(locs.full)), times = nsim), , drop = FALSE]
     noise.full    <- rnorm(nsim * size)
     
   } else if(method.locs == "satellite") {
@@ -334,7 +334,7 @@ generate_gp_spacetime <- function(nsim, n, d, t.len, method.locs, covmodel, meth
     locs.time     <- seq(from = 0, to = 1, length.out = n)
     
     locs.full     <- cbind(locs.space, locs.time)
-    locs.full     <- locs.full[rep(seq(nrow(locs.full)), times = nsim), ]
+    locs.full     <- locs.full[rep(seq(nrow(locs.full)), times = nsim), drop = FALSE]
     noise.full    <- rnorm(nsim * n)
     
   } else {
@@ -345,7 +345,7 @@ generate_gp_spacetime <- function(nsim, n, d, t.len, method.locs, covmodel, meth
   sim <- list()
   for(k in 1:nsim) {
     ind           <- seq(from = 1 + (k - 1) * size, to = k * size, by = 1)
-    locs          <- locs.full[ind, ]
+    locs          <- locs.full[ind, , drop = FALSE]
     
     covmat        <- covmodel(locs, ...)
     covfac        <- factorize(covmat = covmat, pivot = pivot, method = method.modify, tol = tol, return.err = TRUE, verbose = verbose)
