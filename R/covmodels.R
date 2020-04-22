@@ -1058,6 +1058,58 @@ cov_matern_2.5 <- function(locs, covparms)
 
 
 
+#' @title Matern covariance function with smoothness parameter of 3.5
+#'
+#' @param locs A matrix of locations
+#' @param covparms A numerical vector with covariance parameters = (sigma2, range)
+#'
+#' @return A matrix with \code{n} rows and \code{n} columns, with the \code{(i, j)} entry containing the matern covariance with smoothness parameter of 2.5 between observations \code{locs[i, ]} and \code{locs[j, ]}
+#' 
+#' @export
+#'
+#' @examples
+#' locs <- matrix(runif(10), 5, 2)
+#' fields::Matern(d = fields::rdist(locs), range = 1, smoothness = 3.5)
+#' cov_matern_3.5(locs, covparms = c(1, 1))
+#' 
+#' locs <- matrix(runif(10), 5, 2)
+#' fields::Matern(d = fields::rdist(locs), range = 1, smoothness = 3.5)
+#' cov_matern_3.5(locs / sqrt(7), covparms = c(1, 1))
+cov_matern_3.5 <- function(locs, covparms)
+{
+  D.scaled <- fields::rdist(x1 = locs, x2 = NULL) / covparms[2]
+  
+  return( covparms[1] * (1 + sqrt(7) * D.scaled + 14/5 * D.scaled^2 + 7*sqrt(7)/15 * D.scaled^3) * exp(- sqrt(7) * D.scaled) )
+}
+
+
+
+#' @title Matern covariance function with smoothness parameter of 4.5
+#'
+#' @param locs A matrix of locations
+#' @param covparms A numerical vector with covariance parameters = (sigma2, range)
+#'
+#' @return A matrix with \code{n} rows and \code{n} columns, with the \code{(i, j)} entry containing the matern covariance with smoothness parameter of 2.5 between observations \code{locs[i, ]} and \code{locs[j, ]}
+#' 
+#' @export
+#'
+#' @examples
+#' locs <- matrix(runif(10), 5, 2)
+#' fields::Matern(d = fields::rdist(locs), range = 1, smoothness = 4.5)
+#' cov_matern_4.5(locs, covparms = c(1, 1))
+#' 
+#' locs <- matrix(runif(10), 5, 2)
+#' fields::Matern(d = fields::rdist(locs), range = 1, smoothness = 4.5)
+#' cov_matern_4.5(locs / sqrt(9), covparms = c(1, 1))
+cov_matern_4.5 <- function(locs, covparms)
+{
+  D.scaled <- fields::rdist(x1 = locs, x2 = NULL) / covparms[2]
+
+  return( covparms[1] * (1 + 3 * D.scaled + 27/7 * D.scaled^2 + 18/7 * D.scaled^3 + 27/35 * D.scaled^4) * exp(- 3 * D.scaled))
+}
+
+
+
 #' @title Matern covariance function
 #'
 #' @param locs A matrix of locations
