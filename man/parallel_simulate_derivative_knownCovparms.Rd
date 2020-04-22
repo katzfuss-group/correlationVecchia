@@ -10,6 +10,7 @@ parallel_simulate_derivative_knownCovparms(
   nsim,
   n,
   d,
+  abs.corr = FALSE,
   covmodel = cov_derivative_matern_2.5_2d,
   covparms = c(1, NA),
   method.locs = "random",
@@ -29,6 +30,8 @@ parallel_simulate_derivative_knownCovparms(
 \item{n}{A number of locations}
 
 \item{d}{A dimension of domain. It must be 2 for now}
+
+\item{abs.corr}{Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho}
 
 \item{covmodel}{A covariance function}
 

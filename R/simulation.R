@@ -484,6 +484,7 @@ simulate_spacetime_knownCovparms <- function(nsim, n, d, t.len, m, method.locs, 
 #' @param d A dimension of domain. It must be 2 for now
 #' @param m A size of conditioning sets
 #' @param method.locs random or grid 
+#' @param abs.corr Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho
 #' @param method.modify An argument specifying a correction method for the cholesky factorization of a covariance matrix. At \code{NULL} by default.
 #'                      If correction is \code{NULL}, then the built-in R function \code{chol} is used.
 #'                      If correction is \code{"qr"}, then the built-in R function \code{qr} is used.
@@ -520,7 +521,7 @@ simulate_spacetime_knownCovparms <- function(nsim, n, d, t.len, m, method.locs, 
 #' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, method.locs = 'random', covmodel = corr_derivative_squared_expo_2d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
 #' out$kls.average
 #' }
-simulate_derivative_knownCovparms <- function(nsim, n, d, m, method.locs, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = TRUE, covmodel, ...)
+simulate_derivative_knownCovparms <- function(nsim, n, d, m, method.locs, abs.corr = FALSE, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = TRUE, covmodel, ...)
 {
   time.tot      <- proc.time()
   time.sim      <- list()
@@ -576,9 +577,9 @@ simulate_derivative_knownCovparms <- function(nsim, n, d, m, method.locs, method
     if(verbose == TRUE) message(paste0("System: The second baseline approximation is accomplished. [", Sys.time(), "]"))
     approx[[3]] <- baseline_3_multivariate_specify(locs = locs, m = m)
     if(verbose == TRUE) message(paste0("System: The third baseline approximation is accomplished. [", Sys.time(), "]"))
-    approx[[4]] <- baseline_4_multivariate_specify(locs = locs, m = m, covmodel = covmodel, ...)
+    approx[[4]] <- baseline_4_multivariate_specify(locs = locs, m = m, abs.corr = abs.corr, covmodel = covmodel, ...)
     if(verbose == TRUE) message(paste0("System: The fourth baseline approximation is accomplished. [", Sys.time(), "]"))
-    approx[[5]] <- corrvecchia_specify_knownCovparms(locs = locs.all, m = m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, abs.corr = FALSE, initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat.modified, covparms = c(1))
+    approx[[5]] <- corrvecchia_specify_knownCovparms(locs = locs.all, m = m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, abs.corr = abs.corr, initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat.modified, covparms = c(1))
     if(verbose == TRUE) message(paste0("System: C-Maxmin + C-NN Vecchia approximation is accomplished. [", Sys.time(), "]"))
     
     ## compute approximate covariance matrices
