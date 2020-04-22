@@ -1242,7 +1242,7 @@ cov_derivative_matern_2.5_1d <- function(locs, covparms, tol = .Machine$double.e
 corr_derivative_matern_2.5_1d <- function(locs, covparms, tol = .Machine$double.eps)
 {
   # covariance matrix
-  n           <- nrow(locs)
+  n           <- ifelse(is.list(locs), nrow(locs[[1]]), nrow(locs))
   cormat      <- cov_derivative_matern_2.5_1d(locs = locs, covparms = covparms, tol = tol)
   
   # sigma.gp / sigma.dxgp
@@ -1345,7 +1345,7 @@ cov_derivative_matern_2.5_2d <- function(locs, covparms, tol = .Machine$double.e
 corr_derivative_matern_2.5_2d <- function(locs, covparms, tol = .Machine$double.eps)
 {
   # covariance matrix
-  n           <- nrow(locs)
+  n           <- ifelse(is.list(locs), nrow(locs[[1]]), nrow(locs))
   cormat      <- cov_derivative_matern_2.5_2d(locs = locs, covparms = covparms, tol = tol)
   
   # sigma.gp / sigma.dxgp / sigma.dygp
@@ -1475,7 +1475,7 @@ cov_derivative_matern_4.5_1d <- function(locs, covparms, tol = .Machine$double.e
 corr_derivative_matern_4.5_1d <- function(locs, covparms, tol = .Machine$double.eps)
 {
   # covariance matrix
-  n           <- nrow(locs)
+  n           <- ifelse(is.list(locs), nrow(locs[[1]]), nrow(locs))
   cormat      <- cov_derivative_matern_4.5_1d(locs = locs, covparms = covparms, tol = tol)
   
   # sigma.gp / sigma.dxgp
@@ -1579,7 +1579,7 @@ cov_derivative_matern_4.5_2d <- function(locs, covparms, tol = .Machine$double.e
 corr_derivative_matern_4.5_2d <- function(locs, covparms, tol = .Machine$double.eps)
 {
   # covariance matrix
-  n           <- nrow(locs)
+  n           <- ifelse(is.list(locs), nrow(locs[[1]]), nrow(locs))
   cormat      <- cov_derivative_matern_4.5_2d(locs = locs, covparms = covparms, tol = tol)
   
   # sigma.gp / sigma.dxgp / sigma.dygp
@@ -1711,7 +1711,7 @@ cov_derivative_squared_expo_1d <- function(locs, covparms, tol = .Machine$double
 corr_derivative_squared_expo_1d <- function(locs, covparms, tol = .Machine$double.eps)
 {
   # covariance matrix
-  n           <- nrow(locs)
+  n           <- ifelse(is.list(locs), nrow(locs[[1]]), nrow(locs))
   cormat      <- cov_derivative_squared_expo_1d(locs = locs, covparms = covparms, tol = tol)
   
   # sigma.gp / sigma.dxgp
@@ -1815,7 +1815,7 @@ cov_derivative_squared_expo_2d <- function(locs, covparms, tol = .Machine$double
 corr_derivative_squared_expo_2d <- function(locs, covparms, tol = .Machine$double.eps)
 {
   # covariance matrix
-  n           <- nrow(locs)
+  n           <- ifelse(is.list(locs), nrow(locs[[1]]), nrow(locs))
   cormat      <- cov_derivative_squared_expo_2d(locs = locs, covparms = covparms, tol = tol)
   
   # sigma.gp / sigma.dxgp / sigma.dygp
