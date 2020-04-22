@@ -4,12 +4,14 @@
 \alias{baseline_4_multivariate_specify}
 \title{The fourth baseline approximation for multivariate cases}
 \usage{
-baseline_4_multivariate_specify(locs, m, covmodel, ...)
+baseline_4_multivariate_specify(locs, m, abs.corr = FALSE, covmodel, ...)
 }
 \arguments{
 \item{locs}{A matrix of locations}
 
 \item{m}{A size of conditioning sets}
+
+\item{abs.corr}{FALSE -> 1-rho or TRUE -> 1-|rho|}
 
 \item{covmodel}{A covariance function}
 

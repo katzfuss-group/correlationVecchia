@@ -301,6 +301,7 @@ baseline_3_multivariate_specify <- function(locs, m)
 #'
 #' @param locs A matrix of locations
 #' @param m A size of conditioning sets
+#' @param abs.corr FALSE -> 1-rho or TRUE -> 1-|rho|
 #' @param covmodel A covariance function
 #' @param ... Covariance parameters
 #'
@@ -348,7 +349,7 @@ baseline_3_multivariate_specify <- function(locs, m)
 #' cond1 == cond2 # similar
 #' cond1 == cond3 # different
 #' cond3 == cond4 # similar
-baseline_4_multivariate_specify <- function(locs, m, covmodel, ...)
+baseline_4_multivariate_specify <- function(locs, m, abs.corr = FALSE, covmodel, ...)
 {
   p         <- length(locs)
   n         <- unlist(lapply(locs, nrow))
@@ -370,7 +371,14 @@ baseline_4_multivariate_specify <- function(locs, m, covmodel, ...)
   locs.full   <- do.call(rbind, locs)
   locsord     <- locs.full[ord.full, , drop = FALSE]
   covmat      <- covmodel(locs = locsord.each, ...)
-  cond.sets   <- conditioning_nn(m = m, d = 1 - covmat)
+  
+  if(abs.corr == FALSE) {
+    cond.sets   <- conditioning_nn(m = m, d = 1 - covmat)
+  } else if(abs.corr == TRUE) {
+    cond.sets   <- conditioning_nn(m = m, d = 1 - abs(covmat))
+  } else {
+    stop("abs.corr must be logical!")
+  }
   
   Cond        <- matrix(NA, nrow(cond.sets), ncol(cond.sets)); Cond[!is.na(cond.sets)] <- TRUE
   obs         <- rep(TRUE, nrow(locs.full))
