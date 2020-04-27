@@ -334,7 +334,7 @@ generate_gp_spacetime <- function(nsim, n, d, t.len, method.locs, covmodel, meth
     locs.time     <- seq(from = 0, to = 1, length.out = n)
     
     locs.full     <- cbind(locs.space, locs.time)
-    locs.full     <- locs.full[rep(seq(nrow(locs.full)), times = nsim), drop = FALSE]
+    locs.full     <- locs.full[rep(seq(nrow(locs.full)), times = nsim), , drop = FALSE]
     noise.full    <- rnorm(nsim * n)
     
   } else {
