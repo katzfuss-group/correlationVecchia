@@ -17,6 +17,7 @@
 #' @param d A dimension of domain
 #' @param m A size of conditioning sets
 #' @param method.locs random or grid 
+#' @param abs.corr Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho
 #' @param method.modify An argument specifying a correction method for the cholesky factorization of a covariance matrix. At \code{NULL} by default.
 #'                      If correction is \code{NULL}, then the built-in R function \code{chol} is used.
 #'                      If correction is \code{"qr"}, then the built-in R function \code{qr} is used.
@@ -35,12 +36,13 @@
 #'
 #' @examples
 #' out <- simulate_univariate_knownCovparms(nsim = 2, n = 10^2, d = 2, m = 10, 
-#'                                          method.locs = 'random', method.modify = NULL, 
+#'                                          method.locs = 'random', abs.corr = FALSE, 
+#'                                          method.modify = NULL, 
 #'                                          pivot = FALSE, tol = .Machine$double.eps, 
 #'                                          verbose = TRUE, 
 #'                                          covmodel = cov_expo_aniso, covparms = c(1, 0.1, 10))
 #' out$kls.average
-simulate_univariate_knownCovparms <- function(nsim, n, d, m, method.locs, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = TRUE, covmodel, ...)
+simulate_univariate_knownCovparms <- function(nsim, n, d, m, method.locs, method.modify = NULL, abs.corr = FALSE, pivot = FALSE, tol = .Machine$double.eps, verbose = TRUE, covmodel, ...)
 {
   time.tot      <- proc.time()
   time.sim      <- list()
@@ -84,18 +86,18 @@ simulate_univariate_knownCovparms <- function(nsim, n, d, m, method.locs, method
     ## specify vecchia approximations
     approx        <- list()
     
-    approx[[1]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", coordinate = NULL, abs.corr = FALSE, initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = covmat.modified, covparms = c(1))
+    approx[[1]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", coordinate = NULL, abs.corr = abs.corr, initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = covmat.modified, covparms = c(1))
     if(verbose == TRUE) message(paste0("System: E-Maxmin + E-NN Vecchia approximation is accomplished. [", Sys.time(), "]"))
-    approx[[2]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", coordinate = NULL, abs.corr = FALSE, initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat.modified, covparms = c(1))
+    approx[[2]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "euclidean", coordinate = NULL, abs.corr = abs.corr, initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat.modified, covparms = c(1))
     if(verbose == TRUE) message(paste0("System: E-Maxmin + C-NN Vecchia approximation is accomplished. [", Sys.time(), "]"))
-    approx[[3]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, abs.corr = FALSE, initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = covmat.modified, covparms = c(1))
+    approx[[3]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, abs.corr = abs.corr, initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = covmat.modified, covparms = c(1))
     if(verbose == TRUE) message(paste0("System: C-Maxmin + E-NN Vecchia approximation is accomplished. [", Sys.time(), "]"))
-    approx[[4]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, abs.corr = FALSE, initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat.modified, covparms = c(1))
+    approx[[4]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, abs.corr = abs.corr, initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat.modified, covparms = c(1))
     if(verbose == TRUE) message(paste0("System: C-Maxmin + C-NN Vecchia approximation is accomplished. [", Sys.time(), "]"))
     
-    approx[[5]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "coord", ordering.method = "euclidean", coordinate = c(1), abs.corr = FALSE, initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = covmat.modified, covparms = c(1))
+    approx[[5]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "coord", ordering.method = "euclidean", coordinate = c(1), abs.corr = abs.corr, initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = covmat.modified, covparms = c(1))
     if(verbose == TRUE) message(paste0("System: X-coord + E-NN Vecchia approximation is accomplished. [", Sys.time(), "]"))
-    approx[[6]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "coord", ordering.method = "euclidean", coordinate = c(2), abs.corr = FALSE, initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = covmat.modified, covparms = c(1))
+    approx[[6]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "coord", ordering.method = "euclidean", coordinate = c(2), abs.corr = abs.corr, initial.pt = NULL, conditioning = "NN", conditioning.method = "euclidean", covmodel = covmat.modified, covparms = c(1))
     if(verbose == TRUE) message(paste0("System: Y-coord + E-NN Vecchia approximation is accomplished. [", Sys.time(), "]"))
     
     ## compute approximate covariance matrices
@@ -173,6 +175,7 @@ simulate_univariate_knownCovparms <- function(nsim, n, d, m, method.locs, method
 #' @param p A number of GPs
 #' @param m A size of conditioning sets
 #' @param method.locs "random", "overlap", or "grid" 
+#' @param abs.corr Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho
 #' @param method.modify An argument specifying a correction method for the cholesky factorization of a covariance matrix. At \code{NULL} by default.
 #'                      If correction is \code{NULL}, then the built-in R function \code{chol} is used.
 #'                      If correction is \code{"qr"}, then the built-in R function \code{qr} is used.
@@ -191,13 +194,14 @@ simulate_univariate_knownCovparms <- function(nsim, n, d, m, method.locs, method
 #'
 #' @examples
 #' out <- simulate_multivariate_knownCovparms(nsim = 2, n = 10^2, d = 2, p = 2, m = 10,
-#'                                            method.locs = 'random', method.modify = NULL,
+#'                                            method.locs = 'random', abs.corr = FALSE, 
+#'                                            method.modify = NULL,
 #'                                            pivot = FALSE, tol = .Machine$double.eps,
 #'                                            verbose = TRUE,
 #'                                            covmodel = cov_bivariate_expo_latDim, 
 #'                                            covparms = c(1, 0.1, 1))
 #' out$kls.average
-simulate_multivariate_knownCovparms <- function(nsim, n, d, p, m, method.locs, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = TRUE, covmodel, ...)
+simulate_multivariate_knownCovparms <- function(nsim, n, d, p, m, method.locs, method.modify = NULL, abs.corr = FALSE, pivot = FALSE, tol = .Machine$double.eps, verbose = TRUE, covmodel, ...)
 {
   time.tot      <- proc.time()
   time.sim      <- list()
@@ -247,9 +251,9 @@ simulate_multivariate_knownCovparms <- function(nsim, n, d, p, m, method.locs, m
     if(verbose == TRUE) message(paste0("System: The second baseline approximation is accomplished. [", Sys.time(), "]"))
     approx[[3]]   <- baseline_3_multivariate_specify(locs = realization$sim[[k]]$locs, m = m)
     if(verbose == TRUE) message(paste0("System: The third baseline approximation is accomplished. [", Sys.time(), "]"))
-    approx[[4]]   <- baseline_4_multivariate_specify(locs = realization$sim[[k]]$locs, m = m, covmodel = covmodel, ...)
+    approx[[4]]   <- baseline_4_multivariate_specify(locs = realization$sim[[k]]$locs, m = m, abs.corr = abs.corr, covmodel = covmodel, ...)
     if(verbose == TRUE) message(paste0("System: The fourth baseline approximation is accomplished. [", Sys.time(), "]"))
-    approx[[5]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, abs.corr = FALSE, initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat.modified, covparms = c(1))
+    approx[[5]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, abs.corr = abs.corr, initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat.modified, covparms = c(1))
     if(verbose == TRUE) message(paste0("System: C-Maxmin + C-NN Vecchia approximation is accomplished. [", Sys.time(), "]"))
     
     ## compute approximate covariance matrices
@@ -333,6 +337,7 @@ simulate_multivariate_knownCovparms <- function(nsim, n, d, p, m, method.locs, m
 #' @param t.len A number of repeated measurement (= a number of different temporal locations)
 #' @param m A size of conditioning sets
 #' @param method.locs "all.random", "space.random.time.grid", "all.grid", or "satellite"
+#' @param abs.corr Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho
 #' @param method.modify An argument specifying a correction method for the cholesky factorization of a covariance matrix. At \code{NULL} by default.
 #'                      If correction is \code{NULL}, then the built-in R function \code{chol} is used.
 #'                      If correction is \code{"qr"}, then the built-in R function \code{qr} is used.
@@ -352,11 +357,12 @@ simulate_multivariate_knownCovparms <- function(nsim, n, d, p, m, method.locs, m
 #' @examples
 #' out <- simulate_spacetime_knownCovparms(nsim = 2, n = 10^2, d = 2, 
 #'                                         t.len = 2, m = 5, 
-#'                                         method.locs = 'all.random', 
+#'                                         method.locs = 'all.random',
+#'                                         abs.corr = FALSE, 
 #'                                         covmodel = cov_spacetime_expo, 
 #'                                         covparms = c(1, 0.75, 50, 25))
 #' out$kls.average
-simulate_spacetime_knownCovparms <- function(nsim, n, d, t.len, m, method.locs, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = TRUE, covmodel, ...)
+simulate_spacetime_knownCovparms <- function(nsim, n, d, t.len, m, method.locs, abs.corr = FALSE, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = TRUE, covmodel, ...)
 {
   time.tot      <- proc.time()
   time.sim      <- list()
@@ -406,7 +412,7 @@ simulate_spacetime_knownCovparms <- function(nsim, n, d, t.len, m, method.locs, 
     if(verbose == TRUE) message(paste0("System: The second baseline approximation is accomplished. [", Sys.time(), "]"))
     approx[[3]]   <- baseline_3_spacetime_specify(locs = locs, m = m, coordinate = NULL, covmodel = covmodel, ...)
     if(verbose == TRUE) message(paste0("System: The third baseline approximation is accomplished. [", Sys.time(), "]"))
-    approx[[4]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, abs.corr = FALSE, initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat.modified, covparms = c(1))
+    approx[[4]]   <- corrvecchia_specify_knownCovparms(locs = locs, m = m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, abs.corr = abs.corr, initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat.modified, covparms = c(1))
     if(verbose == TRUE) message(paste0("System: C-Maxmin + C-NN Vecchia approximation is accomplished. [", Sys.time(), "]"))
     
     ## compute approximate covariance matrices
@@ -503,22 +509,46 @@ simulate_spacetime_knownCovparms <- function(nsim, n, d, t.len, m, method.locs, 
 #'
 #' @examples
 #' \dontrun{
-#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, method.locs = 'random', covmodel = corr_derivative_matern_2.5_1d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, 
+#'                                          method.locs = 'random', abs.corr = FALSE, 
+#'                                          covmodel = corr_derivative_matern_2.5_1d, 
+#'                                          covparms = c(1, 0.1), pivot = FALSE, 
+#'                                          method.modify = "eigen-I", tol = 1e-5)
 #' out$kls.average
 #' 
-#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, method.locs = 'random', covmodel = corr_derivative_matern_2.5_2d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, 
+#'                                          method.locs = 'random', abs.corr = FALSE, 
+#'                                          covmodel = corr_derivative_matern_2.5_2d, 
+#'                                          covparms = c(1, 0.1), pivot = FALSE, 
+#'                                          method.modify = "eigen-I", tol = 1e-5)
 #' out$kls.average
 #' 
-#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, method.locs = 'random', covmodel = corr_derivative_matern_4.5_1d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, 
+#'                                          method.locs = 'random', abs.corr = FALSE, 
+#'                                          covmodel = corr_derivative_matern_4.5_1d, 
+#'                                          covparms = c(1, 0.1), pivot = FALSE, 
+#'                                          method.modify = "eigen-I", tol = 1e-5)
 #' out$kls.average
 #' 
-#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, method.locs = 'random', covmodel = corr_derivative_matern_4.5_2d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, 
+#'                                          method.locs = 'random', abs.corr = FALSE, 
+#'                                          covmodel = corr_derivative_matern_4.5_2d, 
+#'                                          covparms = c(1, 0.1), pivot = FALSE, 
+#'                                          method.modify = "eigen-I", tol = 1e-5)
 #' out$kls.average
 #' 
-#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, method.locs = 'random', covmodel = corr_derivative_squared_expo_1d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, 
+#'                                          method.locs = 'random', abs.corr = FALSE, 
+#'                                          covmodel = corr_derivative_squared_expo_1d, 
+#'                                          covparms = c(1, 0.1), pivot = FALSE, 
+#'                                          method.modify = "eigen-I", tol = 1e-5)
 #' out$kls.average
 #' 
-#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, method.locs = 'random', covmodel = corr_derivative_squared_expo_2d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+#' out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, 
+#'                                          method.locs = 'random', abs.corr = FALSE, 
+#'                                          covmodel = corr_derivative_squared_expo_2d, 
+#'                                          covparms = c(1, 0.1), pivot = FALSE, 
+#'                                          method.modify = "eigen-I", tol = 1e-5)
 #' out$kls.average
 #' }
 simulate_derivative_knownCovparms <- function(nsim, n, d, m, method.locs, abs.corr = FALSE, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = TRUE, covmodel, ...)

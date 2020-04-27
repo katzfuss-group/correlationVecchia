@@ -57,22 +57,46 @@ Conducting simulation on vecchia approximations for (GP, dGP/dx1 dGP/dx2) with k
 }
 \examples{
 \dontrun{
-out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, method.locs = 'random', covmodel = corr_derivative_matern_2.5_1d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, 
+                                         method.locs = 'random', abs.corr = FALSE, 
+                                         covmodel = corr_derivative_matern_2.5_1d, 
+                                         covparms = c(1, 0.1), pivot = FALSE, 
+                                         method.modify = "eigen-I", tol = 1e-5)
 out$kls.average
 
-out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, method.locs = 'random', covmodel = corr_derivative_matern_2.5_2d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, 
+                                         method.locs = 'random', abs.corr = FALSE, 
+                                         covmodel = corr_derivative_matern_2.5_2d, 
+                                         covparms = c(1, 0.1), pivot = FALSE, 
+                                         method.modify = "eigen-I", tol = 1e-5)
 out$kls.average
 
-out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, method.locs = 'random', covmodel = corr_derivative_matern_4.5_1d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, 
+                                         method.locs = 'random', abs.corr = FALSE, 
+                                         covmodel = corr_derivative_matern_4.5_1d, 
+                                         covparms = c(1, 0.1), pivot = FALSE, 
+                                         method.modify = "eigen-I", tol = 1e-5)
 out$kls.average
 
-out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, method.locs = 'random', covmodel = corr_derivative_matern_4.5_2d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, 
+                                         method.locs = 'random', abs.corr = FALSE, 
+                                         covmodel = corr_derivative_matern_4.5_2d, 
+                                         covparms = c(1, 0.1), pivot = FALSE, 
+                                         method.modify = "eigen-I", tol = 1e-5)
 out$kls.average
 
-out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, method.locs = 'random', covmodel = corr_derivative_squared_expo_1d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, 
+                                         method.locs = 'random', abs.corr = FALSE, 
+                                         covmodel = corr_derivative_squared_expo_1d, 
+                                         covparms = c(1, 0.1), pivot = FALSE, 
+                                         method.modify = "eigen-I", tol = 1e-5)
 out$kls.average
 
-out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, method.locs = 'random', covmodel = corr_derivative_squared_expo_2d, covparms = c(1, 0.1), pivot = FALSE, method.modify = "eigen-I", tol = 1e-5)
+out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, 
+                                         method.locs = 'random', abs.corr = FALSE, 
+                                         covmodel = corr_derivative_squared_expo_2d, 
+                                         covparms = c(1, 0.1), pivot = FALSE, 
+                                         method.modify = "eigen-I", tol = 1e-5)
 out$kls.average
 }
 }

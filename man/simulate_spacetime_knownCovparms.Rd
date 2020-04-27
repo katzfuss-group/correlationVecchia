@@ -11,6 +11,7 @@ simulate_spacetime_knownCovparms(
   t.len,
   m,
   method.locs,
+  abs.corr = FALSE,
   method.modify = NULL,
   pivot = FALSE,
   tol = .Machine$double.eps,
@@ -31,6 +32,8 @@ simulate_spacetime_knownCovparms(
 \item{m}{A size of conditioning sets}
 
 \item{method.locs}{"all.random", "space.random.time.grid", "all.grid", or "satellite"}
+
+\item{abs.corr}{Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho}
 
 \item{method.modify}{An argument specifying a correction method for the cholesky factorization of a covariance matrix. At \code{NULL} by default.
 If correction is \code{NULL}, then the built-in R function \code{chol} is used.
@@ -58,7 +61,8 @@ Conducting simulation on vecchia approximations for spacetime GPs with known cov
 \examples{
 out <- simulate_spacetime_knownCovparms(nsim = 2, n = 10^2, d = 2, 
                                         t.len = 2, m = 5, 
-                                        method.locs = 'all.random', 
+                                        method.locs = 'all.random',
+                                        abs.corr = FALSE, 
                                         covmodel = cov_spacetime_expo, 
                                         covparms = c(1, 0.75, 50, 25))
 out$kls.average

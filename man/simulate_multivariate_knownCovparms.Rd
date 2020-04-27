@@ -12,6 +12,7 @@ simulate_multivariate_knownCovparms(
   m,
   method.locs,
   method.modify = NULL,
+  abs.corr = FALSE,
   pivot = FALSE,
   tol = .Machine$double.eps,
   verbose = TRUE,
@@ -39,6 +40,8 @@ If correction is \code{"diag"}, then \code{C + diag(tol, n)} is used instead of 
 Correction methods \code{"type-I"}, \code{"type-II"}, \code{"eigen-I"}, \code{"eigen-II"}, \code{"GMW81"}, and \code{"SE99"} are refered to Fang and O'leary (2008).
 Correction method \code{"nearPD"} use a built-in function nearPD() in the R package Matrix.}
 
+\item{abs.corr}{Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho}
+
 \item{pivot}{Logical indicating if pivoting is to be used when factorizing a covariance matrix. At \code{FALSE} by default}
 
 \item{tol}{Numerical tolerance. At \code{.Machine$double.eps} by default}
@@ -57,7 +60,8 @@ Conducting simulation on vecchia approximations for multivariate GPs with known 
 }
 \examples{
 out <- simulate_multivariate_knownCovparms(nsim = 2, n = 10^2, d = 2, p = 2, m = 10,
-                                           method.locs = 'random', method.modify = NULL,
+                                           method.locs = 'random', abs.corr = FALSE, 
+                                           method.modify = NULL,
                                            pivot = FALSE, tol = .Machine$double.eps,
                                            verbose = TRUE,
                                            covmodel = cov_bivariate_expo_latDim, 

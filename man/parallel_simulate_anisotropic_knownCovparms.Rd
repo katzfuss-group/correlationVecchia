@@ -13,6 +13,7 @@ parallel_simulate_anisotropic_knownCovparms(
   covmodel = cov_expo_aniso,
   covparms = c(1, 0.1),
   method.locs = "random",
+  abs.corr = FALSE,
   method.modify = NULL,
   pivot = FALSE,
   tol = .Machine$double.eps,
@@ -35,6 +36,8 @@ parallel_simulate_anisotropic_knownCovparms(
 \item{covparms}{A numeric vector of covariance parameters}
 
 \item{method.locs}{random or grid}
+
+\item{abs.corr}{Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho}
 
 \item{method.modify}{An argument specifying a correction method for the cholesky factorization of a covariance matrix. At \code{NULL} by default.
 If correction is \code{NULL}, then the built-in R function \code{chol} is used.
