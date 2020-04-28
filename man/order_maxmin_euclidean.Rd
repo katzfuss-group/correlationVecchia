@@ -4,10 +4,12 @@
 \alias{order_maxmin_euclidean}
 \title{Maximum-minimum (maxmin) ordering of locations in terms of the Euclidean distance}
 \usage{
-order_maxmin_euclidean(locs)
+order_maxmin_euclidean(locs, initial.pt = NULL)
 }
 \arguments{
 \item{locs}{A matrix of locations}
+
+\item{initial.pt}{If \code{NULL} then the most centered location is selected as the first location. If an integer then it is used as the index of the first location}
 }
 \value{
 A vector of indices giving the euclidean-based maxmin ordering

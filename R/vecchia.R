@@ -162,6 +162,194 @@ corrvecchia_specify_knownCovparms <- function(locs, m, ordering = "maxmin", orde
   return(vecchia.approx)
 }
 
+
+
+#' @title specify Euclidean/Correlation-based Vecchia approximation with known parameters
+#'
+#' @param locs A matrix of locations
+#' @param m Number of nearby points to condition on
+#' @param ordering 'maxmin' or 'coord'
+#' @param ordering.method either 'euclidean' or 'correlation'
+#' @param coordinate integer or vector of integers in \code{1,...,d}. This argument is used only when ordering is coord
+#' @param corr.dist 1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), or sqrt(1-rho^2)
+#' @param initial.pt NULL = which.min(rowMeans(d)), center = euclidean-based center, integer = specify the first obs, 'random' = at random, and else = which.min(rowMeans(d))
+#' @param conditioning 'NN' (nearest neighbor)
+#' @param conditioning.method either 'euclidean' or 'correlation'
+#' @param covmodel covariance function (or matrix)
+#' @param covparms covariance parameters as a vector. The first entry must be its overall variance 
+#'
+#' @return An object that specifies the vecchia approximation for later use in likelihood evaluation or prediction.
+#' @export
+#'
+#' @examples
+corrvecchia_specify_knownCovparms_2 <- function(locs, m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, corr.dist = "1-rho", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel, covparms) 
+{
+  locs  <- as.matrix(locs)
+  p     <- ncol(locs)
+  n     <- nrow(locs)
+  
+  if(ordering.method == "correlation" | conditioning.method == "correlation") {
+    
+    rho <- .correlation(locs = locs, covmodel = covmodel, covparms = covparms, abs.corr = FALSE)
+    
+  }
+  
+  if(ordering == "coord") {
+    
+    # ordering
+    if(is.null(coordinate)) coordinate <- seq(p)
+    ord       <- order_coordinate(locs = locs, coordinate = coordinate)
+    
+    # to order locations
+    locsord   <- locs[ord, , drop = FALSE]
+    
+    if(is.matrix(covmodel)) covmodel <- covmodel[ord, ord]
+    
+    # conditioning
+    if(conditioning.method == "euclidean") {                                                    # ?-Coord + E-NN
+      
+      cond.sets   <- GpGp::find_ordered_nn(locs = locsord, m = m)
+      
+    } else if(conditioning.method == "correlation") {                                           # ?-Coord + C-NN
+      
+      rho         <- rho[ord, ord]
+      cond.sets   <- .find_ordered_cnn(m = m, rho = rho, corr.dist = corr.dist)
+      
+    } else {
+      
+      stop("The argument conditioning.method must be euclidean or correlation. Please try again!")
+      
+    }
+    
+  } else if(ordering == "maxmin") {
+    
+    if(ordering.method == "euclidean" & conditioning.method == "euclidean") {                   # E-maxmin + E-NN
+      
+      # ordering
+      ord       <- order_maxmin_euclidean(locs = locs)
+      
+      # to order locations
+      locsord   <- locs[ord, , drop = FALSE]
+      
+      if(is.matrix(covmodel)) covmodel <- covmodel[ord, ord]
+      
+      # conditioning
+      cond.sets <- GpGp::find_ordered_nn_brute(locs = locsord, m = m)
+      
+    } else if(ordering.method == "correlation" & conditioning.method == "euclidean") {          # C-maxmin + E-NN
+      
+      # ordering
+      ord       <- .order_cmaxmin(locs = locs, rho = rho, initial.pt = initial.pt, corr.dist = corr.dist)
+      
+      # to order locations
+      locsord   <- locs[ord, , drop = FALSE]
+      
+      if(is.matrix(covmodel)) covmodel <- covmodel[ord, ord]
+      
+      # conditioning
+      cond.sets <- GpGp::find_ordered_nn_brute(locs = locsord, m = m)
+      
+    } else if(ordering.method == "euclidean" & conditioning.method == "correlation") {          # E-maxmin + C-NN
+      
+      # ordering
+      ord       <- order_maxmin_euclidean(locs = locs)
+      
+      # to order locations
+      locsord   <- locs[ord, , drop = FALSE]
+      
+      if(is.matrix(covmodel)) covmodel <- covmodel[ord, ord]
+      
+      # conditioning
+      rho         <- rho[ord, ord]
+      cond.sets   <- .find_ordered_cnn(m = m, rho = rho, corr.dist = corr.dist)
+      
+    } else if(ordering.method == "correlation" & conditioning.method == "correlation") {        # C-maxmin + C-NN
+      
+      # ordering
+      ord       <- .order_cmaxmin(locs = locs, rho = rho, initial.pt = initial.pt, corr.dist = corr.dist)
+      
+      # to order locations
+      locsord   <- locs[ord, , drop = FALSE]
+      
+      if(is.matrix(covmodel)) covmodel <- covmodel[ord, ord]
+      
+      # conditioning
+      rho         <- rho[ord, ord]
+      cond.sets   <- .find_ordered_cnn(m = m, rho = rho, corr.dist = corr.dist)
+      
+    } else {
+      
+      stop("Both the arguments ordering.method and conditioning.method must be euclidean or correlation. Please try again!")
+      
+    }
+    
+  } else {
+    
+    stop("The argument ordering must be coord or maxmin. Please try again!")
+    
+  }
+  
+  ### return
+  Cond          <- matrix(NA, nrow(cond.sets), ncol(cond.sets)); Cond[!is.na(cond.sets)] <- TRUE
+  obs           <- rep(TRUE, n)
+  U.prep        <- GPvecchia:::U_sparsity(locsord, cond.sets, obs, Cond)
+  
+  vecchia.approx <- list(locsord = locsord, obs = obs, ord = ord, ord.z = ord, ord.pred='general', U.prep = U.prep, cond.yz = 'false', ordering = ordering, ordering.method = ordering.method, conditioning = 'NN', conditioning.method = conditioning.method)
+  return(vecchia.approx)
+}
+
+.order_cmaxmin <- function(locs, rho, initial.pt, corr.dist)
+{
+  if(corr.dist == "1-rho") {
+    # ord       <- order_maxmin_correlation_straightforward(locs = locs, d = 1 - rho, initial.pt = initial.pt)
+    ord       <- order_maxmin_correlation_inverseDist(locs = locs, d.inv = rho, initial.pt = initial.pt)
+  } else if(corr.dist == "1-abs(rho)") {
+    # ord       <- order_maxmin_correlation_straightforward(locs = locs, d = 1 - abs(rho), initial.pt = initial.pt)
+    ord       <- order_maxmin_correlation_inverseDist(locs = locs, d.inv = abs(rho), initial.pt = initial.pt)
+  } else if(corr.dist == "1-rho^2") {
+    # ord       <- order_maxmin_correlation_straightforward(locs = locs, d = 1 - rho^2, initial.pt = initial.pt)
+    ord       <- order_maxmin_correlation_inverseDist(locs = locs, d.inv = abs(rho), initial.pt = initial.pt)
+  } else if(corr.dist == "sqrt(1-rho)") {
+    # ord       <- order_maxmin_correlation_straightforward(locs = locs, d = sqrt(1 - rho), initial.pt = initial.pt)
+    ord       <- order_maxmin_correlation_inverseDist(locs = locs, d.inv = rho, initial.pt = initial.pt)
+  } else if(corr.dist == "sqrt(1-abs(rho))") {
+    # ord       <- order_maxmin_correlation_straightforward(locs = locs, d = sqrt(1 - abs(rho)), initial.pt = initial.pt)
+    ord       <- order_maxmin_correlation_inverseDist(locs = locs, d.inv = abs(rho), initial.pt = initial.pt)
+  } else if(corr.dist == "sqrt(1-rho^2)") {
+    # ord       <- order_maxmin_correlation_straightforward(locs = locs, d = sqrt(1 - rho^2), initial.pt = initial.pt)
+    ord       <- order_maxmin_correlation_inverseDist(locs = locs, d.inv = abs(rho), initial.pt = initial.pt)
+  } else {
+    stop("The argument corr.dist must be one of the followings: 1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), and sqrt(1-rho^2).")
+  }
+  
+  return(ord)
+}
+
+.find_ordered_cnn <- function(m, rho, corr.dist) 
+{
+  if(corr.dist == "1-rho") {
+    cond.sets <- conditioning_nn(m = m, d = 1 - rho)
+  } else if(corr.dist == "1-abs(rho)") {
+    cond.sets <- conditioning_nn(m = m, d = 1 - abs(rho))
+  } else if(corr.dist == "1-rho^2") {
+    # cond.sets <- conditioning_nn(m = m, d = 1 - rho^2)
+    cond.sets <- conditioning_nn(m = m, d = 1 - abs(rho))
+  } else if(corr.dist == "sqrt(1-rho)") {
+    # cond.sets <- conditioning_nn(m = m, d = sqrt(1 - rho))
+    cond.sets <- conditioning_nn(m = m, d = 1 - rho)
+  } else if(corr.dist == "sqrt(1-abs(rho))") {
+    # cond.sets <- conditioning_nn(m = m, d = sqrt(1 - abs(rho)))
+    cond.sets <- conditioning_nn(m = m, d = 1 - abs(rho))
+  } else if(corr.dist == "sqrt(1-rho^2)") {
+    # cond.sets <- conditioning_nn(m = m, d = sqrt(1 - rho^2))
+    cond.sets <- conditioning_nn(m = m, d = 1 - abs(rho))
+  } else {
+    stop("The argument corr.dist must be one of the followings: 1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), and sqrt(1-rho^2).")
+  }
+  
+  return(cond.sets)
+}
+
 .distance_correlation <- function(locs, covmodel, covparms, abs.corr) 
 {
   ### CAUTION: This function can cause numerical issue. Please use the 'correlation()' function, instead.
@@ -195,6 +383,8 @@ corrvecchia_specify_knownCovparms <- function(locs, m, ordering = "maxmin", orde
   
   return(dist.matrix)
 }
+
+
 
 .correlation <- function(locs, covmodel, covparms, abs.corr) 
 {
@@ -261,6 +451,7 @@ order_coordinate <- function(locs, coordinate)
 #' @title Maximum-minimum (maxmin) ordering of locations in terms of the Euclidean distance
 #'
 #' @param locs A matrix of locations
+#' @param initial.pt If \code{NULL} then the most centered location is selected as the first location. If an integer then it is used as the index of the first location
 #'
 #' @return A vector of indices giving the euclidean-based maxmin ordering 
 #' @export
@@ -269,15 +460,22 @@ order_coordinate <- function(locs, coordinate)
 #' locs <- matrix(runif(100 * 2), 100, 2)
 #' 
 #' identical(order_maxmin_euclidean(locs), GPvecchia::order_maxmin_exact(locs))
-order_maxmin_euclidean <- function(locs)
+order_maxmin_euclidean <- function(locs, initial.pt = NULL)
 {
   n             <- nrow(locs)
   p             <- ncol(locs)
   ord           <- rep(NA, n)
   cen           <- t(as.matrix(colMeans(locs)))
   
-  ord[1]        <- which.min(rowSums((locs - matrix(as.numeric(cen), nrow = n, ncol = p, byrow = T))^2))
-  cand.argmax   <- seq(n)[seq(n) != ord[1]]
+  if(is.null(initial.pt)) {
+    ord[1]        <- which.min(rowSums((locs - matrix(as.numeric(cen), nrow = n, ncol = p, byrow = T))^2))
+    cand.argmax   <- seq(n)[seq(n) != ord[1]]
+  } else if(is.numeric(initial.pt) & length(initial.pt) == 1) {
+    ord[1]        <- initial.pt
+    cand.argmax   <- seq(n)[seq(n) != ord[1]]
+  } else {
+    stop("The argument initial.pt must be an integer.")
+  }
   
   cdist         <- fields::rdist(locs[cand.argmax, ], matrix(locs[ord[1], ], nrow = 1, ncol = 2))
   ord[2]        <- cand.argmax[which.max(as.numeric(cdist))]
@@ -334,11 +532,13 @@ order_maxmin_correlation_straightforward <- function(locs, d, initial.pt)
   }
   cand.argmax   <- seq(n)[seq(n) != ord[1]]
   
+  # second step
   ind           <- as.matrix(expand.grid(cand.argmax, ord[1]))
   cdist         <- d[ind]
   ord[2]        <- cand.argmax[which.max(as.numeric(cdist))]
   cand.argmax   <- cand.argmax[cand.argmax != ord[2]]
   
+  # third and so on ...
   for(j in 3:(n-1)){
     ind               <- as.matrix(expand.grid(cand.argmax, ord[seq(j-1)]))
     cdist             <- matrix(d[ind], nrow = length(cand.argmax), ncol = j-1, byrow = F)
@@ -400,15 +600,17 @@ order_maxmin_correlation_inverseDist <- function(locs, d.inv, initial.pt)
   }
   cand.argmax   <- seq(n)[seq(n) != ord[1]]
   
+  # second step
   ind           <- as.matrix(expand.grid(cand.argmax, ord[1]))
   cdist         <- d.inv[ind]
   ord[2]        <- cand.argmax[which.min(as.numeric(cdist))]
   cand.argmax   <- cand.argmax[cand.argmax != ord[2]]
   
+  # third and so on ...
   for(j in 3:(n-1)){
     ind               <- as.matrix(expand.grid(cand.argmax, ord[seq(j-1)]))
     cdist             <- matrix(d.inv[ind], nrow = length(cand.argmax), ncol = j-1, byrow = F)
-    cdist             <- Rfast::rowMaxs(cdist, value = T)
+    cdist             <- Rfast::rowMaxs(cdist, value = TRUE)
     ord[j]            <- cand.argmax[which.min(cdist)]
     cand.argmax       <- cand.argmax[cand.argmax != ord[j]]
   } 
