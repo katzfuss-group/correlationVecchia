@@ -11,8 +11,8 @@ simulate_spacetime_knownCovparms(
   t.len,
   m,
   method.locs,
-  abs.corr = FALSE,
   method.modify = NULL,
+  corr.dist = "1-rho",
   pivot = FALSE,
   tol = .Machine$double.eps,
   verbose = TRUE,
@@ -33,14 +33,14 @@ simulate_spacetime_knownCovparms(
 
 \item{method.locs}{"all.random", "space.random.time.grid", "all.grid", or "satellite"}
 
-\item{abs.corr}{Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho}
-
 \item{method.modify}{An argument specifying a correction method for the cholesky factorization of a covariance matrix. At \code{NULL} by default.
 If correction is \code{NULL}, then the built-in R function \code{chol} is used.
 If correction is \code{"qr"}, then the built-in R function \code{qr} is used.
 If correction is \code{"diag"}, then \code{C + diag(tol, n)} is used instead of a covariance matrix \code{C}.
 Correction methods \code{"type-I"}, \code{"type-II"}, \code{"eigen-I"}, \code{"eigen-II"}, \code{"GMW81"}, and \code{"SE99"} are refered to Fang and O'leary (2008).
 Correction method \code{"nearPD"} use a built-in function nearPD() in the R package Matrix.}
+
+\item{corr.dist}{1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), or sqrt(1-rho^2)}
 
 \item{pivot}{Logical indicating if pivoting is to be used when factorizing a covariance matrix. At \code{FALSE} by default}
 
@@ -62,7 +62,7 @@ Conducting simulation on vecchia approximations for spacetime GPs with known cov
 out <- simulate_spacetime_knownCovparms(nsim = 2, n = 10^2, d = 2, 
                                         t.len = 2, m = 5, 
                                         method.locs = 'all.random',
-                                        abs.corr = FALSE, 
+                                        corr.dist = "1-rho", 
                                         covmodel = cov_spacetime_expo, 
                                         covparms = c(1, 0.75, 50, 25))
 out$kls.average

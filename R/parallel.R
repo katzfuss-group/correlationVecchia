@@ -20,7 +20,7 @@
 #' @param covmodel A covariance function
 #' @param covparms A numeric vector of covariance parameters
 #' @param method.locs random or grid 
-#' @param abs.corr Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho
+#' @param corr.dist 1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), or sqrt(1-rho^2)
 #' @param method.modify An argument specifying a correction method for the cholesky factorization of a covariance matrix. At \code{NULL} by default.
 #'                      If correction is \code{NULL}, then the built-in R function \code{chol} is used.
 #'                      If correction is \code{"qr"}, then the built-in R function \code{qr} is used.
@@ -44,7 +44,7 @@
 #'                                                    nsim = 2, n = 10^2, d = 2)
 #' out$kldiv
 #' }
-parallel_simulate_anisotropic_knownCovparms <- function(cand.m, cand.a, nsim, n, d, covmodel = cov_expo_aniso, covparms = c(1, 0.1), method.locs = 'random', abs.corr = FALSE, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+parallel_simulate_anisotropic_knownCovparms <- function(cand.m, cand.a, nsim, n, d, covmodel = cov_expo_aniso, covparms = c(1, 0.1), method.locs = 'random', corr.dist = "1-rho", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 {
   time.tot <- proc.time()
   
@@ -68,7 +68,7 @@ parallel_simulate_anisotropic_knownCovparms <- function(cand.m, cand.a, nsim, n,
   cl                    <- parallel::makeCluster(no_cores)
   
   doParallel::registerDoParallel(cl)
-  sim <- foreach::foreach(m = cand.all$m, a = cand.all$a, .packages = c("correlationVecchia", "GPvecchia")) %dopar% simulate_univariate_knownCovparms(nsim = nsim, n = n, d = d, m = m, method.locs = method.locs, abs.corr = abs.corr, method.modify = method.modify, pivot = pivot, tol = tol, verbose = FALSE, covmodel = covmodel, covparms = covparms, a = c(a, rep(1, d - 1)) )
+  sim <- foreach::foreach(m = cand.all$m, a = cand.all$a, .packages = c("correlationVecchia", "GPvecchia")) %dopar% simulate_univariate_knownCovparms(nsim = nsim, n = n, d = d, m = m, method.locs = method.locs, corr.dist = corr.dist, method.modify = method.modify, pivot = pivot, tol = tol, verbose = FALSE, covmodel = covmodel, covparms = covparms, a = c(a, rep(1, d - 1)) )
   parallel::stopCluster(cl)
   
   ### KL divergence
@@ -100,7 +100,7 @@ parallel_simulate_anisotropic_knownCovparms <- function(cand.m, cand.a, nsim, n,
 #' @param smoothness A numeric function for spatially varying smoothness \eqn{\nu( loc )}
 #' @param kernel A matrix-valued function for spatially varying (local) geometric anisotropy \eqn{\Sigma( loc )}  
 #' @param method.locs random or grid 
-#' @param abs.corr Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho
+#' @param corr.dist 1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), or sqrt(1-rho^2)
 #' @param method.modify An argument specifying a correction method for the cholesky factorization of a covariance matrix. At \code{NULL} by default.
 #'                      If correction is \code{NULL}, then the built-in R function \code{chol} is used.
 #'                      If correction is \code{"qr"}, then the built-in R function \code{qr} is used.
@@ -306,7 +306,7 @@ parallel_simulate_anisotropic_knownCovparms <- function(cand.m, cand.a, nsim, n,
 #'                                                       kernel = kernel)
 #'  out$kldiv
 #'}
-parallel_simulate_nonstationary_knownCovparms <- function(cand.m, nsim, n, d, covmodel = cov_matern_ns_bruteforce, sigma, smoothness, kernel, method.locs = 'random', abs.corr = FALSE, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+parallel_simulate_nonstationary_knownCovparms <- function(cand.m, nsim, n, d, covmodel = cov_matern_ns_bruteforce, sigma, smoothness, kernel, method.locs = 'random', corr.dist = "1-rho", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 {
   time.tot <- proc.time()
   
@@ -330,7 +330,7 @@ parallel_simulate_nonstationary_knownCovparms <- function(cand.m, nsim, n, d, co
   cl                    <- parallel::makeCluster(no_cores)
   
   doParallel::registerDoParallel(cl)
-  sim <- foreach::foreach(m = cand.all$m, .packages = c("correlationVecchia", "GPvecchia")) %dopar% simulate_univariate_knownCovparms(nsim = nsim, n = n, d = d, m = m, method.locs = method.locs, abs.corr = abs.corr, method.modify = method.modify, pivot = pivot, tol = tol, verbose = FALSE, covmodel = covmodel, sigma = sigma, smoothness = smoothness, kernel = kernel)
+  sim <- foreach::foreach(m = cand.all$m, .packages = c("correlationVecchia", "GPvecchia")) %dopar% simulate_univariate_knownCovparms(nsim = nsim, n = n, d = d, m = m, method.locs = method.locs, corr.dist = corr.dist, method.modify = method.modify, pivot = pivot, tol = tol, verbose = FALSE, covmodel = covmodel, sigma = sigma, smoothness = smoothness, kernel = kernel)
   parallel::stopCluster(cl)
   
   ### KL divergence
@@ -359,10 +359,10 @@ parallel_simulate_nonstationary_knownCovparms <- function(cand.m, nsim, n, d, co
 #' @param n A number of locations
 #' @param d A dimension of domain
 #' @param p A number of processes 
+#' @param corr.dist 1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), or sqrt(1-rho^2)
 #' @param covmodel A covariance function
 #' @param covparms A numeric vector of covariance parameters 
 #' @param method.locs "random", "overlap", or "grid" 
-#' @param abs.corr Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho
 #' @param method.modify An argument specifying a correction method for the cholesky factorization of a covariance matrix. At \code{NULL} by default.
 #'                      If correction is \code{NULL}, then the built-in R function \code{chol} is used.
 #'                      If correction is \code{"qr"}, then the built-in R function \code{qr} is used.
@@ -389,7 +389,7 @@ parallel_simulate_nonstationary_knownCovparms <- function(cand.m, nsim, n, d, co
 #'                                                     covparms = c(1, 0.1))
 #' out$kldiv
 #' }
-parallel_simulate_multivariate_knownCovparms <- function(cand.m, cand.d, nsim, n, d, p = 2, abs.corr = FALSE, covmodel = cov_bivariate_expo_latDim, covparms = c(1, 0.1), method.locs = 'random', method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+parallel_simulate_multivariate_knownCovparms <- function(cand.m, cand.d, nsim, n, d, p = 2, corr.dist = "1-rho", covmodel = cov_bivariate_expo_latDim, covparms = c(1, 0.1), method.locs = 'random', method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 {
   time.tot <- proc.time()
   
@@ -413,7 +413,7 @@ parallel_simulate_multivariate_knownCovparms <- function(cand.m, cand.d, nsim, n
   cl                    <- parallel::makeCluster(no_cores)
   
   doParallel::registerDoParallel(cl)
-  sim <- foreach::foreach(m = cand.all$m, d.latent = cand.all$d, .packages = c("correlationVecchia", "GPvecchia")) %dopar% simulate_multivariate_knownCovparms(nsim = nsim, n = n, d = d, p = p, m = m, method.locs = method.locs, abs.corr = abs.corr, method.modify = method.modify, pivot = pivot, tol = tol, verbose = FALSE, covmodel = covmodel, covparms = c(covparms, d.latent))
+  sim <- foreach::foreach(m = cand.all$m, d.latent = cand.all$d, .packages = c("correlationVecchia", "GPvecchia")) %dopar% simulate_multivariate_knownCovparms(nsim = nsim, n = n, d = d, p = p, m = m, method.locs = method.locs, corr.dist = corr.dist, method.modify = method.modify, pivot = pivot, tol = tol, verbose = FALSE, covmodel = covmodel, covparms = c(covparms, d.latent))
   parallel::stopCluster(cl)
   
   ### KL divergence
@@ -441,7 +441,7 @@ parallel_simulate_multivariate_knownCovparms <- function(cand.m, cand.d, nsim, n
 #' @param n A number of locations
 #' @param d A dimension of domain 
 #' @param t.len A number of repeated measurement (= a number of different temporal locations)
-#' @param abs.corr Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho
+#' @param corr.dist 1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), or sqrt(1-rho^2)
 #' @param covmodel A covariance function
 #' @param covparms A numeric vector of covariance parameters
 #' @param method.locs "all.random", "space.random.time.grid", "all.grid", or "satellite"
@@ -465,13 +465,13 @@ parallel_simulate_multivariate_knownCovparms <- function(cand.m, cand.d, nsim, n
 #' \dontrun{
 #' out <- parallel_simulate_spacetime_knownCovparms(cand.m = c(10, 20), 
 #'                                                  nsim = 2, n = 10^2, 
-#'                                                  d = 2, t.len = 3, abs.corr = FALSE,
+#'                                                  d = 2, t.len = 3, corr.dist = "1-rho",
 #'                                                  covmodel = cov_spacetime_expo, 
 #'                                                  covparms = c(1, 0.75, 50, 25), 
 #'                                                  method.locs = "all.random")
 #' out$kldiv
 #' }
-parallel_simulate_spacetime_knownCovparms <- function(cand.m, nsim, n, d, t.len, abs.corr = FALSE, covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 50, 25), method.locs = 'all.random', method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+parallel_simulate_spacetime_knownCovparms <- function(cand.m, nsim, n, d, t.len, corr.dist = "1-rho", covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 50, 25), method.locs = 'all.random', method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 {
   time.tot <- proc.time()
   
@@ -495,7 +495,7 @@ parallel_simulate_spacetime_knownCovparms <- function(cand.m, nsim, n, d, t.len,
   cl                    <- parallel::makeCluster(no_cores)
   
   doParallel::registerDoParallel(cl)
-  sim <- foreach::foreach(m = cand.all$m, .packages = c("correlationVecchia", "GPvecchia")) %dopar% simulate_spacetime_knownCovparms(nsim = nsim, n = n, d = d, t.len = t.len, m = m, method.locs = method.locs, abs.corr = abs.corr, method.modify = method.modify, pivot = pivot, tol = tol, verbose = FALSE, covmodel = covmodel, covparms = covparms)
+  sim <- foreach::foreach(m = cand.all$m, .packages = c("correlationVecchia", "GPvecchia")) %dopar% simulate_spacetime_knownCovparms(nsim = nsim, n = n, d = d, t.len = t.len, m = m, method.locs = method.locs, corr.dist = corr.dist, method.modify = method.modify, pivot = pivot, tol = tol, verbose = FALSE, covmodel = covmodel, covparms = covparms)
   parallel::stopCluster(cl)
   
   ### KL divergence
@@ -523,10 +523,10 @@ parallel_simulate_spacetime_knownCovparms <- function(cand.m, nsim, n, d, t.len,
 #' @param nsim A number of repeated simualtions for each case
 #' @param n A number of locations
 #' @param d A dimension of domain. It must be 2 for now
+#' @param corr.dist 1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), or sqrt(1-rho^2)
 #' @param covmodel A covariance function
 #' @param covparms A numeric vector of covariance parameters = c(sigma2, range = NA)
 #' @param method.locs random or grid 
-#' @param abs.corr Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho
 #' @param method.modify An argument specifying a correction method for the cholesky factorization of a covariance matrix. At \code{NULL} by default.
 #'                      If correction is \code{NULL}, then the built-in R function \code{chol} is used.
 #'                      If correction is \code{"qr"}, then the built-in R function \code{qr} is used.
@@ -553,7 +553,7 @@ parallel_simulate_spacetime_knownCovparms <- function(cand.m, nsim, n, d, t.len,
 #'                                                   tol = 1e-6)
 #' out$kldiv
 #' }
-parallel_simulate_derivative_knownCovparms <- function(cand.m, cand.r, nsim, n, d, abs.corr = FALSE, covmodel = cov_derivative_matern_2.5_2d, covparms = c(1, NA), method.locs = 'random', method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+parallel_simulate_derivative_knownCovparms <- function(cand.m, cand.r, nsim, n, d, corr.dist = "1-rho", covmodel = cov_derivative_matern_2.5_2d, covparms = c(1, NA), method.locs = 'random', method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 {
   time.tot <- proc.time()
   
@@ -577,7 +577,7 @@ parallel_simulate_derivative_knownCovparms <- function(cand.m, cand.r, nsim, n, 
   cl                    <- parallel::makeCluster(no_cores)
   
   doParallel::registerDoParallel(cl)
-  sim <- foreach::foreach(m = cand.all$m, r = cand.all$r, .packages = c("correlationVecchia", "GPvecchia")) %dopar% simulate_derivative_knownCovparms(nsim = nsim, n = n, d = d, m = m, method.locs = method.locs, abs.corr = abs.corr, method.modify = method.modify, pivot = pivot, tol = tol, verbose = FALSE, covmodel = covmodel, covparms = c(covparms[1], r))
+  sim <- foreach::foreach(m = cand.all$m, r = cand.all$r, .packages = c("correlationVecchia", "GPvecchia")) %dopar% simulate_derivative_knownCovparms(nsim = nsim, n = n, d = d, m = m, method.locs = method.locs, corr.dist = corr.dist, method.modify = method.modify, pivot = pivot, tol = tol, verbose = FALSE, covmodel = covmodel, covparms = c(covparms[1], r))
   parallel::stopCluster(cl)
   
   ### KL divergence

@@ -11,7 +11,7 @@ parallel_simulate_multivariate_knownCovparms(
   n,
   d,
   p = 2,
-  abs.corr = FALSE,
+  corr.dist = "1-rho",
   covmodel = cov_bivariate_expo_latDim,
   covparms = c(1, 0.1),
   method.locs = "random",
@@ -34,7 +34,7 @@ parallel_simulate_multivariate_knownCovparms(
 
 \item{p}{A number of processes}
 
-\item{abs.corr}{Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho}
+\item{corr.dist}{1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), or sqrt(1-rho^2)}
 
 \item{covmodel}{A covariance function}
 

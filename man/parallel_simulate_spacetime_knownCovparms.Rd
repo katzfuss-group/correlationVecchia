@@ -10,7 +10,7 @@ parallel_simulate_spacetime_knownCovparms(
   n,
   d,
   t.len,
-  abs.corr = FALSE,
+  corr.dist = "1-rho",
   covmodel = cov_spacetime_expo,
   covparms = c(1, 0.75, 50, 25),
   method.locs = "all.random",
@@ -31,7 +31,7 @@ parallel_simulate_spacetime_knownCovparms(
 
 \item{t.len}{A number of repeated measurement (= a number of different temporal locations)}
 
-\item{abs.corr}{Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho}
+\item{corr.dist}{1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), or sqrt(1-rho^2)}
 
 \item{covmodel}{A covariance function}
 
@@ -62,7 +62,7 @@ Simulation on spacetime cases
 \dontrun{
 out <- parallel_simulate_spacetime_knownCovparms(cand.m = c(10, 20), 
                                                  nsim = 2, n = 10^2, 
-                                                 d = 2, t.len = 3, abs.corr = FALSE,
+                                                 d = 2, t.len = 3, corr.dist = "1-rho",
                                                  covmodel = cov_spacetime_expo, 
                                                  covparms = c(1, 0.75, 50, 25), 
                                                  method.locs = "all.random")

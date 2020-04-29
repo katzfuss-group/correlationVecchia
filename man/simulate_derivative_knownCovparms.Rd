@@ -2,7 +2,7 @@
 % Please edit documentation in R/simulation.R
 \name{simulate_derivative_knownCovparms}
 \alias{simulate_derivative_knownCovparms}
-\title{Conducting simulation on vecchia approximations for (GP, dGP/dx1 dGP/dx2) with known covariance parameters}
+\title{Conducting simulation on vecchia approximations for (GP, dGP/dx1 dGP/dx2, ...) with known covariance parameters}
 \usage{
 simulate_derivative_knownCovparms(
   nsim,
@@ -10,8 +10,8 @@ simulate_derivative_knownCovparms(
   d,
   m,
   method.locs,
-  abs.corr = FALSE,
   method.modify = NULL,
+  corr.dist = "1-rho",
   pivot = FALSE,
   tol = .Machine$double.eps,
   verbose = TRUE,
@@ -30,14 +30,14 @@ simulate_derivative_knownCovparms(
 
 \item{method.locs}{random or grid}
 
-\item{abs.corr}{Logical at \code{FALSE} be default. If \code{TRUE} then distance = 1-|rho|. If \code{FALSE} then distane = 1-rho}
-
 \item{method.modify}{An argument specifying a correction method for the cholesky factorization of a covariance matrix. At \code{NULL} by default.
 If correction is \code{NULL}, then the built-in R function \code{chol} is used.
 If correction is \code{"qr"}, then the built-in R function \code{qr} is used.
 If correction is \code{"diag"}, then \code{C + diag(tol, n)} is used instead of a covariance matrix \code{C}.
 Correction methods \code{"type-I"}, \code{"type-II"}, \code{"eigen-I"}, \code{"eigen-II"}, \code{"GMW81"}, and \code{"SE99"} are refered to Fang and O'leary (2008).
 Correction method \code{"nearPD"} use a built-in function nearPD() in the R package Matrix.}
+
+\item{corr.dist}{1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), or sqrt(1-rho^2)}
 
 \item{pivot}{Logical indicating if pivoting is to be used when factorizing a covariance matrix. At \code{FALSE} by default}
 
@@ -53,47 +53,54 @@ Correction method \code{"nearPD"} use a built-in function nearPD() in the R pack
 list
 }
 \description{
-Conducting simulation on vecchia approximations for (GP, dGP/dx1 dGP/dx2) with known covariance parameters
+Conducting simulation on vecchia approximations for (GP, dGP/dx1 dGP/dx2, ...) with known covariance parameters
 }
 \examples{
+out <- simulate_derivative_knownCovparms(nsim = 1, n = 10^2, d = 1, m = 10, 
+                                         method.locs = 'random', corr.dist = "1-rho", 
+                                         covmodel = corr_derivative_squared_expo_1d, 
+                                         covparms = c(1, 0.1), pivot = FALSE, 
+                                         method.modify = "eigen-I", tol = 1e-4)
+out$kls.average
+
 \dontrun{
 out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, 
-                                         method.locs = 'random', abs.corr = FALSE, 
+                                         method.locs = 'random', corr.dist = "1-rho", 
                                          covmodel = corr_derivative_matern_2.5_1d, 
                                          covparms = c(1, 0.1), pivot = FALSE, 
                                          method.modify = "eigen-I", tol = 1e-5)
 out$kls.average
 
 out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, 
-                                         method.locs = 'random', abs.corr = FALSE, 
+                                         method.locs = 'random', corr.dist = "1-rho", 
                                          covmodel = corr_derivative_matern_2.5_2d, 
                                          covparms = c(1, 0.1), pivot = FALSE, 
                                          method.modify = "eigen-I", tol = 1e-5)
 out$kls.average
 
 out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, 
-                                         method.locs = 'random', abs.corr = FALSE, 
+                                         method.locs = 'random', corr.dist = "1-rho", 
                                          covmodel = corr_derivative_matern_4.5_1d, 
                                          covparms = c(1, 0.1), pivot = FALSE, 
                                          method.modify = "eigen-I", tol = 1e-5)
 out$kls.average
 
 out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, 
-                                         method.locs = 'random', abs.corr = FALSE, 
+                                         method.locs = 'random', corr.dist = "1-rho", 
                                          covmodel = corr_derivative_matern_4.5_2d, 
                                          covparms = c(1, 0.1), pivot = FALSE, 
                                          method.modify = "eigen-I", tol = 1e-5)
 out$kls.average
 
 out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 1, m = 10, 
-                                         method.locs = 'random', abs.corr = FALSE, 
+                                         method.locs = 'random', corr.dist = "1-rho", 
                                          covmodel = corr_derivative_squared_expo_1d, 
                                          covparms = c(1, 0.1), pivot = FALSE, 
                                          method.modify = "eigen-I", tol = 1e-5)
 out$kls.average
 
 out <- simulate_derivative_knownCovparms(nsim = 1, n = 20^2, d = 2, m = 10, 
-                                         method.locs = 'random', abs.corr = FALSE, 
+                                         method.locs = 'random', corr.dist = "1-rho", 
                                          covmodel = corr_derivative_squared_expo_2d, 
                                          covparms = c(1, 0.1), pivot = FALSE, 
                                          method.modify = "eigen-I", tol = 1e-5)
