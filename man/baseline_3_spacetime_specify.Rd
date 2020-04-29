@@ -4,7 +4,14 @@
 \alias{baseline_3_spacetime_specify}
 \title{The third baseline approximation for spatio-temporal cases}
 \usage{
-baseline_3_spacetime_specify(locs, m, coordinate = NULL, covmodel, covparms)
+baseline_3_spacetime_specify(
+  locs,
+  m,
+  coordinate = NULL,
+  corr.dist = "1-rho",
+  covmodel,
+  covparms
+)
 }
 \arguments{
 \item{locs}{A matrix of spatio-temporal locations}
@@ -12,6 +19,8 @@ baseline_3_spacetime_specify(locs, m, coordinate = NULL, covmodel, covparms)
 \item{m}{A size of conditioning sets}
 
 \item{coordinate}{integer or vector of integers in \code{1,...,d}}
+
+\item{corr.dist}{1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), or sqrt(1-rho^2)}
 
 \item{covmodel}{covariance function}
 

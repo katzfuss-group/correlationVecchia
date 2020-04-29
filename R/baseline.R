@@ -301,7 +301,7 @@ baseline_3_multivariate_specify <- function(locs, m)
 #'
 #' @param locs A matrix of locations
 #' @param m A size of conditioning sets
-#' @param abs.corr FALSE -> 1-rho or TRUE -> 1-|rho|
+#' @param corr.dist 1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), or sqrt(1-rho^2)
 #' @param covmodel A covariance function
 #' @param ... Covariance parameters
 #'
@@ -349,7 +349,7 @@ baseline_3_multivariate_specify <- function(locs, m)
 #' cond1 == cond2 # similar
 #' cond1 == cond3 # different
 #' cond3 == cond4 # similar
-baseline_4_multivariate_specify <- function(locs, m, abs.corr = FALSE, covmodel, ...)
+baseline_4_multivariate_specify <- function(locs, m, corr.dist = "1-rho", covmodel, ...)
 {
   p         <- length(locs)
   n         <- unlist(lapply(locs, nrow))
@@ -372,13 +372,7 @@ baseline_4_multivariate_specify <- function(locs, m, abs.corr = FALSE, covmodel,
   locsord     <- locs.full[ord.full, , drop = FALSE]
   covmat      <- covmodel(locs = locsord.each, ...)
   
-  if(abs.corr == FALSE) {
-    cond.sets   <- conditioning_nn(m = m, d = 1 - covmat)
-  } else if(abs.corr == TRUE) {
-    cond.sets   <- conditioning_nn(m = m, d = 1 - abs(covmat))
-  } else {
-    stop("abs.corr must be logical!")
-  }
+  cond.sets   <- .find_ordered_cnn(m = m, rho = covmat, corr.dist = corr.dist)
   
   Cond        <- matrix(NA, nrow(cond.sets), ncol(cond.sets)); Cond[!is.na(cond.sets)] <- TRUE
   obs         <- rep(TRUE, nrow(locs.full))
@@ -504,6 +498,7 @@ baseline_2_spacetime_specify <- function(locs, m, coordinate = NULL, theta = 1)
   locsord     <- locs[ord, , drop = FALSE]
   
   d.spacetime <- fields::rdist(x1 = locs[, 1:2, drop = FALSE]) + theta * fields::rdist(x1 = locs[, 3, drop = FALSE])
+  
   cond.sets   <- conditioning_nn(m = m, d = d.spacetime)
   
   Cond        <- matrix(NA, nrow(cond.sets), ncol(cond.sets)); Cond[!is.na(cond.sets)] <- TRUE
@@ -522,6 +517,7 @@ baseline_2_spacetime_specify <- function(locs, m, coordinate = NULL, theta = 1)
 #' @param locs A matrix of spatio-temporal locations
 #' @param m A size of conditioning sets  
 #' @param coordinate integer or vector of integers in \code{1,...,d}
+#' @param corr.dist 1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), or sqrt(1-rho^2)
 #' @param covmodel covariance function
 #' @param covparms A numeric vector of covariance parameters
 #'
@@ -559,7 +555,7 @@ baseline_2_spacetime_specify <- function(locs, m, coordinate = NULL, theta = 1)
 #' cond1
 #' cond2 
 #' cond3
-baseline_3_spacetime_specify <- function(locs, m, coordinate = NULL, covmodel, covparms)
+baseline_3_spacetime_specify <- function(locs, m, coordinate = NULL, corr.dist = "1-rho", covmodel, covparms)
 {
   ord         <- order_time(locs = locs, coordinate = coordinate)
   locsord     <- locs[ord, , drop = FALSE]
@@ -567,7 +563,7 @@ baseline_3_spacetime_specify <- function(locs, m, coordinate = NULL, covmodel, c
   covmat      <- covmodel(locs = locs, covparms = covparms) / covparms[1]
   covmatord   <- covmat[ord, ord]
   
-  cond.sets   <- conditioning_nn(m = m, d = 1 - covmat)
+  cond.sets   <- .find_ordered_cnn(m = m, rho = covmat, corr.dist = corr.dist)
   
   Cond        <- matrix(NA, nrow(cond.sets), ncol(cond.sets)); Cond[!is.na(cond.sets)] <- TRUE
   obs         <- rep(TRUE, nrow(locsord))
