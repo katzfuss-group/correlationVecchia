@@ -182,6 +182,109 @@ corrvecchia_specify_knownCovparms <- function(locs, m, ordering = "maxmin", orde
 #' @export
 #'
 #' @examples
+#' ### What you should know ...
+#' 
+#' locs <- matrix(runif(400), 200, 2) ; m <- 10
+#' 
+#' rho <- correlationVecchia:::.correlation(locs = locs, covmodel = cov_expo_iso, 
+#'                                          covparms = c(1, 0.1), abs.corr = FALSE)
+#' 
+#' ord <- GPvecchia::order_maxmin_exact(locs)
+#' all.equal(ord, 
+#'           order_maxmin_correlation_straightforward(locs = locs, 
+#'                                                    d = 1 - rho, 
+#'                                                    initial.pt = ord[1]))
+#' all.equal(ord, 
+#'           order_maxmin_correlation_inverseDist(locs = locs, 
+#'                                                d = rho, 
+#'                                                initial.pt = ord[1]))
+#' 
+#' locsord <- locs[ord, , drop = FALSE] ; rhoord <- rho[ord, ord]
+#' all.equal(GpGp::find_ordered_nn_brute(locs = locsord, m = m), 
+#'           conditioning_nn(m = m, d = 1 - rhoord))
+#' all.equal(GpGp::find_ordered_nn(locs = locsord, m = m), 
+#'           conditioning_nn(m = m, d = 1 - rhoord))
+#' 
+#' ### Example
+#' 
+#' n             <- 15^2
+#' m             <- 15
+#' locs          <- matrix(runif(n * 2, 0, 1), n, 2)
+#' covparms      <- c(1, 0.1, 10)
+#' 
+#' # true cov matrix
+#' Sigma <- cov_expo_aniso(locs, covparms)
+#' 
+#' # Visualize the process
+#' y <- as.numeric(t(chol(Sigma)) %*% rnorm(n))
+#' fields::quilt.plot(locs[,1], locs[,2], y)
+#' 
+#' out01 <- corrvecchia_specify_knownCovparms_2(locs = locs, m = m,
+#'                                              ordering = "maxmin", ordering.method = "euclidean",
+#'                                              coordinate = NULL, corr.dist = "1-rho", 
+#'                                              initial.pt = NULL,
+#'                                              conditioning = "NN", 
+#'                                              conditioning.method = "euclidean",
+#'                                              covmodel = cov_expo_aniso, covparms = covparms)
+#' out02 <- corrvecchia_specify_knownCovparms_2(locs = locs, m = m, ordering = "maxmin",
+#'                                              ordering.method = "euclidean",
+#'                                              coordinate = NULL, corr.dist = "1-rho", 
+#'                                              initial.pt = NULL,
+#'                                              conditioning = "NN", 
+#'                                              conditioning.method = "correlation",
+#'                                              covmodel = cov_expo_aniso, covparms = covparms)
+#' out03 <- corrvecchia_specify_knownCovparms_2(locs = locs, m = m, ordering = "maxmin",
+#'                                              ordering.method = "correlation",
+#'                                              coordinate = NULL, corr.dist = "1-rho", 
+#'                                              initial.pt = NULL,
+#'                                              conditioning = "NN", 
+#'                                              conditioning.method = "euclidean",
+#'                                              covmodel = cov_expo_aniso, covparms = covparms)
+#' out04 <- corrvecchia_specify_knownCovparms_2(locs = locs, m = m,
+#'                                              ordering = "maxmin", ordering.method = "correlation",
+#'                                              coordinate = NULL, corr.dist = "1-rho", 
+#'                                              initial.pt = NULL,
+#'                                              conditioning = "NN", 
+#'                                              conditioning.method = "correlation",
+#'                                              covmodel = cov_expo_aniso, covparms = covparms)
+#' out05 <- corrvecchia_specify_knownCovparms_2(locs = locs, m = m,
+#'                                              ordering = "coord", ordering.method = "euclidean",
+#'                                              coordinate = NULL, corr.dist = "1-rho", 
+#'                                              initial.pt = NULL,
+#'                                              conditioning = "NN", 
+#'                                              conditioning.method = "euclidean",
+#'                                              covmodel = cov_expo_aniso, covparms = covparms)
+#' out06 <- corrvecchia_specify_knownCovparms_2(locs = locs, m = m,
+#'                                              ordering = "coord", ordering.method = "euclidean",
+#'                                              coordinate = c(1), corr.dist = "1-rho", 
+#'                                              initial.pt = NULL,
+#'                                              conditioning = "NN", 
+#'                                              conditioning.method = "euclidean",
+#'                                              covmodel = cov_expo_aniso, covparms = covparms)
+#' out07 <- corrvecchia_specify_knownCovparms_2(locs = locs, m = m,
+#'                                              ordering = "coord", ordering.method = "euclidean",
+#'                                              coordinate = c(2), corr.dist = "1-rho", 
+#'                                              initial.pt = NULL,
+#'                                              conditioning = "NN", 
+#'                                              conditioning.method = "euclidean",
+#'                                              covmodel = cov_expo_aniso, covparms = covparms)
+#' 
+#' kls.euc.euc    <- performance(out = out01, locs = locs,
+#'                                covmodel = cov_expo_aniso, covparms = covparms)
+#' kls.cor.euc    <- performance(out = out02, locs = locs,
+#'                                covmodel = cov_expo_aniso, covparms = covparms)
+#' kls.euc.cor    <- performance(out = out03, locs = locs,
+#'                                covmodel = cov_expo_aniso, covparms = covparms)
+#' kls.cor.cor    <- performance(out = out04, locs = locs,
+#'                                covmodel = cov_expo_aniso, covparms = covparms)
+#' kls.coord.xy   <- performance(out = out05, locs = locs,
+#'                                covmodel = cov_expo_aniso, covparms = covparms)
+#' kls.coord.x    <- performance(out = out06, locs = locs,
+#'                                covmodel = cov_expo_aniso, covparms = covparms)
+#' kls.coord.y    <- performance(out = out07, locs = locs,
+#'                                covmodel = cov_expo_aniso, covparms = covparms)
+#' 
+#' c(kls.euc.euc, kls.euc.cor, kls.cor.euc, kls.cor.cor, kls.coord.xy, kls.coord.x, kls.coord.y)
 corrvecchia_specify_knownCovparms_2 <- function(locs, m, ordering = "maxmin", ordering.method = "correlation", coordinate = NULL, corr.dist = "1-rho", initial.pt = NULL, conditioning = "NN", conditioning.method = "correlation", covmodel, covparms) 
 {
   locs  <- as.matrix(locs)
