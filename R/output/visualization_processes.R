@@ -179,3 +179,230 @@ abline(h = 0, v = 0, col = 'gray', lwd = 2)
 legend("topright", legend = c("corr(GP, GP)", "corr(GP', GP)", "corr(GP', GP')"), lty = 1, lwd = 2, col = c("black", "red", "blue"))
 
 par(mfrow = c(1, 1))
+
+### derivative case 2 #############################################################################################
+
+locs <- seq(from = 0, to = 0.5, by = 0.01)
+locs <- matrix(locs, nrow = length(locs), ncol = 1)
+locs <- cbind(locs, 0)
+
+covparms = c(1, 0.1)
+
+covvec.mat25 <- correlationVecchia::cov_matern_2.5(locs = locs, covparms = covparms)[1, ]
+covvec.mat45 <- correlationVecchia::cov_matern_4.5(locs = locs, covparms = covparms)[1, ]
+covvec.sqexp <- correlationVecchia::cov_squared_expo(locs = locs, covparms = covparms)[1, ]
+
+corvec.mat25 <- covvec.mat25 / covvec.mat25[1]
+corvec.mat45 <- covvec.mat45 / covvec.mat45[1]
+corvec.sqexp <- covvec.sqexp / covvec.sqexp[1]
+
+covvec.dgp.mat25 <- correlationVecchia:::.partial_cov_matern_2.5(locs = locs, covparms = covparms, coord = c(1))[1, ]
+covvec.dgp.mat45 <- correlationVecchia:::.partial_cov_matern_4.5(locs = locs, covparms = covparms, coord = c(1))[1, ]
+covvec.dgp.sqexp <- correlationVecchia:::.partial_cov_squared_expo(locs = locs, covparms = covparms, coord = c(1))[1, ]
+
+covvec.d2gp.mat25 <- correlationVecchia:::.double_partial_cov_matern_2.5(locs = locs, covparms = covparms, coord = c(1))[1, ]
+covvec.d2gp.mat45 <- correlationVecchia:::.double_partial_cov_matern_4.5(locs = locs, covparms = covparms, coord = c(1))[1, ]
+covvec.d2gp.sqexp <- correlationVecchia:::.double_partial_cov_squared_expo(locs = locs, covparms = covparms, coord = c(1))[1, ]
+
+corvec.dgp.mat25 <- covvec.dgp.mat25 / sqrt(covvec.mat25[1]) / sqrt(covvec.d2gp.mat25[1])
+corvec.dgp.mat45 <- covvec.dgp.mat45 / sqrt(covvec.mat45[1]) / sqrt(covvec.d2gp.mat45[1])
+corvec.dgp.sqexp <- covvec.dgp.sqexp / sqrt(covvec.sqexp[1]) / sqrt(covvec.d2gp.sqexp[1])
+
+corvec.d2gp.mat25 <- covvec.d2gp.mat25 / covvec.d2gp.mat25[1]
+corvec.d2gp.mat45 <- covvec.d2gp.mat45 / covvec.d2gp.mat45[1]
+corvec.d2gp.sqexp <- covvec.d2gp.sqexp / covvec.d2gp.sqexp[1]
+
+legvec <- c("cov(GP, GP)    ", "cov(GP', GP)    ", "cov(GP', GP')    ")
+
+par(mfrow = c(3, 2))
+
+plot(locs[, 1], covvec.mat25, type = 'l', lwd = 2, col = 'black', xlab = 'distance', ylab = 'covariance', main = 'Matern covariance with nu = 2.5', ylim = range(c(covvec.mat25, covvec.dgp.mat25, covvec.d2gp.mat25)))
+lines(locs[, 1], covvec.dgp.mat25, lwd = 2, col = 'red')
+lines(locs[, 1], covvec.d2gp.mat25, lwd = 2, col = 'blue')
+abline(h = 0, v = 0, col = 'gray', lwd = 2)
+legend("topright", legend = legvec, lty = 1, lwd = 1, col = c("black", "red", "blue"))
+
+plot(locs[, 1], corvec.mat25, type = 'l', lwd = 2, col = 'black', xlab = 'distance', ylab = 'correlation', main = 'Matern correlation with nu = 2.5', ylim = range(c(corvec.mat25, corvec.dgp.mat25, corvec.d2gp.mat25)))
+lines(locs[, 1], corvec.dgp.mat25, lwd = 2, col = 'red')
+lines(locs[, 1], corvec.d2gp.mat25, lwd = 2, col = 'blue')
+abline(h = 0, v = 0, col = 'gray', lwd = 2)
+legend("topright", legend = legvec, lty = 1, lwd = 1, col = c("black", "red", "blue"))
+
+plot(locs[, 1], covvec.mat45, type = 'l', lwd = 2, col = 'black', xlab = 'distance', ylab = 'covariance', main = 'Matern covariance with nu = 4.5', ylim = range(c(covvec.mat45, covvec.dgp.mat45, covvec.d2gp.mat45)))
+lines(locs[, 1], covvec.dgp.mat45, lwd = 2, col = 'red')
+lines(locs[, 1], covvec.d2gp.mat45, lwd = 2, col = 'blue')
+abline(h = 0, v = 0, col = 'gray', lwd = 2)
+legend("topright", legend = legvec, lty = 1, lwd = 1, col = c("black", "red", "blue"))
+
+plot(locs[, 1], corvec.mat45, type = 'l', lwd = 2, col = 'black', xlab = 'distance', ylab = 'correlation', main = 'Matern correlation with nu = 4.5', ylim = range(c(corvec.mat45, corvec.dgp.mat45, corvec.d2gp.mat45)))
+lines(locs[, 1], corvec.dgp.mat45, lwd = 2, col = 'red')
+lines(locs[, 1], corvec.d2gp.mat45, lwd = 2, col = 'blue')
+abline(h = 0, v = 0, col = 'gray', lwd = 2)
+legend("topright", legend = legvec, lty = 1, lwd = 1, col = c("black", "red", "blue"))
+
+plot(locs[, 1], covvec.sqexp, type = 'l', lwd = 2, col = 'black', xlab = 'distance', ylab = 'covariance', main = 'Squared exponential covariance', ylim = range(c(covvec.sqexp, covvec.dgp.sqexp, covvec.d2gp.sqexp)))
+lines(locs[, 1], covvec.dgp.sqexp, lwd = 2, col = 'red')
+lines(locs[, 1], covvec.d2gp.sqexp, lwd = 2, col = 'blue')
+abline(h = 0, v = 0, col = 'gray', lwd = 2)
+legend("topright", legend = legvec, lty = 1, lwd = 1, col = c("black", "red", "blue"))
+
+plot(locs[, 1], corvec.sqexp, type = 'l', lwd = 2, col = 'black', xlab = 'distance', ylab = 'correlation', main = 'Squared exponential correlation', ylim = range(c(corvec.sqexp, corvec.dgp.sqexp, corvec.d2gp.sqexp)))
+lines(locs[, 1], corvec.dgp.sqexp, lwd = 2, col = 'red')
+lines(locs[, 1], corvec.d2gp.sqexp, lwd = 2, col = 'blue')
+abline(h = 0, v = 0, col = 'gray', lwd = 2)
+legend("topright", legend = legvec, lty = 1, lwd = 1, col = c("black", "red", "blue"))
+
+par(mfrow = c(1, 1))
+
+### derivative case 3 #############################################################################################
+
+n <- 20
+d <- 2
+
+locs <- matrix(runif(n * d), nrow = n, ncol = d)
+locsall <- rbind(locs, locs, locs)
+locs <- list(locs1 = locs, locs2 = locs, locs3 = locs)
+
+covmat <- corr_derivative_squared_expo_2d(locs = locs, covparms = c(1, 0.1))
+fields::image.plot(abs(covmat))
+
+m <- 6
+
+out.b1 <- baseline_1_multivariate_specify(locs = locs, m = m)
+ord.b1 <- out.b1$ord
+con.b1 <- out.b1$U.prep$revNNarray[, seq(from = m, to = 1, by = -1)]
+
+out.b2 <- baseline_2_multivariate_specify(locs = locs, m = m)
+ord.b2 <- out.b2$ord
+con.b2 <- out.b2$U.prep$revNNarray[, seq(from = m, to = 1, by = -1)]
+
+out.b3 <- baseline_3_multivariate_specify(locs = locs, m = m)
+ord.b3 <- out.b3$ord
+con.b3 <- out.b3$U.prep$revNNarray[, seq(from = m, to = 1, by = -1)]
+
+out.b4 <- baseline_4_multivariate_specify(locs = locs, m = m, abs.corr = TRUE, covmodel = cov_derivative_squared_expo_2d, covparms = c(1, 0.1))
+ord.b4 <- out.b4$ord
+con.b4 <- out.b4$U.prep$revNNarray[, seq(from = m, to = 1, by = -1)]
+
+out.cc <- corrvecchia_specify_knownCovparms(locs = locsall, m = m, ordering = "maxmin", ordering.method = "correlation", abs.corr = TRUE, conditioning = "NN", conditioning.method = "correlation", covmodel = covmat, covparms = c(1))
+ord.cc <- out.b4$ord
+con.cc <- out.b4$U.prep$revNNarray[, seq(from = m, to = 1, by = -1)]
+
+################################################################################
+
+ind <- 2 * n + 1
+
+################################################################################
+
+par(mfrow = c(1, 2))
+
+plot(locs[[1]], xlim = c(0, 1), ylim = c(0, 1), xlab = 'x1', ylab = 'x2', main = 'Ordering (Baseline 1)')
+
+locsord <- locsall[ord.b1, ]
+
+for(i in 1:n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 4)
+for(i in 1:n+n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 3)
+for(i in 1:n+2*n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 2)
+
+plot(locs[[1]], xlim = c(0, 1), ylim = c(0, 1), xlab = 'x1', ylab = 'x2', main = 'Conditioning (Baseline 1)')
+points(locsord[ind, 1], locsord[ind, 2], pch = 15, cex = 2)
+
+for(i in 1:m) {
+  k <- con.b1[ind, i]
+  points(locsord[k, 1], locsord[k, 2], pch = 13)
+  text(locsord[k, 1], locsord[k, 2], label = i, pos = 4)
+}
+
+par(mfrow = c(1, 1))
+
+################################################################################
+
+par(mfrow = c(1, 2))
+
+plot(locs[[1]], xlim = c(0, 1), ylim = c(0, 1), xlab = 'x1', ylab = 'x2', main = 'Ordering (Baseline 2)')
+
+locsord <- locsall[ord.b2, ]
+
+for(i in 1:n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 4)
+for(i in 1:n+n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 3)
+for(i in 1:n+2*n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 2)
+
+plot(locs[[1]], xlim = c(0, 1), ylim = c(0, 1), xlab = 'x1', ylab = 'x2', main = 'Conditioning (Baseline 2)')
+points(locsord[ind, 1], locsord[ind, 2], pch = 15, cex = 2)
+
+for(i in 1:m) {
+  k <- con.b2[ind, i]
+  points(locsord[k, 1], locsord[k, 2], pch = 13)
+  text(locsord[k, 1], locsord[k, 2], label = i, pos = 4)
+}
+
+par(mfrow = c(1, 1))
+
+###############################################################################
+
+par(mfrow = c(1, 2))
+
+plot(locs[[1]], xlim = c(0, 1), ylim = c(0, 1), xlab = 'x1', ylab = 'x2', main = 'Ordering (Baseline 3)')
+
+locsord <- locsall[ord.b3, ]
+
+for(i in 1:n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 4)
+for(i in 1:n+n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 3)
+for(i in 1:n+2*n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 2)
+
+plot(locs[[1]], xlim = c(0, 1), ylim = c(0, 1), xlab = 'x1', ylab = 'x2', main = 'Conditioning (Baseline 3)')
+points(locsord[ind, 1], locsord[ind, 2], pch = 15, cex = 2)
+
+for(i in 1:m) {
+  k <- con.b3[ind, i]
+  points(locsord[k, 1], locsord[k, 2], pch = 13)
+  text(locsord[k, 1], locsord[k, 2], label = i, pos = 4)
+}
+
+par(mfrow = c(1, 1))
+
+#############################################################################
+
+par(mfrow = c(1, 2))
+
+plot(locs[[1]], xlim = c(0, 1), ylim = c(0, 1), xlab = 'x1', ylab = 'x2', main = 'Ordering (Baseline 4)')
+
+locsord <- locsall[ord.b4, ]
+
+for(i in 1:n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 4)
+for(i in 1:n+n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 3)
+for(i in 1:n+2*n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 2)
+
+plot(locs[[1]], xlim = c(0, 1), ylim = c(0, 1), xlab = 'x1', ylab = 'x2', main = 'Conditioning (Baseline 4)')
+points(locsord[ind, 1], locsord[ind, 2], pch = 15, cex = 2)
+
+for(i in 1:m) {
+  k <- con.b4[ind, i]
+  points(locsord[k, 1], locsord[k, 2], pch = 13)
+  text(locsord[k, 1], locsord[k, 2], label = i, pos = 4)
+}
+
+par(mfrow = c(1, 1))
+
+############################################################################
+
+par(mfrow = c(1, 2))
+
+plot(locs[[1]], xlim = c(0, 1), ylim = c(0, 1), xlab = 'x1', ylab = 'x2', main = 'Ordering (CorrVecchia)')
+
+locsord <- locsall[ord.cc, ]
+
+for(i in 1:n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 4)
+for(i in 1:n+n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 3)
+for(i in 1:n+2*n) text(locsord[i, 1], locsord[i, 2], label = i, pos = 2)
+
+plot(locs[[1]], xlim = c(0, 1), ylim = c(0, 1), xlab = 'x1', ylab = 'x2', main = 'Conditioning (CorrVecchia)')
+points(locsord[ind, 1], locsord[ind, 2], pch = 15, cex = 2)
+
+for(i in 1:m) {
+  k <- con.cc[ind, i]
+  points(locsord[k, 1], locsord[k, 2], pch = 13)
+  text(locsord[k, 1], locsord[k, 2], label = i, pos = 4)
+}
+
+par(mfrow = c(1, 1))
