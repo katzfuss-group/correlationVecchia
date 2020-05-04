@@ -595,3 +595,78 @@ parallel_simulate_derivative_knownCovparms <- function(cand.m, cand.r, nsim, n, 
   ### return
   return(list(vars = cand.all, kldiv = kls, time.tot = time.tot, nsim = nsim, n = n, d = d))
 }
+
+
+
+#' @title Simulation on periodic cases
+#'
+#' @param cand.m A numeric vector of candidates of the size of conditioning sets (m)
+#' @param cand.period A numeric vector of candidates of period or nu (period, nu)
+#' @param nsim A number of repeated simualtions for each case
+#' @param n A number of locations
+#' @param d A dimension of domain
+#' @param covmodel A covariance function
+#' @param type A method (function) to construct a wave model. It can be "Dampedsine," "Dampedcosine," or "BesselJ." At "Dampedsine" by default
+#' @param covparms A numeric vector of covariance parameters = (sigma2, range, period)
+#' @param method.locs random or grid 
+#' @param corr.dist 1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), or sqrt(1-rho^2)
+#' @param method.modify An argument specifying a correction method for the cholesky factorization of a covariance matrix. At \code{NULL} by default.
+#'                      If correction is \code{NULL}, then the built-in R function \code{chol} is used.
+#'                      If correction is \code{"qr"}, then the built-in R function \code{qr} is used.
+#'                      If correction is \code{"diag"}, then \code{C + diag(tol, n)} is used instead of a covariance matrix \code{C}.
+#'                      Correction methods \code{"type-I"}, \code{"type-II"}, \code{"eigen-I"}, \code{"eigen-II"}, \code{"GMW81"}, and \code{"SE99"} are refered to Fang and O'leary (2008).
+#'                      Correction method \code{"nearPD"} use a built-in function nearPD() in the R package Matrix. 
+#' @param pivot Logical indicating if pivoting is to be used when factorizing a covariance matrix. At \code{FALSE} by default 
+#' @param tol Numerical tolerance. At \code{.Machine$double.eps} by default
+#' @param ncores A number of cores for parallel computing 
+#'
+#' @return list
+#' 
+#' @import foreach
+#' 
+#' @export
+#'
+#' @examples
+#' 1 + 1
+parallel_simulate_wave_knownCovparms <- function(cand.m, cand.period, nsim, n, d, covmodel = cov_wave, type = "Dampedsine", covparms = c(1, 0.1), method.locs = 'random', corr.dist = "1-rho", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+{
+  time.tot <- proc.time()
+  
+  # import::from(foreach,"%do%")
+  # import::from(foreach,"%dopar%")
+  
+  ### cand.all
+  cand.all              <- expand.grid(cand.m, cand.period)
+  cand.all              <- cbind(seq(nrow(cand.all)), cand.all)
+  colnames(cand.all)    <- c("index", "m", "period")
+  
+  ### ncores
+  if(is.null(ncores)) {
+    no_cores  <- parallel::detectCores() - 2
+  } else {
+    no_cores  <- ncores
+  }
+  
+  ### simulation
+  sim                   <- list()
+  cl                    <- parallel::makeCluster(no_cores)
+  
+  doParallel::registerDoParallel(cl)
+  sim <- foreach::foreach(m = cand.all$m, period = cand.all$period, .packages = c("correlationVecchia", "GPvecchia")) %dopar% simulate_univariate_knownCovparms(nsim = nsim, n = n, d = d, m = m, method.locs = method.locs, corr.dist = corr.dist, method.modify = method.modify, pivot = pivot, tol = tol, verbose = FALSE, covmodel = covmodel, method = type, covparms = c(covparms, period))
+  parallel::stopCluster(cl)
+  
+  ### KL divergence
+  n.approx        <- sim[[1]]$n.approx
+  kls             <- matrix(NA, nrow(cand.all), 1 + n.approx)
+  kls[, 1]        <- seq(nrow(cand.all))
+  for(k in 1:length(sim)) {
+    kls[k, seq(n.approx) + 1]   <- sim[[k]]$kls.average
+  }
+  kls             <- as.data.frame(kls)
+  colnames(kls)   <- c("index", names(sim[[1]]$kls.average))
+  
+  time.tot <- proc.time() - time.tot
+  
+  ### return
+  return(list(vars = cand.all, kldiv = kls, time.tot = time.tot, nsim = nsim, n = n, d = d))
+}
