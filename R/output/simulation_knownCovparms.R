@@ -361,12 +361,12 @@ ggplot2::ggsave("deriv6.pdf", vis.d6, width = 15.2, height = 5.7)
 nsim    <- 2
 n <- 30^2
 
-#####
+##### d = 2
 
 cand.m <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 cand.period <- c(0.05, 0.1, 0.15, 0.2, 0.25, 0.30, 0.35, 0.4)
 
-out.p1 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = cand.period, nsim = nsim, n = n, d = 2, covmodel = cov_wave, type = "Dampedsine", covparms = c(1, 0.1), method.locs = 'random', corr.dist = "sqrt(1-abs(rho))", method.modify = "eigen-I", pivot = FALSE, tol = 1e-4, ncores = NULL)
+out.p1 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = cand.period, nsim = nsim, n = n, d = 2, covmodel = cov_wave, type = "Dampedsine", covparms = c(1), method.locs = 'random', corr.dist = "sqrt(1-abs(rho))", method.modify = "eigen-I", pivot = FALSE, tol = 1e-4, ncores = NULL)
 
 vdat1   <- out.p1$vars %>% left_join(out.p1$kldiv, by = "index") %>% filter(period == 0.2) %>% select(-period)
 vdat2   <- out.p1$vars %>% left_join(out.p1$kldiv, by = "index") %>% filter(m == 30) %>% select(-m)
@@ -374,7 +374,7 @@ vis.p1  <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN
 
 save(out.p1, vis.p1, file = "wave1.RData")
 
-#####
+##### d = 2
 
 cand.m <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 cand.period <- c(0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4)
@@ -387,7 +387,7 @@ vis.p2  <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN
 
 save(out.p2, vis.p2, file = "wave2.RData")
 
-#####
+##### d = 2
 
 cand.m <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 cand.period <- c(0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4)
@@ -407,3 +407,51 @@ save(out.p1, out.p2, out.p3, vis.p1, vis.p2, vis.p3, file = "wave.RData")
 ggplot2::ggsave("wave1.pdf", vis.p1, width = 15.2, height = 5.7)
 ggplot2::ggsave("wave2.pdf", vis.p2, width = 15.2, height = 5.7)
 ggplot2::ggsave("wave3.pdf", vis.p3, width = 15.2, height = 5.7)
+
+##### d = 1
+
+cand.m <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+cand.period <- c(0.05, 0.1, 0.15, 0.2, 0.25, 0.30, 0.35, 0.4)
+
+out.p1d1 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = cand.period, nsim = nsim, n = n, d = 1, covmodel = cov_wave, type = "Dampedsine", covparms = c(1), method.locs = 'random', corr.dist = "sqrt(1-abs(rho))", method.modify = "eigen-I", pivot = FALSE, tol = 1e-4, ncores = NULL)
+
+vdat1   <- out.p1d1$vars %>% left_join(out.p1d1$kldiv, by = "index") %>% filter(period == 0.2) %>% select(-period)
+vdat2   <- out.p1d1$vars %>% left_join(out.p1d1$kldiv, by = "index") %>% filter(m == 30) %>% select(-m)
+vis.p1d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+
+save(out.p1d1, vis.p1d1, file = "wave1_d1.RData")
+
+##### d = 1
+
+cand.m <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+cand.period <- c(0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4)
+
+out.p2d1 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = cand.period, nsim = nsim, n = n, d = 1, covmodel = cov_wave, type = "Dampedcosine", covparms = c(1, 0.1), method.locs = 'random', corr.dist = "sqrt(1-abs(rho))", method.modify = "eigen-I", pivot = FALSE, tol = 1e-4, ncores = NULL)
+
+vdat1   <- out.p2d1$vars %>% left_join(out.p2d1$kldiv, by = "index") %>% filter(period == 0.2) %>% select(-period)
+vdat2   <- out.p2d1$vars %>% left_join(out.p2d1$kldiv, by = "index") %>% filter(m == 30) %>% select(-m)
+vis.p2d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+
+save(out.p2d1, vis.p2d1, file = "wave2_d1.RData")
+
+##### d = 1
+
+cand.m <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+cand.period <- c(0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4)
+
+out.p3d1 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = cand.period, nsim = nsim, n = n, d = 1, covmodel = cov_wave, type = "BesselJ", covparms = c(1, 0), method.locs = 'random', corr.dist = "sqrt(1-abs(rho))", method.modify = "eigen-I", pivot = FALSE, tol = 1e-4, ncores = NULL)
+
+vdat1   <- out.p3d1$vars %>% left_join(out.p3d1$kldiv, by = "index") %>% filter(period == 0.2) %>% select(-period)
+vdat2   <- out.p3d1$vars %>% left_join(out.p3d1$kldiv, by = "index") %>% filter(m == 30) %>% select(-m)
+vis.p3d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+
+save(out.p3d1, vis.p3d1, file = "wave3_d1.RData")
+
+#####
+
+save(out.p1d1, out.p2d1, out.p3d1, vis.p1d1, vis.p2d1, vis.p3d1, file = "wave_d1.RData")
+
+ggplot2::ggsave("wave1_d1.pdf", vis.p1d1, width = 15.2, height = 5.7)
+ggplot2::ggsave("wave2_d1.pdf", vis.p2d1, width = 15.2, height = 5.7)
+ggplot2::ggsave("wave3_d1.pdf", vis.p3d1, width = 15.2, height = 5.7)
+
