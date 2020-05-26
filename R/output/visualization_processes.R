@@ -8,7 +8,7 @@
 
 # use_build_ignore("R/output/visualization_processes.R", escape = TRUE)
 
-set.seed(03222020)
+set.seed(05042020)
 
 library(correlationVecchia)
 library(dplyr)
@@ -47,6 +47,48 @@ leg       <- get_legend(covmat %>% melt() %>% ggplot(aes(x = Var2, y = Var1)) + 
 p1        <- grid.arrange(vis.all, leg, nrow = 1, ncol = 2, widths = c(6, 1), heights = c(1))
 
 ggplot2::ggsave("p1_multi.pdf", p1, width = 15.2, height = 5.7)
+
+######
+
+n <- 30
+
+locs <- matrix(sort(runif(n)), nrow = n, ncol = 1)
+locs <- list(locs1 = locs, locs2 = locs)
+locsall <- rbind(locs$locs1, locs$locs2)
+
+covmat1 <- cov_bivariate_expo_latDim(locs = locs, covparms = c(1, 0.1, 0.0))
+covmat2 <- cov_bivariate_expo_latDim(locs = locs, covparms = c(1, 0.1, 0.3))
+covmat3 <- cov_bivariate_expo_latDim(locs = locs, covparms = c(1, 0.1, 0.6))
+
+covfac1 <- factorize(covmat = covmat1, method = "eigen-I")$covfactor
+covfac2 <- factorize(covmat = covmat2, method = "eigen-I")$covfactor
+covfac3 <- factorize(covmat = covmat3, method = "eigen-I")$covfactor
+
+y1 <- as.numeric(t(covfac1) %*% rnorm(n * 2)) ; y11 <- y1[1:n] ; y12 <- y1[seq(from = n+1, to = n * 2, by = 1)]
+y2 <- as.numeric(t(covfac2) %*% rnorm(n * 2)) ; y21 <- y2[1:n] ; y22 <- y2[seq(from = n+1, to = n * 2, by = 1)]
+y3 <- as.numeric(t(covfac3) %*% rnorm(n * 2)) ; y31 <- y3[1:n] ; y32 <- y3[seq(from = n+1, to = n * 2, by = 1)]
+
+x <- locs$locs1[, 1]
+
+plot(x, y11, type = 'o', ylim = c(-3, 27), col = 'red')
+points(x, y21, type = 'o', col = 'blue')
+points(x, y31, type = 'o', col = 'green')
+
+points(x, y12 + 8, type = 'o', col = 'red')
+points(x, y22 + 16, type = 'o', col = 'blue')
+points(x, y32 + 24, type = 'o', col = 'green')
+
+for(i in 1:4) abline(h = 8 * (i-1))
+for(i in 1:n) abline(v = x[i], lty = "dotted")
+
+diff <- 8
+df <- data.frame(x = x, y11 = y11, y12 = y12 + diff, y21 = y21, y22 = y22 + diff * 2, y31 = y31, y32 = y32 + diff * 3)
+df <- df %>% tidyr::gather(key = "type", value = "processes", -x)
+df$latent.d <- as.character(c(rep(0, n*2), rep(0.3, n*2), rep(0.6, n*2)))
+
+p <- ggplot(data = df, aes(x = x, y = processes, group = type)) + geom_line(aes(color = latent.d)) + geom_point(aes(color = latent.d)) + geom_hline(yintercept = c(0, diff, diff * 2, diff * 3)) + geom_vline(xintercept = x, linetype = "dotted") + theme(axis.ticks = element_blank()) + scale_y_continuous(breaks=c(0, diff, diff*2, diff*3), labels = c("original", "latent.d = 0.0", "latent.d = 0.3", "latent.d = 0.6")) + scale_x_continuous(breaks=NULL)
+
+ggplot2::ggsave("processes.pdf", p, width = 15.2, height = 5.7)
 
 
 ### spacetime case #############################################################################################
@@ -254,6 +296,21 @@ legend("topright", legend = legvec, lty = 1, lwd = 1, col = c("black", "red", "b
 
 par(mfrow = c(1, 1))
 
+df1 <- data.frame(distance = locs[, 1], covgp = covvec.sqexp, covdgp = covvec.dgp.sqexp, cov.d2gp = covvec.d2gp.sqexp)
+df1 <- df1 %>% tidyr::gather(key = "type", value = "covariance", -distance)
+
+
+df2 <- data.frame(distance = locs[, 1], corgp = corvec.sqexp, cordgp = corvec.dgp.sqexp, cor.d2gp = corvec.d2gp.sqexp)
+df2 <- df2 %>% tidyr::gather(key = "type", value = "correlation", -distance)
+
+p <- list()
+p[[1]] <- ggplot(data = df1, aes(x = distance, y = covariance, group = type)) + geom_line(aes(color = type), size = 1.1) + scale_color_manual(values=c("#4DAF4A", "#377EB8", "#E41A1C"), labels = c("cov(y', y')", "cov(y', y)", "cov(y, y)")) + xlim(0, 0.5) + ylim(-50, 100) + geom_hline(yintercept = 0) + geom_vline(xintercept = 0) + theme(legend.title = element_blank())
+p[[2]] <- ggplot(data = df2, aes(x = distance, y = correlation, group = type)) + geom_line(aes(color = type), size = 1.1) + scale_color_manual(values=c("#4DAF4A", "#377EB8", "#E41A1C"), labels = c("corr(y', y')", "corr(y', y)", "corr(y, y)")) + xlim(0, 0.5) + ylim(-0.5, 1) + geom_hline(yintercept = 0) + geom_vline(xintercept = 0) + theme(legend.title = element_blank())
+
+p <- ggpubr::ggarrange(p[[1]], p[[2]], nrow = 2, ncol = 1)
+
+ggplot2::ggsave("sqexp.pdf", p, width = 15.2, height = 8)
+
 ### derivative case 3 #############################################################################################
 
 n <- 20
@@ -406,3 +463,30 @@ for(i in 1:m) {
 }
 
 par(mfrow = c(1, 1))
+
+### periodic case #############################################################################################
+
+locs <- cbind(seq(from = 0, to = sqrt(2), by = 0.01), 0)
+
+covmat <- cov_wave(locs = locs, covparms = c(1, 0.2), method = "Dampedsine")
+dampedsine <- covmat[, 1]
+df1 <- data.frame(locs = locs[, 1], covmat = dampedsine, type = "Damped Sine")
+
+covmat <- cov_wave(locs = locs, covparms = c(1, 0.1, 0.2), method = "Dampedcosine")
+dampedcosine <- covmat[, 1]
+df2 <- data.frame(locs = locs[, 1], covmat = dampedcosine, type = "Damped Cosine")
+
+covmat <- cov_wave(locs = locs, covparms = c(1, 0, 0.2), method = "BesselJ")
+besselJ <- covmat[, 1]
+df3 <- data.frame(locs = locs[, 1], covmat = besselJ, type = "Bessel J")
+
+df <- rbind(df1, df2, df3) ; rm(dampedsine, dampedcosine, besselJ)
+
+ggplot(data = df, aes(x = locs, y = covmat, group = type)) + geom_line(aes(color = type)) + scale_color_manual(values=c("#984EA3", "#4DAF4A", "#377EB8"))
+
+df3 <- df3 %>% mutate(distance = sqrt(1-abs(covmat))) %>% select(-type) %>% rename(edist = locs, "periodic correlation" = covmat, "correlation-based distance" = distance)
+df3 <- df3 %>% tidyr::gather(key = "type", value = "value", -edist)
+
+p <- ggplot(data = df3, aes(x = edist, y = value, group = type)) + geom_line(aes(color= type), size = 1.1) + scale_color_manual(values=c("#377EB8", "#E41A1C")) + scale_linetype_manual(values=c("dotted", "solid")) + xlab("Euclidean-based distance") + geom_hline(yintercept = c(0, 1)) + geom_vline(xintercept = 0)
+
+ggplot2::ggsave("besselJ.pdf", p, width = 15.2, height = 5.7)
