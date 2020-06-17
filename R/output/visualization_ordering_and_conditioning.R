@@ -3,7 +3,8 @@ library(dplyr)
 library(ggplot2)
 library(ggnetwork)
 
-set.seed(20200524)
+# set.seed(20200524)
+set.seed(20200526)
 
 n     <- 30
 m     <- as.integer(sqrt(n))
@@ -51,7 +52,8 @@ econd     <- GpGp::find_ordered_nn(locs = locseord, m = m)
 econd.table   <- cbind(as.vector(econd[, -1, drop = FALSE]), rep(econd[, 1], times = m)) %>% na.omit()
 adjmat        <- get.adjacency(graph.edgelist(econd.table, directed = TRUE)) %>% as.matrix()
 
-pivind        <- as.integer(n * 0.5)
+# pivind        <- as.integer(n * 0.5)
+pivind        <- n
 cond.piv      <- which(adjmat[, pivind] == 1)
 
 adjmat[, pivind] <- adjmat[, pivind] * 10 
@@ -71,7 +73,7 @@ axis(2, labels=FALSE, tick=TRUE)
 
 #####
 
-ggnet <- ggnetwork(net, layout = locseord)
+ggnet <- ggnetwork(net, layout = locseord, arrow.gap = 0.03)
 
 ggnet$vertex.names <- NA
 ggnet$vertex.names[which(is.na(ggnet$weight))] <- 1:n
@@ -81,10 +83,10 @@ ggnet$edge.names[which(ggnet$weight == 10)] <- "important"
 
 p.eucl <- ggplot(data = ggnet) + 
   geom_edges(aes(x = x, y = y, xend = xend, yend = yend, color = edge.names), arrow = arrow(length = unit(8, "pt"), type = "closed")) + 
-  geom_nodes(aes(x = x, y = y, color = gp), size = 8) +
-  geom_nodetext(aes(x = x, y = y, label = vertex.names)) +
+  geom_nodes(aes(x = x, y = y, color = gp), size = 10) +
+  geom_nodetext(aes(x = x, y = y, label = vertex.names), size = 5) +
   scale_color_manual(values = c("gold", "black", "lightsteelblue2", "grey80", "tomato")) + 
-  theme(panel.background = element_rect(fill = "white", colour = "grey50"), legend.position = "none", axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 12)) +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50"), legend.position = "none", axis.text.x = element_text(size = 14), axis.text.y = element_text(size = 14)) +
   xlab("") + ylab("")
 
 p.eucl
@@ -99,7 +101,8 @@ ccond     <- correlationVecchia::conditioning_nn(m = m, d = 1 - rho[cord, cord])
 ccond.table   <- cbind(as.vector(ccond[, -1, drop = FALSE]), rep(ccond[, 1], times = m)) %>% na.omit()
 adjmat        <- get.adjacency(graph.edgelist(ccond.table, directed = TRUE)) %>% as.matrix()
 
-pivind        <- which(fields::rdist(x1 = locseord[pivind, , drop = FALSE], x2 = locscord) == 0)
+# pivind        <- which(fields::rdist(x1 = locseord[pivind, , drop = FALSE], x2 = locscord) == 0)
+pivind        <- n
 cond.piv      <- which(adjmat[, pivind] == 1)
 
 adjmat[, pivind] <- adjmat[, pivind] * 10 
@@ -135,7 +138,7 @@ axis(2, labels=FALSE, tick=TRUE)
 
 #####
 
-ggnet <- ggnetwork(net, layout = locscord)
+ggnet <- ggnetwork(net, layout = locscord, arrow.gap = 0.03)
 
 ggnet$vertex.names <- NA
 ggnet$vertex.names[which(is.na(ggnet$weight))] <- 1:n
@@ -145,15 +148,15 @@ ggnet$edge.names[which(ggnet$weight == 10)] <- "important"
 
 p.corr <- ggplot(data = ggnet) + 
   geom_edges(aes(x = x, y = y, xend = xend, yend = yend, color = edge.names), arrow = arrow(length = unit(8, "pt"), type = "closed")) + 
-  geom_nodes(aes(x = x, y = y, color = gp), size = 8) +
-  geom_nodetext(aes(x = x, y = y, label = vertex.names)) +
+  geom_nodes(aes(x = x, y = y, color = gp), size = 10) +
+  geom_nodetext(aes(x = x, y = y, label = vertex.names), size = 5) +
   scale_color_manual(values = c("gold", "black", "lightsteelblue2", "grey80", "tomato")) + 
-  theme(panel.background = element_rect(fill = "white", colour = "grey50"), legend.position = "none", axis.text.x = element_text(size = 12), axis.text.y = element_text(size = 12)) +
+  theme(panel.background = element_rect(fill = "white", colour = "grey50"), legend.position = "none", axis.text.x = element_text(size = 14), axis.text.y = element_text(size = 14)) +
   xlab("") + ylab("")
 
 p.corr
 
 #####
 
-ggplot2::ggsave("Euclidean_MN.pdf", p.eucl, width = 7.6, height = 7.6)
-ggplot2::ggsave("correlation_MN.pdf", p.corr, width = 7.6, height = 7.6)
+ggplot2::ggsave("Euclidean_MN.pdf", p.eucl, width = 7.6, height = 8.0)
+ggplot2::ggsave("correlation_MN.pdf", p.corr, width = 7.6, height = 8.0)
