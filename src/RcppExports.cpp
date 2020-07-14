@@ -6,55 +6,67 @@
 
 using namespace Rcpp;
 
-// rcpparma_hello_world
-arma::mat rcpparma_hello_world();
-RcppExport SEXP _correlationVecchia_rcpparma_hello_world() {
+// fun_cpp
+arma::vec fun_cpp(const double& a, const arma::vec& x);
+RcppExport SEXP _correlationVecchia_fun_cpp(SEXP aSEXP, SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpparma_hello_world());
+    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(fun_cpp(a, x));
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpparma_outerproduct
-arma::mat rcpparma_outerproduct(const arma::colvec& x);
-RcppExport SEXP _correlationVecchia_rcpparma_outerproduct(SEXP xSEXP) {
+// cov_cpp
+double cov_cpp(const arma::rowvec& x1, const arma::rowvec& x2);
+RcppExport SEXP _correlationVecchia_cov_cpp(SEXP x1SEXP, SEXP x2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpparma_outerproduct(x));
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type x1(x1SEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type x2(x2SEXP);
+    rcpp_result_gen = Rcpp::wrap(cov_cpp(x1, x2));
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpparma_innerproduct
-double rcpparma_innerproduct(const arma::colvec& x);
-RcppExport SEXP _correlationVecchia_rcpparma_innerproduct(SEXP xSEXP) {
+// sortSparse_Rcpp
+Rcpp::List sortSparse_Rcpp(const arma::mat& x, const double& rho, const int& initInd, std::string fstr);
+RcppExport SEXP _correlationVecchia_sortSparse_Rcpp(SEXP xSEXP, SEXP rhoSEXP, SEXP initIndSEXP, SEXP fstrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpparma_innerproduct(x));
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const double& >::type rho(rhoSEXP);
+    Rcpp::traits::input_parameter< const int& >::type initInd(initIndSEXP);
+    Rcpp::traits::input_parameter< std::string >::type fstr(fstrSEXP);
+    rcpp_result_gen = Rcpp::wrap(sortSparse_Rcpp(x, rho, initInd, fstr));
     return rcpp_result_gen;
 END_RCPP
 }
-// rcpparma_bothproducts
-Rcpp::List rcpparma_bothproducts(const arma::colvec& x);
-RcppExport SEXP _correlationVecchia_rcpparma_bothproducts(SEXP xSEXP) {
+// NNcheck_Rcpp
+arma::rowvec NNcheck_Rcpp(const arma::rowvec& I, const arma::rowvec& J, const arma::rowvec& P, const arma::rowvec& distances, const arma::mat& x, const double rho, std::string fstr);
+RcppExport SEXP _correlationVecchia_NNcheck_Rcpp(SEXP ISEXP, SEXP JSEXP, SEXP PSEXP, SEXP distancesSEXP, SEXP xSEXP, SEXP rhoSEXP, SEXP fstrSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::colvec& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rcpparma_bothproducts(x));
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type I(ISEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type J(JSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type P(PSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type distances(distancesSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const double >::type rho(rhoSEXP);
+    Rcpp::traits::input_parameter< std::string >::type fstr(fstrSEXP);
+    rcpp_result_gen = Rcpp::wrap(NNcheck_Rcpp(I, J, P, distances, x, rho, fstr));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_correlationVecchia_rcpparma_hello_world", (DL_FUNC) &_correlationVecchia_rcpparma_hello_world, 0},
-    {"_correlationVecchia_rcpparma_outerproduct", (DL_FUNC) &_correlationVecchia_rcpparma_outerproduct, 1},
-    {"_correlationVecchia_rcpparma_innerproduct", (DL_FUNC) &_correlationVecchia_rcpparma_innerproduct, 1},
-    {"_correlationVecchia_rcpparma_bothproducts", (DL_FUNC) &_correlationVecchia_rcpparma_bothproducts, 1},
+    {"_correlationVecchia_fun_cpp", (DL_FUNC) &_correlationVecchia_fun_cpp, 2},
+    {"_correlationVecchia_cov_cpp", (DL_FUNC) &_correlationVecchia_cov_cpp, 2},
+    {"_correlationVecchia_sortSparse_Rcpp", (DL_FUNC) &_correlationVecchia_sortSparse_Rcpp, 4},
+    {"_correlationVecchia_NNcheck_Rcpp", (DL_FUNC) &_correlationVecchia_NNcheck_Rcpp, 7},
     {NULL, NULL, 0}
 };
 

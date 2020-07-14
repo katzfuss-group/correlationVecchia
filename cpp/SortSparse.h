@@ -419,7 +419,7 @@ output sortSparse(signed int N, double rho, double dist2Func(signed int, signed 
 		*/
 	}
 
-	dc.rowval = subMember(dc.rowval, 0, dc.colptr.at(dc.colptr.size() - 1) - 1);
+	dc.rowval = subMember(dc.rowval, 0, dc.colptr.at(dc.colptr.size() - 1));
 
 	for (signed int i = 0; i < dc.rowval.size(); i++) {
 		dc.rowval[i].id = dc.revP.at(dc.rowval[i].id);

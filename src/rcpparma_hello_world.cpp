@@ -2,51 +2,92 @@
 
 // we only include RcppArmadillo.h which pulls Rcpp.h in for us
 #include "RcppArmadillo.h"
+#include "vector"
+#include "math.h"
+#include "Types.h"
+#include "SortSparse.h"
+// using namespace Rcpp;
 
 // via the depends attribute we tell Rcpp to create hooks for
 // RcppArmadillo so that the build process will know what to do
 //
 // [[Rcpp::depends(RcppArmadillo)]]
 
-// simple example of creating two matrices and
-// returning the result of an operatioon on them
-//
-// via the exports attribute we tell Rcpp to make this function
-// available from R
-//
 // [[Rcpp::export]]
-arma::mat rcpparma_hello_world() {
-    arma::mat m1 = arma::eye<arma::mat>(3, 3);
-    arma::mat m2 = arma::eye<arma::mat>(3, 3);
-	                     
-    return m1 + 3 * (m1 + m2);
+arma::vec fun_cpp(const double & a, const arma::vec & x) { return(a * x); }
+
+// [[Rcpp::export]]
+double cov_cpp(const arma::rowvec & x1, const arma::rowvec & x2) { return(pow(norm(x1 - x2), 2.0)); }
+
+funcXptr putFunPtrInXPtr(std::string fstr) { 
+    
+     if (fstr == "fun_cpp") {
+         
+     return(funcXptr(new funcPtr(&fun_cpp)));
+         
+     } else {
+         
+     return(funcXptr(R_NilValue)); // runtime error as NULL no XPtr
+         
+     }
 }
 
-
-// another simple example: outer product of a vector, 
-// returning a matrix
-//
-// [[Rcpp::export]]
-arma::mat rcpparma_outerproduct(const arma::colvec & x) {
-    arma::mat m = x * x.t();
-    return m;
+covXptr putCovPtrInXptr(std::string fstr) {
+    
+    if (fstr == "cov_cpp") {
+        
+        return(covXptr(new covPtr(&cov_cpp)));
+        
+    } else {
+        
+        return(covXptr(R_NilValue));
+        
+    }
 }
 
-// and the inner product returns a scalar
-//
 // [[Rcpp::export]]
-double rcpparma_innerproduct(const arma::colvec & x) {
-    double v = arma::as_scalar(x.t() * x);
-    return v;
+Rcpp::List sortSparse_Rcpp(const arma::mat & x, const double & rho, const int & initInd, std::string fstr) {
+    
+    int n = x.n_rows;
+    
+    covXptr ptr = putCovPtrInXptr(fstr);
+    covPtr cov = *ptr;
+    
+    // Rcpp::XPtr<funcPtr> xpfun(xpsexp);
+    // funcPtr dist2Func = *xpfun;
+    
+    function<double(int, int)> dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); }; // auto dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); };
+    
+    output result = sortSparse(n, rho, dist2Func, initInd);
+    
+    vector<signed int> rowvalOut(result.rowval.size(), -1);
+    for (int i = 0; i < result.rowval.size(); i++) {
+        rowvalOut[i] = result.rowval[i].id;
+    }
+    
+    return Rcpp::List::create(Rcpp::Named("P") = result.P,
+                              Rcpp::Named("revP") = result.revP,
+                              Rcpp::Named("colptr") = result.colptr,
+                              Rcpp::Named("rowval") = rowvalOut,
+                              Rcpp::Named("distances") = result.distances);
 }
 
-
-// and we can use Rcpp::List to return both at the same time
-//
 // [[Rcpp::export]]
-Rcpp::List rcpparma_bothproducts(const arma::colvec & x) {
-    arma::mat op = x * x.t();
-    double    ip = arma::as_scalar(x.t() * x);
-    return Rcpp::List::create(Rcpp::Named("outer")=op,
-                              Rcpp::Named("inner")=ip);
+arma::rowvec NNcheck_Rcpp(const arma::rowvec & I, const arma::rowvec & J, const arma::rowvec & P, const arma::rowvec & distances, const arma::mat & x, const double rho, std::string fstr) {
+    
+    arma::rowvec chk = arma::ones<arma::rowvec>(arma::size(I));
+    
+    covXptr ptr = putCovPtrInXptr(fstr);
+    covPtr cov = *ptr;
+    
+    function<double(int, int)> dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); }; 
+    
+    for (int k = 0; k < I.n_cols; k++) {
+        if ( sqrt(dist2Func(P[I[k]], P[J[k]])) > rho * std::min(distances[I[k]], distances[J[k]]) ) {
+            chk[k] = 0;
+        }
+    }
+    
+    return(chk);
 }
+
