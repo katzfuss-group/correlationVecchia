@@ -13,11 +13,25 @@
 //
 // [[Rcpp::depends(RcppArmadillo)]]
 
-// [[Rcpp::export]]
 arma::vec fun_cpp(const double & a, const arma::vec & x) { return(a * x); }
 
 // [[Rcpp::export]]
-double cov_cpp(const arma::rowvec & x1, const arma::rowvec & x2) { return(pow(norm(x1 - x2), 2.0)); }
+double cov_cpp(const arma::rowvec & x1, const arma::rowvec & x2, const arma::rowvec & covparms) { return(covparms[0] - pow(norm(x1 - x2), 2.0)); }
+
+// [[Rcpp::export]]
+double cov_expo_iso_cpp(const arma::rowvec & x1, const arma::rowvec & x2, const arma::rowvec & covparms) { return(covparms[0] * exp(- norm(x1 - x2) / covparms[1])); }
+
+// [[Rcpp::export]]
+double cov_expo_aniso_cpp(const arma::rowvec & x1, const arma::rowvec & x2, const arma::rowvec & covparms) { 
+    
+    arma::rowvec diff = x1 - x2;
+    diff[0] = diff[0] * covparms[2];
+    
+    return( covparms[0] * exp(- norm(diff) / covparms[1]) ); 
+    
+    // arma::rowvec diagvector(size(x1)); diagvector.ones(); diagvector[0] = pow(covparms[2], 2);
+    // return(covparms[0] * exp( - sqrt(dot(x1-x2, (x1-x2) * diagmat(diagvector))) / covparms[1] )); 
+}
 
 funcXptr putFunPtrInXPtr(std::string fstr) { 
     
@@ -34,9 +48,17 @@ funcXptr putFunPtrInXPtr(std::string fstr) {
 
 covXptr putCovPtrInXptr(std::string fstr) {
     
-    if (fstr == "cov_cpp") {
+    if (fstr == "cov" || fstr == "cov_cpp") {
         
         return(covXptr(new covPtr(&cov_cpp)));
+        
+    } else if (fstr == "cov_expo_iso" || fstr == "cov_expo_iso_cpp") {
+        
+        return(covXptr(new covPtr(&cov_expo_iso_cpp)));
+        
+    } else if (fstr == "cov_expo_aniso" || fstr == "cov_expo_aniso_cpp") {
+        
+        return(covXptr(new covPtr(&cov_expo_aniso_cpp)));
         
     } else {
         
@@ -46,7 +68,7 @@ covXptr putCovPtrInXptr(std::string fstr) {
 }
 
 // [[Rcpp::export]]
-Rcpp::List sortSparse_Rcpp(const arma::mat & x, const double & rho, const int & initInd, std::string fstr) {
+Rcpp::List sortSparse_Rcpp(const arma::mat & x, const double & rho, const int & initInd, std::string fstr, const arma::rowvec & covparms) {
     
     int n = x.n_rows;
     
@@ -56,7 +78,7 @@ Rcpp::List sortSparse_Rcpp(const arma::mat & x, const double & rho, const int & 
     // Rcpp::XPtr<funcPtr> xpfun(xpsexp);
     // funcPtr dist2Func = *xpfun;
     
-    function<double(int, int)> dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); }; // auto dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); };
+    function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - cov(x.row(i), x.row(j), covparms)); }; // auto dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); };
     
     output result = sortSparse(n, rho, dist2Func, initInd);
     
@@ -73,14 +95,14 @@ Rcpp::List sortSparse_Rcpp(const arma::mat & x, const double & rho, const int & 
 }
 
 // [[Rcpp::export]]
-arma::rowvec NNcheck_Rcpp(const arma::rowvec & I, const arma::rowvec & J, const arma::rowvec & P, const arma::rowvec & distances, const arma::mat & x, const double rho, std::string fstr) {
+arma::rowvec NNcheck_Rcpp(const arma::rowvec & I, const arma::rowvec & J, const arma::rowvec & P, const arma::rowvec & distances, const arma::mat & x, const double rho, std::string fstr, const arma::rowvec & covparms) {
     
     arma::rowvec chk = arma::ones<arma::rowvec>(arma::size(I));
     
     covXptr ptr = putCovPtrInXptr(fstr);
     covPtr cov = *ptr;
     
-    function<double(int, int)> dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); }; 
+    function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - cov(x.row(i), x.row(j), covparms)); }; 
     
     for (int k = 0; k < I.n_cols; k++) {
         if ( sqrt(dist2Func(P[I[k]], P[J[k]])) > rho * std::min(distances[I[k]], distances[J[k]]) ) {

@@ -6,33 +6,48 @@
 
 using namespace Rcpp;
 
-// fun_cpp
-arma::vec fun_cpp(const double& a, const arma::vec& x);
-RcppExport SEXP _correlationVecchia_fun_cpp(SEXP aSEXP, SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const double& >::type a(aSEXP);
-    Rcpp::traits::input_parameter< const arma::vec& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(fun_cpp(a, x));
-    return rcpp_result_gen;
-END_RCPP
-}
 // cov_cpp
-double cov_cpp(const arma::rowvec& x1, const arma::rowvec& x2);
-RcppExport SEXP _correlationVecchia_cov_cpp(SEXP x1SEXP, SEXP x2SEXP) {
+double cov_cpp(const arma::rowvec& x1, const arma::rowvec& x2, const arma::rowvec& covparms);
+RcppExport SEXP _correlationVecchia_cov_cpp(SEXP x1SEXP, SEXP x2SEXP, SEXP covparmsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::rowvec& >::type x1(x1SEXP);
     Rcpp::traits::input_parameter< const arma::rowvec& >::type x2(x2SEXP);
-    rcpp_result_gen = Rcpp::wrap(cov_cpp(x1, x2));
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type covparms(covparmsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cov_cpp(x1, x2, covparms));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cov_expo_iso_cpp
+double cov_expo_iso_cpp(const arma::rowvec& x1, const arma::rowvec& x2, const arma::rowvec& covparms);
+RcppExport SEXP _correlationVecchia_cov_expo_iso_cpp(SEXP x1SEXP, SEXP x2SEXP, SEXP covparmsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type x1(x1SEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type x2(x2SEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type covparms(covparmsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cov_expo_iso_cpp(x1, x2, covparms));
+    return rcpp_result_gen;
+END_RCPP
+}
+// cov_expo_aniso_cpp
+double cov_expo_aniso_cpp(const arma::rowvec& x1, const arma::rowvec& x2, const arma::rowvec& covparms);
+RcppExport SEXP _correlationVecchia_cov_expo_aniso_cpp(SEXP x1SEXP, SEXP x2SEXP, SEXP covparmsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type x1(x1SEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type x2(x2SEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type covparms(covparmsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cov_expo_aniso_cpp(x1, x2, covparms));
     return rcpp_result_gen;
 END_RCPP
 }
 // sortSparse_Rcpp
-Rcpp::List sortSparse_Rcpp(const arma::mat& x, const double& rho, const int& initInd, std::string fstr);
-RcppExport SEXP _correlationVecchia_sortSparse_Rcpp(SEXP xSEXP, SEXP rhoSEXP, SEXP initIndSEXP, SEXP fstrSEXP) {
+Rcpp::List sortSparse_Rcpp(const arma::mat& x, const double& rho, const int& initInd, std::string fstr, const arma::rowvec& covparms);
+RcppExport SEXP _correlationVecchia_sortSparse_Rcpp(SEXP xSEXP, SEXP rhoSEXP, SEXP initIndSEXP, SEXP fstrSEXP, SEXP covparmsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -40,13 +55,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const double& >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< const int& >::type initInd(initIndSEXP);
     Rcpp::traits::input_parameter< std::string >::type fstr(fstrSEXP);
-    rcpp_result_gen = Rcpp::wrap(sortSparse_Rcpp(x, rho, initInd, fstr));
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type covparms(covparmsSEXP);
+    rcpp_result_gen = Rcpp::wrap(sortSparse_Rcpp(x, rho, initInd, fstr, covparms));
     return rcpp_result_gen;
 END_RCPP
 }
 // NNcheck_Rcpp
-arma::rowvec NNcheck_Rcpp(const arma::rowvec& I, const arma::rowvec& J, const arma::rowvec& P, const arma::rowvec& distances, const arma::mat& x, const double rho, std::string fstr);
-RcppExport SEXP _correlationVecchia_NNcheck_Rcpp(SEXP ISEXP, SEXP JSEXP, SEXP PSEXP, SEXP distancesSEXP, SEXP xSEXP, SEXP rhoSEXP, SEXP fstrSEXP) {
+arma::rowvec NNcheck_Rcpp(const arma::rowvec& I, const arma::rowvec& J, const arma::rowvec& P, const arma::rowvec& distances, const arma::mat& x, const double rho, std::string fstr, const arma::rowvec& covparms);
+RcppExport SEXP _correlationVecchia_NNcheck_Rcpp(SEXP ISEXP, SEXP JSEXP, SEXP PSEXP, SEXP distancesSEXP, SEXP xSEXP, SEXP rhoSEXP, SEXP fstrSEXP, SEXP covparmsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -57,16 +73,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
     Rcpp::traits::input_parameter< const double >::type rho(rhoSEXP);
     Rcpp::traits::input_parameter< std::string >::type fstr(fstrSEXP);
-    rcpp_result_gen = Rcpp::wrap(NNcheck_Rcpp(I, J, P, distances, x, rho, fstr));
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type covparms(covparmsSEXP);
+    rcpp_result_gen = Rcpp::wrap(NNcheck_Rcpp(I, J, P, distances, x, rho, fstr, covparms));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_correlationVecchia_fun_cpp", (DL_FUNC) &_correlationVecchia_fun_cpp, 2},
-    {"_correlationVecchia_cov_cpp", (DL_FUNC) &_correlationVecchia_cov_cpp, 2},
-    {"_correlationVecchia_sortSparse_Rcpp", (DL_FUNC) &_correlationVecchia_sortSparse_Rcpp, 4},
-    {"_correlationVecchia_NNcheck_Rcpp", (DL_FUNC) &_correlationVecchia_NNcheck_Rcpp, 7},
+    {"_correlationVecchia_cov_cpp", (DL_FUNC) &_correlationVecchia_cov_cpp, 3},
+    {"_correlationVecchia_cov_expo_iso_cpp", (DL_FUNC) &_correlationVecchia_cov_expo_iso_cpp, 3},
+    {"_correlationVecchia_cov_expo_aniso_cpp", (DL_FUNC) &_correlationVecchia_cov_expo_aniso_cpp, 3},
+    {"_correlationVecchia_sortSparse_Rcpp", (DL_FUNC) &_correlationVecchia_sortSparse_Rcpp, 5},
+    {"_correlationVecchia_NNcheck_Rcpp", (DL_FUNC) &_correlationVecchia_NNcheck_Rcpp, 8},
     {NULL, NULL, 0}
 };
 

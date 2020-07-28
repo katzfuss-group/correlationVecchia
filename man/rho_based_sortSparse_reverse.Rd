@@ -4,7 +4,13 @@
 \alias{rho_based_sortSparse_reverse}
 \title{Schaefer's algorithm with reverse-maxmin ordering implemented in C++}
 \usage{
-rho_based_sortSparse_reverse(locs, rho, initial.pt = 1, covmodel = "cov_cpp")
+rho_based_sortSparse_reverse(
+  locs,
+  rho,
+  initial.pt = 1,
+  covmodel = "cov_cpp",
+  covparms = c(1, 0.1, 10)
+)
 }
 \arguments{
 \item{locs}{location}
@@ -14,6 +20,8 @@ rho_based_sortSparse_reverse(locs, rho, initial.pt = 1, covmodel = "cov_cpp")
 \item{initial.pt}{initial index}
 
 \item{covmodel}{covmodel}
+
+\item{covparms}{covariance parameters}
 }
 \value{
 
@@ -35,8 +43,13 @@ locs <- matrix(c(0.630680164, 0.785343212, 0.725967403, 0.384746804, 0.066332777
                  0.398383379, 0.516435312, 0.556239369, 0.418524799, 0.46378566,
                  0.681082833, 0.29392978, 0.067728284, 0.254978952, 0.337992825),
                30, 2)
-rho <- 3.5
+rho <- 1.5
 initial.pt <- 1
 
-out <- rho_based_sortSparse_reverse(locs, rho)
+out <- rho_based_sortSparse_reverse(locs, rho, covmodel = "cov_expo_iso", 
+                                    covparms = c(1, 0.1))
+out$P
+corrvecchia_specify_knownCovparms(locs, m = 5, initial.pt = 1, 
+                                  covmodel = cov_expo_iso, 
+                                  covparms = c(1, 0.1))$ord
 }

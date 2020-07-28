@@ -132,7 +132,7 @@ void _determineChildren(MutHeap *h, ChildList *dc, vector<Member> *parents, Node
   
   viewBuffer = subMember(*buffer, 0, iterBuffer);
   sort(viewBuffer.begin(), viewBuffer.end(), compareMember);
-  newParent(dc, pivot.id); printf("%10d", pivot.id);
+  newParent(dc, pivot.id); // printf("%10d", pivot.id);
   newChildren(dc, viewBuffer);
 }	
 
