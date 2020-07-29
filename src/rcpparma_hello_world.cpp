@@ -78,7 +78,7 @@ Rcpp::List sortSparse_Rcpp(const arma::mat & x, const double & rho, const int & 
     // Rcpp::XPtr<funcPtr> xpfun(xpsexp);
     // funcPtr dist2Func = *xpfun;
     
-    function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - cov(x.row(i), x.row(j), covparms)); }; // auto dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); };
+    function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - pow(cov(x.row(i), x.row(j), covparms), 2)); }; // auto dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); };
     
     output result = sortSparse(n, rho, dist2Func, initInd);
     
@@ -102,7 +102,7 @@ arma::rowvec NNcheck_Rcpp(const arma::rowvec & I, const arma::rowvec & J, const 
     covXptr ptr = putCovPtrInXptr(fstr);
     covPtr cov = *ptr;
     
-    function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - cov(x.row(i), x.row(j), covparms)); }; 
+    function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - pow(cov(x.row(i), x.row(j), covparms), 2)); }; 
     
     for (int k = 0; k < I.n_cols; k++) {
         if ( sqrt(dist2Func(P[I[k]], P[J[k]])) > rho * std::min(distances[I[k]], distances[J[k]]) ) {
@@ -112,4 +112,61 @@ arma::rowvec NNcheck_Rcpp(const arma::rowvec & I, const arma::rowvec & J, const 
     
     return(chk);
 }
+
+// [[Rcpp::export]]
+arma::mat conditioning_Rcpp(const arma::rowvec & indvec, const arma::rowvec & condvec, const arma::rowvec & P, const int & maxsize, const arma::mat & x, std::string fstr, const arma::rowvec & covparms) {
+    
+    int n = x.n_rows;
+    int len = indvec.n_elem;
+    int k = n - 1;
+    
+    covXptr ptr = putCovPtrInXptr(fstr);
+    covPtr cov = *ptr;
+    
+    function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - pow(cov(x.row(i), x.row(j), covparms), 2)); };
+    
+    arma::mat condsets(n, maxsize); condsets.fill(NA_REAL);
+    arma::rowvec freq(n); freq.zeros();
+    
+    for (int i = 0; i < len; i++) {
+        if(indvec[i] == k) {
+            condsets.at(k, freq[k]) = condvec.at(i);
+            freq[k]++;
+        } else {
+            k--;
+            condsets.at(k, freq[k]) = condvec.at(i);
+            freq[k]++;
+        }
+    }
+    
+    arma::rowvec distvec(n);
+    arma::uvec rankvec(n);
+    
+    for (int i = 0; i < n; i++) {
+        
+        distvec.resize(freq[i]); distvec.fill(std::numeric_limits<double>::max());
+        for (int j = 0; j < freq[i]; j++) {
+            distvec[j] = dist2Func(P.at(i), P.at(condsets.at(i, j)));
+        }
+        
+        rankvec.resize(freq[i]); rankvec = arma::sort_index(distvec);
+        
+        for (int j = 0; j < freq[i]; j++) {
+            distvec.at(j) = condsets.at(i, j);
+        }
+        
+        for (int j = 0; j < freq[i]; j++) {
+            condsets.at(i, j) = distvec.at(rankvec.at(j));
+        } 
+        
+    }
+    
+    return(condsets);
+}
+
+
+
+
+
+
 

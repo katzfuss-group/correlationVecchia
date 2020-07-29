@@ -156,3 +156,42 @@ rho_based_sortSparse_reverse <- function(locs, rho, initial.pt = 1, covmodel = "
 
 
 
+#' @title specify a general vecchia approximation using the Schaefer's algorithm with known parameters
+#'
+#' @param locs locs
+#' @param rho rho
+#' @param initial.pt initial.pt 
+#' @param covmodel covmodel
+#' @param covparms covparms
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' 1+1
+fastcorrvecchia_specify_knownCovparms <- function(locs, rho = 1.5, initial.pt = NULL, covmodel = "cov_expo_iso", covparms = c(1, 0.1))
+{
+  locs  <- as.matrix(locs)
+  p     <- ncol(locs)
+  n     <- nrow(locs)
+  
+  output      <- rho_based_sortSparse_reverse(locs = locs, rho = rho, initial.pt = initial.pt, covmodel = covmodel, covparms = covparms)
+  
+  output$sparsity   <- as(output$sparsity, "TsparseMatrix")
+  maxsize           <- max(table(output$sparsity@j))
+  output$sparsity   <- cbind(rev(output$sparsity@j), rev(output$sparsity@i))
+  
+  cond.sets   <- conditioning_Rcpp(output$sparsity[, 1], output$sparsity[, 2], output$P-1, maxsize, locs, covmodel, covparms)
+  cond.sets   <- cond.sets + 1
+  
+  locsord     <- locs[output$P, ]
+  
+  # return 
+  Cond          <- matrix(NA, nrow(cond.sets), ncol(cond.sets)); Cond[!is.na(cond.sets)] <- TRUE
+  obs           <- rep(TRUE, n)
+  U.prep        <- GPvecchia:::U_sparsity(locsord, cond.sets, obs, Cond)
+  
+  vecchia.approx <- list(locsord = locsord, obs = obs, ord = output$P, ord.z = output$P, ord.pred='general', U.prep = U.prep, cond.yz = 'false', ordering = "maxmin", ordering.method = "correlation", conditioning = 'NN', conditioning.method = "correlation")
+  return(vecchia.approx)
+}
+

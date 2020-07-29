@@ -21,3 +21,7 @@ NNcheck_Rcpp <- function(I, J, P, distances, x, rho, fstr, covparms) {
     .Call(`_correlationVecchia_NNcheck_Rcpp`, I, J, P, distances, x, rho, fstr, covparms)
 }
 
+conditioning_Rcpp <- function(indvec, condvec, P, maxsize, x, fstr, covparms) {
+    .Call(`_correlationVecchia_conditioning_Rcpp`, indvec, condvec, P, maxsize, x, fstr, covparms)
+}
+

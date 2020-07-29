@@ -78,6 +78,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// conditioning_Rcpp
+arma::mat conditioning_Rcpp(const arma::rowvec& indvec, const arma::rowvec& condvec, const arma::rowvec& P, const int& maxsize, const arma::mat& x, std::string fstr, const arma::rowvec& covparms);
+RcppExport SEXP _correlationVecchia_conditioning_Rcpp(SEXP indvecSEXP, SEXP condvecSEXP, SEXP PSEXP, SEXP maxsizeSEXP, SEXP xSEXP, SEXP fstrSEXP, SEXP covparmsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type indvec(indvecSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type condvec(condvecSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type P(PSEXP);
+    Rcpp::traits::input_parameter< const int& >::type maxsize(maxsizeSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< std::string >::type fstr(fstrSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type covparms(covparmsSEXP);
+    rcpp_result_gen = Rcpp::wrap(conditioning_Rcpp(indvec, condvec, P, maxsize, x, fstr, covparms));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_correlationVecchia_cov_cpp", (DL_FUNC) &_correlationVecchia_cov_cpp, 3},
@@ -85,6 +102,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_correlationVecchia_cov_expo_aniso_cpp", (DL_FUNC) &_correlationVecchia_cov_expo_aniso_cpp, 3},
     {"_correlationVecchia_sortSparse_Rcpp", (DL_FUNC) &_correlationVecchia_sortSparse_Rcpp, 5},
     {"_correlationVecchia_NNcheck_Rcpp", (DL_FUNC) &_correlationVecchia_NNcheck_Rcpp, 8},
+    {"_correlationVecchia_conditioning_Rcpp", (DL_FUNC) &_correlationVecchia_conditioning_Rcpp, 7},
     {NULL, NULL, 0}
 };
 
