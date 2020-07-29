@@ -116,3 +116,16 @@ legend("topleft", legend = c("Brute-force Implementation", "Florian's algorithm"
 
 plot(nvec, time.rhobased, col = 'red', type = 'o', ylab = 'time (millisecond)', xlab = 'sample size', main = 'Time Performance (Ordering + Conditioning)')
 par(mfrow = c(1, 1))
+
+#######################################################################################################################################################
+
+n <- 100^2
+d <- 2
+locs <- matrix(10 * runif(n * d), nrow = n, ncol = d)
+
+rho <- 3
+
+initial.pt <- 1
+covparms <- c(1, 0.1)
+
+microbenchmark(fastcorrvecchia_specify_knownCovparms(locs = locs, rho = rho, initial.pt = initial.pt, covmodel = "cov_expo_iso", covparms = covparms), times = 1)
