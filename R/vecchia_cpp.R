@@ -175,7 +175,7 @@ fastcorrvecchia_specify_knownCovparms <- function(locs, rho = 1.5, initial.pt = 
   p     <- ncol(locs)
   n     <- nrow(locs)
   
-  output      <- rho_based_sortSparse_reverse(locs = locs, rho = rho, initial.pt = initial.pt, covmodel = covmodel, covparms = covparms)
+  output      <- rho_based_sortSparse(locs = locs, rho = rho, initial.pt = initial.pt, covmodel = covmodel, covparms = covparms)
   
   output$sparsity   <- as(output$sparsity, "TsparseMatrix")
   maxsize           <- max(table(output$sparsity@j))
