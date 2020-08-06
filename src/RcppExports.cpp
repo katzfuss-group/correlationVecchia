@@ -45,6 +45,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cov_matern_2p5_cpp
+double cov_matern_2p5_cpp(const arma::rowvec& x1, const arma::rowvec& x2, const arma::rowvec& covparms);
+RcppExport SEXP _correlationVecchia_cov_matern_2p5_cpp(SEXP x1SEXP, SEXP x2SEXP, SEXP covparmsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type x1(x1SEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type x2(x2SEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type covparms(covparmsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cov_matern_2p5_cpp(x1, x2, covparms));
+    return rcpp_result_gen;
+END_RCPP
+}
 // sortSparse_Rcpp
 Rcpp::List sortSparse_Rcpp(const arma::mat& x, const double& rho, const int& initInd, std::string distype, std::string fstr, const arma::rowvec& covparms);
 RcppExport SEXP _correlationVecchia_sortSparse_Rcpp(SEXP xSEXP, SEXP rhoSEXP, SEXP initIndSEXP, SEXP distypeSEXP, SEXP fstrSEXP, SEXP covparmsSEXP) {
@@ -103,6 +116,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_correlationVecchia_cov_cpp", (DL_FUNC) &_correlationVecchia_cov_cpp, 3},
     {"_correlationVecchia_cov_expo_iso_cpp", (DL_FUNC) &_correlationVecchia_cov_expo_iso_cpp, 3},
     {"_correlationVecchia_cov_expo_aniso_cpp", (DL_FUNC) &_correlationVecchia_cov_expo_aniso_cpp, 3},
+    {"_correlationVecchia_cov_matern_2p5_cpp", (DL_FUNC) &_correlationVecchia_cov_matern_2p5_cpp, 3},
     {"_correlationVecchia_sortSparse_Rcpp", (DL_FUNC) &_correlationVecchia_sortSparse_Rcpp, 6},
     {"_correlationVecchia_NNcheck_Rcpp", (DL_FUNC) &_correlationVecchia_NNcheck_Rcpp, 9},
     {"_correlationVecchia_conditioning_Rcpp", (DL_FUNC) &_correlationVecchia_conditioning_Rcpp, 8},

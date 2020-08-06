@@ -33,6 +33,14 @@ double cov_expo_aniso_cpp(const arma::rowvec & x1, const arma::rowvec & x2, cons
     // return(covparms[0] * exp( - sqrt(dot(x1-x2, (x1-x2) * diagmat(diagvector))) / covparms[1] )); 
 }
 
+// [[Rcpp::export]]
+double cov_matern_2p5_cpp(const arma::rowvec & x1, const arma::rowvec & x2, const arma::rowvec & covparms) {
+    
+    double dist = norm(x1 - x2) / covparms[1];
+    
+    return( covparms[0] * (1 + sqrt(5) * dist + (5.0/3.0) * pow(dist, 2)) * exp(- sqrt(5) * dist) );
+}
+
 funcXptr putFunPtrInXPtr(std::string fstr) { 
     
      if (fstr == "fun_cpp") {
@@ -59,6 +67,10 @@ covXptr putCovPtrInXptr(std::string fstr) {
     } else if (fstr == "cov_expo_aniso" || fstr == "cov_expo_aniso_cpp") {
         
         return(covXptr(new covPtr(&cov_expo_aniso_cpp)));
+        
+    } else if (fstr == "cov_matern_2.5" || fstr == "cov_matern_2.5_cpp") {
+        
+        return(covXptr(new covPtr(&cov_matern_2p5_cpp)));
         
     } else {
         

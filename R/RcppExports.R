@@ -13,6 +13,10 @@ cov_expo_aniso_cpp <- function(x1, x2, covparms) {
     .Call(`_correlationVecchia_cov_expo_aniso_cpp`, x1, x2, covparms)
 }
 
+cov_matern_2p5_cpp <- function(x1, x2, covparms) {
+    .Call(`_correlationVecchia_cov_matern_2p5_cpp`, x1, x2, covparms)
+}
+
 sortSparse_Rcpp <- function(x, rho, initInd, distype, fstr, covparms) {
     .Call(`_correlationVecchia_sortSparse_Rcpp`, x, rho, initInd, distype, fstr, covparms)
 }
