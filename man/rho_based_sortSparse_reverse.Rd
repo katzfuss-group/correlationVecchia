@@ -8,7 +8,8 @@ rho_based_sortSparse_reverse(
   locs,
   rho,
   initial.pt = 1,
-  covmodel = "cov_cpp",
+  distype = "euclidean",
+  covmodel = "cov_expo_iso_cpp",
   covparms = c(1, 0.1, 10)
 )
 }
@@ -18,6 +19,8 @@ rho_based_sortSparse_reverse(
 \item{rho}{rho}
 
 \item{initial.pt}{initial index}
+
+\item{distype}{"euclidean" or "correlation"}
 
 \item{covmodel}{covmodel}
 
@@ -46,7 +49,8 @@ locs <- matrix(c(0.630680164, 0.785343212, 0.725967403, 0.384746804, 0.066332777
 rho <- 1.5
 initial.pt <- 1
 
-out <- rho_based_sortSparse_reverse(locs, rho, covmodel = "cov_expo_iso", 
+out <- rho_based_sortSparse_reverse(locs, rho, distype = "correlation", 
+                                    covmodel = "cov_expo_iso", 
                                     covparms = c(1, 0.1))
 out$P
 corrvecchia_specify_knownCovparms(locs, m = 5, initial.pt = 1, 

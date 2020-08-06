@@ -8,6 +8,7 @@ rho_based_sortSparse(
   locs,
   rho,
   initial.pt = 1,
+  distype = "euclidean",
   covmodel = "cov_expo_iso",
   covparms = c(1, 0.1)
 )
@@ -18,6 +19,8 @@ rho_based_sortSparse(
 \item{rho}{rho}
 
 \item{initial.pt}{initial index}
+
+\item{distype}{"euclidean" or "correlation"}
 
 \item{covmodel}{covmodel}
 
@@ -46,7 +49,8 @@ locs <- matrix(c(0.630680164, 0.785343212, 0.725967403, 0.384746804, 0.066332777
 rho <- 1.5
 initial.pt <- 1
 
-out <- rho_based_sortSparse(locs, rho, covmodel = "cov_expo_iso", 
+out <- rho_based_sortSparse(locs, rho, distype = "correlation",
+                            covmodel = "cov_expo_iso", 
                             covparms = c(1, 0.1))
 out$P
 corrvecchia_specify_knownCovparms(locs, m = 5, initial.pt = 1, 

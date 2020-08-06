@@ -13,15 +13,15 @@ cov_expo_aniso_cpp <- function(x1, x2, covparms) {
     .Call(`_correlationVecchia_cov_expo_aniso_cpp`, x1, x2, covparms)
 }
 
-sortSparse_Rcpp <- function(x, rho, initInd, fstr, covparms) {
-    .Call(`_correlationVecchia_sortSparse_Rcpp`, x, rho, initInd, fstr, covparms)
+sortSparse_Rcpp <- function(x, rho, initInd, distype, fstr, covparms) {
+    .Call(`_correlationVecchia_sortSparse_Rcpp`, x, rho, initInd, distype, fstr, covparms)
 }
 
-NNcheck_Rcpp <- function(I, J, P, distances, x, rho, fstr, covparms) {
-    .Call(`_correlationVecchia_NNcheck_Rcpp`, I, J, P, distances, x, rho, fstr, covparms)
+NNcheck_Rcpp <- function(I, J, P, distances, x, rho, distype, fstr, covparms) {
+    .Call(`_correlationVecchia_NNcheck_Rcpp`, I, J, P, distances, x, rho, distype, fstr, covparms)
 }
 
-conditioning_Rcpp <- function(indvec, condvec, P, maxsize, x, fstr, covparms) {
-    .Call(`_correlationVecchia_conditioning_Rcpp`, indvec, condvec, P, maxsize, x, fstr, covparms)
+conditioning_Rcpp <- function(indvec, condvec, P, maxsize, x, distype, fstr, covparms) {
+    .Call(`_correlationVecchia_conditioning_Rcpp`, indvec, condvec, P, maxsize, x, distype, fstr, covparms)
 }
 

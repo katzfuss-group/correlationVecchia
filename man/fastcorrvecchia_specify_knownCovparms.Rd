@@ -8,6 +8,7 @@ fastcorrvecchia_specify_knownCovparms(
   locs,
   rho = 1.5,
   initial.pt = NULL,
+  distype = "euclidean",
   covmodel = "cov_expo_iso",
   covparms = c(1, 0.1)
 )
@@ -18,6 +19,8 @@ fastcorrvecchia_specify_knownCovparms(
 \item{rho}{rho}
 
 \item{initial.pt}{initial.pt}
+
+\item{distype}{"euclidean" or "correlation"}
 
 \item{covmodel}{covmodel}
 

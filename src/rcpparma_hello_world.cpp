@@ -68,7 +68,7 @@ covXptr putCovPtrInXptr(std::string fstr) {
 }
 
 // [[Rcpp::export]]
-Rcpp::List sortSparse_Rcpp(const arma::mat & x, const double & rho, const int & initInd, std::string fstr, const arma::rowvec & covparms) {
+Rcpp::List sortSparse_Rcpp(const arma::mat & x, const double & rho, const int & initInd, std::string distype, std::string fstr, const arma::rowvec & covparms) {
     
     int n = x.n_rows;
     
@@ -78,7 +78,17 @@ Rcpp::List sortSparse_Rcpp(const arma::mat & x, const double & rho, const int & 
     // Rcpp::XPtr<funcPtr> xpfun(xpsexp);
     // funcPtr dist2Func = *xpfun;
     
-    function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - pow(cov(x.row(i), x.row(j), covparms), 2)); }; // auto dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); };
+    function<double(int, int)> dist2Func = [&, distype, covparms](int i, int j) { 
+        if (distype == "euclidean") {
+            return(pow(norm(x.row(i) - x.row(j)), 2.0));
+        } else if (distype == "correlation") {
+            return(covparms[0] - pow(cov(x.row(i), x.row(j), covparms), 2));
+        } else {
+            return(pow(norm(x.row(i) - x.row(j)), 2.0));
+        }
+    };
+    // function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - pow(cov(x.row(i), x.row(j), covparms), 2)); }; // auto dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); };
+    // function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - abs(cov(x.row(i), x.row(j), covparms))); }; // auto dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); };
     
     output result = sortSparse(n, rho, dist2Func, initInd);
     
@@ -95,14 +105,24 @@ Rcpp::List sortSparse_Rcpp(const arma::mat & x, const double & rho, const int & 
 }
 
 // [[Rcpp::export]]
-arma::rowvec NNcheck_Rcpp(const arma::rowvec & I, const arma::rowvec & J, const arma::rowvec & P, const arma::rowvec & distances, const arma::mat & x, const double rho, std::string fstr, const arma::rowvec & covparms) {
+arma::rowvec NNcheck_Rcpp(const arma::rowvec & I, const arma::rowvec & J, const arma::rowvec & P, const arma::rowvec & distances, const arma::mat & x, const double rho, std::string distype, std::string fstr, const arma::rowvec & covparms) {
     
     arma::rowvec chk = arma::ones<arma::rowvec>(arma::size(I));
     
     covXptr ptr = putCovPtrInXptr(fstr);
     covPtr cov = *ptr;
     
-    function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - pow(cov(x.row(i), x.row(j), covparms), 2)); }; 
+    function<double(int, int)> dist2Func = [&, distype, covparms](int i, int j) { 
+        if (distype == "euclidean") {
+            return(pow(norm(x.row(i) - x.row(j)), 2.0));
+        } else if (distype == "correlation") {
+            return(covparms[0] - pow(cov(x.row(i), x.row(j), covparms), 2));
+        } else {
+            return(pow(norm(x.row(i) - x.row(j)), 2.0));
+        }
+    };
+    // function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - pow(cov(x.row(i), x.row(j), covparms), 2)); }; // auto dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); }; 
+    // function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - abs(cov(x.row(i), x.row(j), covparms))); }; // auto dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); };
     
     for (int k = 0; k < I.n_cols; k++) {
         if ( sqrt(dist2Func(P[I[k]], P[J[k]])) > rho * std::min(distances[I[k]], distances[J[k]]) ) {
@@ -114,7 +134,7 @@ arma::rowvec NNcheck_Rcpp(const arma::rowvec & I, const arma::rowvec & J, const 
 }
 
 // [[Rcpp::export]]
-arma::mat conditioning_Rcpp(const arma::rowvec & indvec, const arma::rowvec & condvec, const arma::rowvec & P, const int & maxsize, const arma::mat & x, std::string fstr, const arma::rowvec & covparms) {
+arma::mat conditioning_Rcpp(const arma::rowvec & indvec, const arma::rowvec & condvec, const arma::rowvec & P, const int & maxsize, const arma::mat & x, std::string distype, std::string fstr, const arma::rowvec & covparms) {
     
     int n = x.n_rows;
     int len = indvec.n_elem;
@@ -123,7 +143,17 @@ arma::mat conditioning_Rcpp(const arma::rowvec & indvec, const arma::rowvec & co
     covXptr ptr = putCovPtrInXptr(fstr);
     covPtr cov = *ptr;
     
-    function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - pow(cov(x.row(i), x.row(j), covparms), 2)); };
+    function<double(int, int)> dist2Func = [&, distype, covparms](int i, int j) { 
+        if (distype == "euclidean") {
+            return(pow(norm(x.row(i) - x.row(j)), 2.0));
+        } else if (distype == "correlation") {
+            return(covparms[0] - pow(cov(x.row(i), x.row(j), covparms), 2));
+        } else {
+            return(pow(norm(x.row(i) - x.row(j)), 2.0));
+        }
+    };
+    // function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - pow(cov(x.row(i), x.row(j), covparms), 2)); }; // auto dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); };
+    // function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - abs(cov(x.row(i), x.row(j), covparms))); }; // auto dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); };
     
     arma::mat condsets(n, maxsize); condsets.fill(NA_REAL);
     arma::rowvec freq(n); freq.zeros();

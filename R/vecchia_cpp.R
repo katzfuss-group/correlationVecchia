@@ -15,6 +15,7 @@
 #' @param locs location 
 #' @param rho rho
 #' @param initial.pt initial index
+#' @param distype "euclidean" or "correlation"
 #' @param covmodel covmodel
 #' @param covparms covariance parameters
 #'
@@ -38,20 +39,21 @@
 #' rho <- 1.5
 #' initial.pt <- 1
 #' 
-#' out <- rho_based_sortSparse(locs, rho, covmodel = "cov_expo_iso", 
+#' out <- rho_based_sortSparse(locs, rho, distype = "correlation",
+#'                             covmodel = "cov_expo_iso", 
 #'                             covparms = c(1, 0.1))
 #' out$P
 #' corrvecchia_specify_knownCovparms(locs, m = 5, initial.pt = 1, 
 #'                                   covmodel = cov_expo_iso, 
 #'                                   covparms = c(1, 0.1))$ord
-rho_based_sortSparse <- function(locs, rho, initial.pt = 1, covmodel = "cov_expo_iso", covparms = c(1, 0.1))
+rho_based_sortSparse <- function(locs, rho, initial.pt = 1, distype = "euclidean", covmodel = "cov_expo_iso", covparms = c(1, 0.1))
 {
   locs        <- as.matrix(locs)
   initial.pt  <- initial.pt - 1 # 0-based indexing vs. 1-based indexing
   
   ##### 0-based indexing #####
   
-  output <- sortSparse_Rcpp(locs, rho, initial.pt, covmodel, covparms)
+  output <- sortSparse_Rcpp(locs, rho, initial.pt, distype, covmodel, covparms)
   
   output$P <- as.integer(output$P)
   output$revP <- as.integer(output$revP)
@@ -62,7 +64,7 @@ rho_based_sortSparse <- function(locs, rho, initial.pt = 1, covmodel = "cov_expo
   ind_row <- sparseMat@i
   ind_col <- sparseMat@j
   
-  NNchk <- as.numeric(NNcheck_Rcpp(ind_row, ind_col, output$P, output$distances, locs, rho, covmodel, covparms))
+  NNchk <- as.numeric(NNcheck_Rcpp(ind_row, ind_col, output$P, output$distances, locs, rho, distype, covmodel, covparms))
   
   ##### 1-based indexing #####
   
@@ -86,6 +88,7 @@ rho_based_sortSparse <- function(locs, rho, initial.pt = 1, covmodel = "cov_expo
 #' @param locs location 
 #' @param rho rho
 #' @param initial.pt initial index
+#' @param distype "euclidean" or "correlation"
 #' @param covmodel covmodel 
 #' @param covparms covariance parameters
 #'
@@ -109,20 +112,21 @@ rho_based_sortSparse <- function(locs, rho, initial.pt = 1, covmodel = "cov_expo
 #' rho <- 1.5
 #' initial.pt <- 1
 #' 
-#' out <- rho_based_sortSparse_reverse(locs, rho, covmodel = "cov_expo_iso", 
+#' out <- rho_based_sortSparse_reverse(locs, rho, distype = "correlation", 
+#'                                     covmodel = "cov_expo_iso", 
 #'                                     covparms = c(1, 0.1))
 #' out$P
 #' corrvecchia_specify_knownCovparms(locs, m = 5, initial.pt = 1, 
 #'                                   covmodel = cov_expo_iso, 
 #'                                   covparms = c(1, 0.1))$ord
-rho_based_sortSparse_reverse <- function(locs, rho, initial.pt = 1, covmodel = "cov_cpp", covparms = c(1, 0.1, 10)) 
+rho_based_sortSparse_reverse <- function(locs, rho, initial.pt = 1, distype = "euclidean", covmodel = "cov_expo_iso_cpp", covparms = c(1, 0.1, 10)) 
 {
   locs        <- as.matrix(locs)
   initial.pt  <- initial.pt - 1 # 0-based indexing vs. 1-based indexing
   
   ##### 0-based indexing #####
   
-  output <- sortSparse_Rcpp(locs, rho, initial.pt, covmodel, covparms)
+  output <- sortSparse_Rcpp(locs, rho, initial.pt, distype, covmodel, covparms)
   
   output$P <- as.integer(output$P)
   output$revP <- as.integer(output$revP)
@@ -133,7 +137,7 @@ rho_based_sortSparse_reverse <- function(locs, rho, initial.pt = 1, covmodel = "
   ind_row <- sparseMat@i
   ind_col <- sparseMat@j
   
-  NNchk <- as.numeric(NNcheck_Rcpp(ind_row, ind_col, output$P, output$distances, locs, rho, covmodel, covparms))
+  NNchk <- as.numeric(NNcheck_Rcpp(ind_row, ind_col, output$P, output$distances, locs, rho, distype, covmodel, covparms))
   
   ##### 1-based indexing #####
   
@@ -161,6 +165,7 @@ rho_based_sortSparse_reverse <- function(locs, rho, initial.pt = 1, covmodel = "
 #' @param locs locs
 #' @param rho rho
 #' @param initial.pt initial.pt 
+#' @param distype "euclidean" or "correlation"
 #' @param covmodel covmodel
 #' @param covparms covparms
 #'
@@ -169,19 +174,19 @@ rho_based_sortSparse_reverse <- function(locs, rho, initial.pt = 1, covmodel = "
 #'
 #' @examples
 #' 1+1
-fastcorrvecchia_specify_knownCovparms <- function(locs, rho = 1.5, initial.pt = NULL, covmodel = "cov_expo_iso", covparms = c(1, 0.1))
+fastcorrvecchia_specify_knownCovparms <- function(locs, rho = 1.5, initial.pt = NULL, distype = "euclidean", covmodel = "cov_expo_iso", covparms = c(1, 0.1))
 {
   locs  <- as.matrix(locs)
   p     <- ncol(locs)
   n     <- nrow(locs)
   
-  output      <- rho_based_sortSparse(locs = locs, rho = rho, initial.pt = initial.pt, covmodel = covmodel, covparms = covparms)
+  output      <- rho_based_sortSparse(locs = locs, rho = rho, initial.pt = initial.pt, distype = distype, covmodel = covmodel, covparms = covparms)
   
   output$sparsity   <- as(output$sparsity, "TsparseMatrix")
   maxsize           <- max(table(output$sparsity@j))
   output$sparsity   <- cbind(rev(output$sparsity@j), rev(output$sparsity@i))
   
-  cond.sets   <- conditioning_Rcpp(output$sparsity[, 1], output$sparsity[, 2], output$P-1, maxsize, locs, covmodel, covparms)
+  cond.sets   <- conditioning_Rcpp(output$sparsity[, 1], output$sparsity[, 2], output$P-1, maxsize, locs, distype, covmodel, covparms)
   cond.sets   <- cond.sets + 1
   
   locsord     <- locs[output$P, ]
