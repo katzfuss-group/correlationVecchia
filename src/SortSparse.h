@@ -211,3 +211,81 @@ output sortSparse(signed int N, double rho, function<double(signed int, signed i
   
   return(result);
 }
+
+output predSortSparse(signed int NTrain, signed int NTest, double rho, function<double(signed int, signed int)> dist2Func, signed int initInd)
+{
+  signed int N = NTrain + NTest;
+  
+  MutHeap h;
+  ChildList dc;
+  vector<Member> nodeBuffer;
+  vector<double> distances;
+  
+  vector<Member> viewBuffer;
+  vector<Member> parents;
+  
+  output result;
+  
+  h.nodes.resize(N);
+  h.lookup.resize(N);
+  
+  for (signed int i = 0; i < NTrain; i++) {
+    h.nodes[i].val = numeric_limits<double>::max();
+    h.nodes[i].id = i;
+    h.lookup[i] = i;
+    
+    h.nodes[i].rank = 0;
+  }
+  
+  for (signed int i = NTrain; i < N; i++) {
+    h.nodes[i].val = numeric_limits<double>::max();
+    h.nodes[i].id = i;
+    h.lookup[i] = i;
+    
+    h.nodes[i].rank = 1;
+  }
+  
+  dc.NParents = 0; dc.NChildren = 0; dc.NBuffer = N;
+  dc.P.resize(N, -1); dc.revP.resize(N, -1); dc.colptr.resize(N + 1, -1);
+  dc.rowval.resize(N);
+  
+  nodeBuffer.resize(N);
+  distances.resize(N, -1.0);
+  
+  newParent(&dc, initInd);
+  h.nodes.at(initInd).rank = numeric_limits<signed int>::max();
+  distances.at(0) = numeric_limits<double>::max();
+  
+  for (signed int i = 0; i < N; i++) {
+    nodeBuffer[i].val = update(&h, i, sqrt(dist2Func(i, initInd)));
+    nodeBuffer[i].id = i;
+  }
+  
+  viewBuffer = subMember(nodeBuffer, 0, N);
+  sort(viewBuffer.begin(), viewBuffer.end(), compareMember);
+  newChildren(&dc, viewBuffer);
+  
+  parents.resize(N);
+  for (signed int i = 0; i < N; i++) {
+    parents[i] = assignMember(sqrt(dist2Func(initInd, i)), initInd);
+  }
+  
+  for (signed int i = 1; i < N; i++) {
+    distances[i] = topNode_rankUpdate(&h).val;
+    _determineChildren(&h, &dc, &parents, topNode(&h), &nodeBuffer, rho, dist2Func);
+  }
+  
+  dc.rowval = subMember(dc.rowval, 0, dc.colptr.at(dc.colptr.size() - 1));
+  
+  for (signed int i = 0; i < dc.rowval.size(); i++) {
+    dc.rowval[i].id = dc.revP.at(dc.rowval[i].id);
+  }
+  
+  result.colptr = dc.colptr;
+  result.rowval = dc.rowval;
+  result.P = dc.P;
+  result.revP = dc.revP;
+  result.distances = distances;
+  
+  return(result);
+}

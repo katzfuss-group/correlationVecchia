@@ -16,22 +16,56 @@ struct Node
 
 bool Node::operator>(const Node& other)
 {
+  if (rank == other.rank) {
+    if (val > other.val) {
+      return(true);
+    }
+    else {
+      return(false);
+    }
+  }
+  else if (rank > other.rank) {
+    return(false);
+  }
+  else {
+    return(true);
+  }
+  
+  /*
   if (val > other.val) { // rank < other.rank &&
     return(true);
   }
   else {
     return(false);
   }
+  */
 }
 
 bool Node::operator>=(const Node& other)
 {
+  if (rank == other.rank) {
+    if (val >= other.val) {
+      return(true);
+    }
+    else {
+      return(false);
+    }
+  }
+  else if (rank > other.rank) {
+    return(false);
+  }
+  else {
+    return(true);
+  }
+  
+  /*
   if ( val >= other.val) { // rank <= other.rank &&
     return(true);
   }
   else {
     return(false);
   }
+  */
 }
 
 struct MutHeap
