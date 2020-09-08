@@ -13,6 +13,9 @@ set.seed(04282020)
 
 library(correlationVecchia)
 library(dplyr)
+library(foreach)
+library(ggplot2)
+library(gridExtra)
 
 ### anisotropic case #############################################################################################
 
@@ -32,7 +35,8 @@ save(out, file = "aniso.RData")
 
 vdat1   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(a == 10) %>% select(-a)
 vdat2   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(m == 30) %>% select(-m)
-vis     <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+vis     <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-MM + E-NN", "E-MM + C-NN", "C-MM + E-NN", "C-MM + C-NN", "X-ord + E-NN", "Y-ord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+# vis     <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
 
 ggplot2::ggsave("aniso.pdf", vis, width = 15.2, height = 5.7)
 
@@ -150,7 +154,8 @@ save(out1, out2, out3, out4, file = "nonst.RData")
 
 vdat1   <- out1$vars %>% left_join(out1$kldiv, by = "index")
 vdat2   <- out4$vars %>% left_join(out4$kldiv, by = "index")
-vis     <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+vis     <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-MM + E-NN", "E-MM + C-NN", "C-MM + E-NN", "C-MM + C-NN", "X-ord + E-NN", "Y-ord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+# vis     <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
 
 ggplot2::ggsave("nonst.pdf", vis, width = 15.2, height = 5.7)
 
@@ -183,11 +188,13 @@ save(out1, out2, file = "multi.RData")
 
 vdat1     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(d == 0.4) %>% select(-d)
 vdat2     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-vis_ran   <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+vis_ran   <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+# vis_ran   <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
 vdat1     <- out2$vars %>% left_join(out2$kldiv, by = "index") %>% filter(d == 0.4) %>% select(-d)
 vdat2     <- out2$vars %>% left_join(out2$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-vis_lap   <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+vis_lap   <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+# vis_lap   <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
 ggplot2::ggsave("multi_random.pdf", vis_ran, width = 15.2, height = 5.7)
 ggplot2::ggsave("multi_overlap.pdf", vis_lap, width = 15.2, height = 5.7)
@@ -231,22 +238,26 @@ save(out21, out22, out23, out24, file = "spti2.RData")
 
 vdat1         <- out11$vars %>% left_join(out11$kldiv, by = "index")
 vdat2         <- out12$vars %>% left_join(out12$kldiv, by = "index")
-vis_sprand    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+vis_sprand    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+# vis_sprand    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
 
 vdat1         <- out13$vars %>% left_join(out13$kldiv, by = "index") 
 vdat2         <- out14$vars %>% left_join(out14$kldiv, by = "index")
-vis_spgrid    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+vis_spgrid    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+# vis_spgrid    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
 
 ggplot2::ggsave("spti1_sprand.pdf", vis_sprand, width = 15.2, height = 5.7)
 ggplot2::ggsave("spti1_spgrid.pdf", vis_spgrid, width = 15.2, height = 5.7)
 
 vdat1         <- out21$vars %>% left_join(out21$kldiv, by = "index")
 vdat2         <- out22$vars %>% left_join(out22$kldiv, by = "index")
-vis_sprand    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+vis_sprand    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+# vis_sprand    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
 
 vdat1         <- out23$vars %>% left_join(out23$kldiv, by = "index") 
 vdat2         <- out24$vars %>% left_join(out24$kldiv, by = "index")
-vis_spgrid    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+vis_spgrid    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+# vis_spgrid    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
 
 ggplot2::ggsave("spti2_sprand.pdf", vis_sprand, width = 15.2, height = 5.7)
 ggplot2::ggsave("spti2_spgrid.pdf", vis_spgrid, width = 15.2, height = 5.7)
@@ -270,7 +281,8 @@ out.d1 <- parallel_simulate_derivative_knownCovparms(cand.m = cand.m, cand.r = c
 
 vdat1     <- out.d1$vars %>% left_join(out.d1$kldiv, by = "index") %>% filter(r == 0.1) %>% select(-r)
 vdat2     <- out.d1$vars %>% left_join(out.d1$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-vis.d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+vis.d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+# vis.d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
 save(out.d1, vis.d1, file = "deriv1.RData")
 
@@ -284,7 +296,8 @@ out.d2 <- parallel_simulate_derivative_knownCovparms(cand.m = cand.m, cand.r = c
 
 vdat1     <- out.d2$vars %>% left_join(out.d2$kldiv, by = "index") %>% filter(r == 0.1) %>% select(-r)
 vdat2     <- out.d2$vars %>% left_join(out.d2$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-vis.d2    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+vis.d2    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+# vis.d2    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
 save(out.d2, vis.d2, file = "deriv2.RData")
 
@@ -298,7 +311,8 @@ out.d3 <- parallel_simulate_derivative_knownCovparms(cand.m = cand.m, cand.r = c
 
 vdat1     <- out.d3$vars %>% left_join(out.d3$kldiv, by = "index") %>% filter(r == 0.1) %>% select(-r)
 vdat2     <- out.d3$vars %>% left_join(out.d3$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-vis.d3    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+vis.d3    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+# vis.d3    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
 save(out.d3, vis.d3, file = "deriv3.RData")
 
@@ -312,7 +326,8 @@ out.d4 <- parallel_simulate_derivative_knownCovparms(cand.m = cand.m, cand.r = c
 
 vdat1     <- out.d4$vars %>% left_join(out.d4$kldiv, by = "index") %>% filter(r == 0.1) %>% select(-r)
 vdat2     <- out.d4$vars %>% left_join(out.d4$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-vis.d4    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+vis.d4    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+# vis.d4    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
 save(out.d4, vis.d4, file = "deriv4.RData")
 
@@ -326,7 +341,8 @@ out.d5 <- parallel_simulate_derivative_knownCovparms(cand.m = cand.m, cand.r = c
 
 vdat1     <- out.d5$vars %>% left_join(out.d5$kldiv, by = "index") %>% filter(r == 0.1) %>% select(-r)
 vdat2     <- out.d5$vars %>% left_join(out.d5$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-vis.d5    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+vis.d5    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+# vis.d5    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
 save(out.d5, vis.d5, file = "deriv5.RData")
 
@@ -340,7 +356,8 @@ out.d6 <- parallel_simulate_derivative_knownCovparms(cand.m = cand.m, cand.r = c
 
 vdat1     <- out.d6$vars %>% left_join(out.d6$kldiv, by = "index") %>% filter(r == 0.1) %>% select(-r)
 vdat2     <- out.d6$vars %>% left_join(out.d6$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-vis.d6    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+vis.d6    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+# vis.d6    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
 save(out.d6, vis.d6, file = "deriv6.RData")
 
@@ -370,7 +387,8 @@ out.p1 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = ca
 
 vdat1   <- out.p1$vars %>% left_join(out.p1$kldiv, by = "index") %>% filter(period == 0.2) %>% select(-period)
 vdat2   <- out.p1$vars %>% left_join(out.p1$kldiv, by = "index") %>% filter(m == 30) %>% select(-m)
-vis.p1  <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+vis.p1  <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-MM + E-NN", "E-MM + C-NN", "C-MM + E-NN", "C-MM + C-NN", "X-ord + E-NN", "Y-ord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+# vis.p1  <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
 
 save(out.p1, vis.p1, file = "wave1.RData")
 
@@ -383,7 +401,8 @@ out.p2 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = ca
 
 vdat1   <- out.p2$vars %>% left_join(out.p2$kldiv, by = "index") %>% filter(period == 0.2) %>% select(-period)
 vdat2   <- out.p2$vars %>% left_join(out.p2$kldiv, by = "index") %>% filter(m == 30) %>% select(-m)
-vis.p2  <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+vis.p2  <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-MM + E-NN", "E-MM + C-NN", "C-MM + E-NN", "C-MM + C-NN", "X-ord + E-NN", "Y-ord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+# vis.p2  <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
 
 save(out.p2, vis.p2, file = "wave2.RData")
 
@@ -396,7 +415,8 @@ out.p3 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = ca
 
 vdat1   <- out.p3$vars %>% left_join(out.p3$kldiv, by = "index") %>% filter(period == 0.2) %>% select(-period)
 vdat2   <- out.p3$vars %>% left_join(out.p3$kldiv, by = "index") %>% filter(m == 30) %>% select(-m)
-vis.p3  <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+vis.p3  <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-MM + E-NN", "E-MM + C-NN", "C-MM + E-NN", "C-MM + C-NN", "X-ord + E-NN", "Y-ord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+# vis.p3  <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
 
 save(out.p3, vis.p3, file = "wave3.RData")
 
@@ -417,7 +437,8 @@ out.p1d1 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = 
 
 vdat1   <- out.p1d1$vars %>% left_join(out.p1d1$kldiv, by = "index") %>% filter(period == 0.2) %>% select(-period)
 vdat2   <- out.p1d1$vars %>% left_join(out.p1d1$kldiv, by = "index") %>% filter(m == 30) %>% select(-m)
-vis.p1d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+vis.p1d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-MM + E-NN", "E-MM + C-NN", "C-MM + E-NN", "C-MM + C-NN", "X-ord + E-NN", "Y-ord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+# vis.p1d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
 
 save(out.p1d1, vis.p1d1, file = "wave1_d1.RData")
 
@@ -430,7 +451,8 @@ out.p2d1 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = 
 
 vdat1   <- out.p2d1$vars %>% left_join(out.p2d1$kldiv, by = "index") %>% filter(period == 0.2) %>% select(-period)
 vdat2   <- out.p2d1$vars %>% left_join(out.p2d1$kldiv, by = "index") %>% filter(m == 30) %>% select(-m)
-vis.p2d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+vis.p2d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-MM + E-NN", "E-MM + C-NN", "C-MM + E-NN", "C-MM + C-NN", "X-ord + E-NN", "Y-ord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+# vis.p2d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
 
 save(out.p2d1, vis.p2d1, file = "wave2_d1.RData")
 
@@ -443,7 +465,8 @@ out.p3d1 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = 
 
 vdat1   <- out.p3d1$vars %>% left_join(out.p3d1$kldiv, by = "index") %>% filter(period == 0.2) %>% select(-period)
 vdat2   <- out.p3d1$vars %>% left_join(out.p3d1$kldiv, by = "index") %>% filter(m == 30) %>% select(-m)
-vis.p3d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+vis.p3d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-MM + E-NN", "E-MM + C-NN", "C-MM + E-NN", "C-MM + C-NN", "X-ord + E-NN", "Y-ord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
+# vis.p3d1    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
 
 save(out.p3d1, vis.p3d1, file = "wave3_d1.RData")
 

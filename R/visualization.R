@@ -62,8 +62,8 @@ vis_arrange <- function(vdat1, vdat2 = NULL, legend, color, shape, alpha = 0.7, 
 {
   # library(ggplot2) ; library(dplyr) ; library(RColorBrewer) ; library(gridExtra)
   
-  n.space   <- 10
-  legend    <- paste0( legend, paste0(rep(" ", n.space), collapse = "") )
+  # n.space   <- 10
+  # legend    <- paste0( legend, paste0(rep(" ", n.space), collapse = "") )
   
   if(is.null(vdat2)) {
     
@@ -85,16 +85,17 @@ vis_arrange <- function(vdat1, vdat2 = NULL, legend, color, shape, alpha = 0.7, 
       geom_point(size = size.point) + 
       geom_line(size = size.line, alpha = alpha) + 
       scale_x_continuous(name = vars1, limits = range(xlabel1), breaks = xlabel1) +
-      scale_color_manual(values = color, labels = legend) + 
-      scale_shape_manual(values = shape, labels = legend) +
+      scale_color_manual(values = color, labels = legend, guide = guide_legend(nrow = 1, byrow = TRUE)) + 
+      scale_shape_manual(values = shape, labels = legend, guide = guide_legend(nrow = 1, byrow = TRUE)) +
       xlab(vars1) + ylab('log10(KL)') + 
       theme(axis.title.x = element_text(size = size.lab), 
             axis.text.x = element_text(size = size.text), 
             axis.title.y = element_text(size = size.lab), 
             axis.text.y = element_text(size = size.text), 
             legend.title = element_blank(), 
-            legend.text = element_text(size = size.legend), 
+            legend.text = element_text(size = size.legend, margin = margin(r = 25, unit = 'pt')), 
             legend.direction = 'horizontal', 
+            legend.spacing.x = unit(15, 'pt'),
             plot.margin = unit(size.margin, "pt")) # t, r, b, l
     
     ### Visualize the second data table ###
