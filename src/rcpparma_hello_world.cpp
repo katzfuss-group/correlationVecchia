@@ -117,6 +117,47 @@ Rcpp::List sortSparse_Rcpp(const arma::mat & x, const double & rho, const int & 
 }
 
 // [[Rcpp::export]]
+Rcpp::List predSortSparse_Rcpp(const arma::mat & xTrain, const arma::mat & xTest, const double & rho, const int & initInd, std::string distype, std::string fstr, const arma::rowvec & covparms) {
+
+    int nTrain = xTrain.n_rows;
+    int nTest = xTest.n_rows;
+    int n = nTrain + nTest;
+    
+    arma::mat x = join_vert(xTrain, xTest);
+    
+    covXptr ptr = putCovPtrInXptr(fstr);
+    covPtr cov = *ptr;
+    
+    // Rcpp::XPtr<funcPtr> xpfun(xpsexp);
+    // funcPtr dist2Func = *xpfun;
+    
+    function<double(int, int)> dist2Func = [&, distype, covparms](int i, int j) { 
+        if (distype == "euclidean") {
+            return(pow(norm(x.row(i) - x.row(j)), 2.0));
+        } else if (distype == "correlation") {
+            return(covparms[0] - pow(cov(x.row(i), x.row(j), covparms), 2));
+        } else {
+            return(pow(norm(x.row(i) - x.row(j)), 2.0));
+        }
+    };
+    // function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - pow(cov(x.row(i), x.row(j), covparms), 2)); }; // auto dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); };
+    // function<double(int, int)> dist2Func = [&, covparms](int i, int j) { return(covparms[0] - abs(cov(x.row(i), x.row(j), covparms))); }; // auto dist2Func = [&](int i, int j) { return(cov(x.row(i), x.row(j))); };
+    
+    output result = predSortSparse(nTrain, nTest, rho, dist2Func, initInd);
+    
+    vector<signed int> rowvalOut(result.rowval.size(), -1);
+    for (int i = 0; i < result.rowval.size(); i++) {
+        rowvalOut[i] = result.rowval[i].id;
+    }
+    
+    return Rcpp::List::create(Rcpp::Named("P") = result.P,
+                              Rcpp::Named("revP") = result.revP,
+                              Rcpp::Named("colptr") = result.colptr,
+                              Rcpp::Named("rowval") = rowvalOut,
+                              Rcpp::Named("distances") = result.distances);
+}
+
+// [[Rcpp::export]]
 arma::rowvec NNcheck_Rcpp(const arma::rowvec & I, const arma::rowvec & J, const arma::rowvec & P, const arma::rowvec & distances, const arma::mat & x, const double rho, std::string distype, std::string fstr, const arma::rowvec & covparms) {
     
     arma::rowvec chk = arma::ones<arma::rowvec>(arma::size(I));

@@ -21,6 +21,10 @@ sortSparse_Rcpp <- function(x, rho, initInd, distype, fstr, covparms) {
     .Call(`_correlationVecchia_sortSparse_Rcpp`, x, rho, initInd, distype, fstr, covparms)
 }
 
+predSortSparse_Rcpp <- function(xTrain, xTest, rho, initInd, distype, fstr, covparms) {
+    .Call(`_correlationVecchia_predSortSparse_Rcpp`, xTrain, xTest, rho, initInd, distype, fstr, covparms)
+}
+
 NNcheck_Rcpp <- function(I, J, P, distances, x, rho, distype, fstr, covparms) {
     .Call(`_correlationVecchia_NNcheck_Rcpp`, I, J, P, distances, x, rho, distype, fstr, covparms)
 }

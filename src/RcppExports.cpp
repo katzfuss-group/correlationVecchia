@@ -74,6 +74,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// predSortSparse_Rcpp
+Rcpp::List predSortSparse_Rcpp(const arma::mat& xTrain, const arma::mat& xTest, const double& rho, const int& initInd, std::string distype, std::string fstr, const arma::rowvec& covparms);
+RcppExport SEXP _correlationVecchia_predSortSparse_Rcpp(SEXP xTrainSEXP, SEXP xTestSEXP, SEXP rhoSEXP, SEXP initIndSEXP, SEXP distypeSEXP, SEXP fstrSEXP, SEXP covparmsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type xTrain(xTrainSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type xTest(xTestSEXP);
+    Rcpp::traits::input_parameter< const double& >::type rho(rhoSEXP);
+    Rcpp::traits::input_parameter< const int& >::type initInd(initIndSEXP);
+    Rcpp::traits::input_parameter< std::string >::type distype(distypeSEXP);
+    Rcpp::traits::input_parameter< std::string >::type fstr(fstrSEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type covparms(covparmsSEXP);
+    rcpp_result_gen = Rcpp::wrap(predSortSparse_Rcpp(xTrain, xTest, rho, initInd, distype, fstr, covparms));
+    return rcpp_result_gen;
+END_RCPP
+}
 // NNcheck_Rcpp
 arma::rowvec NNcheck_Rcpp(const arma::rowvec& I, const arma::rowvec& J, const arma::rowvec& P, const arma::rowvec& distances, const arma::mat& x, const double rho, std::string distype, std::string fstr, const arma::rowvec& covparms);
 RcppExport SEXP _correlationVecchia_NNcheck_Rcpp(SEXP ISEXP, SEXP JSEXP, SEXP PSEXP, SEXP distancesSEXP, SEXP xSEXP, SEXP rhoSEXP, SEXP distypeSEXP, SEXP fstrSEXP, SEXP covparmsSEXP) {
@@ -118,6 +135,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_correlationVecchia_cov_expo_aniso_cpp", (DL_FUNC) &_correlationVecchia_cov_expo_aniso_cpp, 3},
     {"_correlationVecchia_cov_matern_2p5_cpp", (DL_FUNC) &_correlationVecchia_cov_matern_2p5_cpp, 3},
     {"_correlationVecchia_sortSparse_Rcpp", (DL_FUNC) &_correlationVecchia_sortSparse_Rcpp, 6},
+    {"_correlationVecchia_predSortSparse_Rcpp", (DL_FUNC) &_correlationVecchia_predSortSparse_Rcpp, 7},
     {"_correlationVecchia_NNcheck_Rcpp", (DL_FUNC) &_correlationVecchia_NNcheck_Rcpp, 9},
     {"_correlationVecchia_conditioning_Rcpp", (DL_FUNC) &_correlationVecchia_conditioning_Rcpp, 8},
     {NULL, NULL, 0}
