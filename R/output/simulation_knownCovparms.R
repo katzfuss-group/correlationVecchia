@@ -162,7 +162,7 @@ ggplot2::ggsave("nonst.pdf", vis, width = 15.2, height = 5.7)
 rm(list = ls())
 
 
-### multivariate case #############################################################################################
+### Bivariate case #############################################################################################
 
 nsim    <- 2
 cand.m  <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
@@ -198,6 +198,43 @@ vis_lap   <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("S-E-MM + HH-E
 
 ggplot2::ggsave("multi_random.pdf", vis_ran, width = 15.2, height = 5.7)
 ggplot2::ggsave("multi_overlap.pdf", vis_lap, width = 15.2, height = 5.7)
+
+rm(list = ls())
+
+### Trivariate case #############################################################################################
+
+# nsim    <- 2
+# cand.m  <- c(3, 6, 12, 15, 18, 24, 30, 36, 45)
+# cand.d  <- c(0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6)
+
+nsim    <- 2
+cand.m  <- c(2, 4, 8, 10, 16, 20, 25, 40, 50)
+cand.d  <- c(0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6)
+
+## sim 1: randomly selected locations
+
+out1 <- parallel_simulate_multivariate_knownCovparms(cand.m = cand.m, cand.d = cand.d, nsim = nsim, n = 20^2, d = 2, p = 3, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_bivariate_expo_latDim, covparms = c(1, 0.1), method.locs = "random", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+save(out1, file = "temp1.RData")
+
+## sim 2: overlapped locations
+
+out2 <- parallel_simulate_multivariate_knownCovparms(cand.m = cand.m, cand.d = cand.d, nsim = nsim, n = 20^2, d = 2, p = 3, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_bivariate_expo_latDim, covparms = c(1, 0.1), method.locs = "overlap", method.modify = "eigen-I", pivot = FALSE, tol = 1e-6, ncores = NULL)
+save(out2, file = "temp2.RData")
+
+save(out1, out2, file = "trivariate.RData")
+
+
+vdat1     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(d == 0.4) %>% select(-d)
+vdat2     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
+vis_ran   <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+
+vdat1     <- out2$vars %>% left_join(out2$kldiv, by = "index") %>% filter(d == 0.4) %>% select(-d)
+vdat2     <- out2$vars %>% left_join(out2$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
+vis_lap   <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+# vis_lap   <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+
+ggplot2::ggsave("triva_random.pdf", vis_ran, width = 15.2, height = 5.7)
+ggplot2::ggsave("triva_overlap.pdf", vis_lap, width = 15.2, height = 5.7)
 
 rm(list = ls())
 
