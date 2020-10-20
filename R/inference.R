@@ -10,6 +10,201 @@
 
 
 
+#' Fitting parameters using baseline approximations
+#'
+#' @param y see fit_scaled()
+#' @param inputs see fit_scaled()
+#' @param ms see fit_scaled()
+#' @param trend see fit_scaled()
+#' @param X see fit_scaled()
+#' @param scale see fit_scaled()
+#' @param baseline see fit_scaled()
+#' @param covfun see fit_scaled()
+#' @param var.ini see fit_scaled()
+#' @param ranges.ini see fit_scaled()
+#' @param nu see fit_scaled()
+#' @param nug see fit_scaled()
+#' @param select see fit_scaled()
+#' @param print.level see fit_scaled()
+#' @param max.it see fit_scaled()
+#' @param tol.dec see fit_scaled()
+#' @param n.est see fit_scaled()
+#'
+#' @return see fit_scaled()
+#' @export
+#'
+#' @examples
+#' 1+1
+fit_spacetime_baseline <- function(y, inputs, ms = c(30), trend = 'zero', X, scale = 'parms', baseline, covfun, var.ini, ranges.ini, nu = 3.5, nug = 0, select = Inf, print.level = 0, max.it = 32, tol.dec = 4, n.est = min(5e3, nrow(inputs)))
+{
+  if(covfun != "matern_spacetime") stop("This function is only for the spacetime matern covariance function.")
+  
+  ### dimensions
+  n = nrow(inputs)
+  d = ncol(inputs)
+  
+  ### specify trend covariates
+  if(missing(X)) {
+    if(trend == 'zero'){
+      X = as.matrix(sample(c(-1, 1), n, replace = TRUE))
+    } else if(trend == 'intercept'){
+      X = as.matrix(rep(1, n))
+    } else if(trend == 'linear'){
+      X = cbind(rep(1, n), inputs)
+    } else stop('invalid trend option specified')
+  } else trend = 'X'
+  
+  ### default variance parameter
+  if(missing(var.ini)) {
+    cur.var = summary(stats::lm(y~X-1))$sigma^2
+  } else cur.var = var.ini
+  
+  ### default range parameter
+  input.ranges = apply(inputs, 2, function(x) diff(range(x)))
+  
+  if(covfun == "matern_spacetime") {
+    if(missing(ranges.ini)) cur.ranges = .2 * c(mean(input.ranges[-length(input.ranges)]), input.ranges[length(input.ranges)]) else cur.ranges = ranges.ini
+  } else {
+    if(missing(ranges.ini)) cur.ranges = .2 * input.ranges else cur.ranges = ranges.ini
+  } ; active = rep(TRUE, d)
+  
+  ### fixed nugget?
+  if(is.null(nug)){
+    fix.nug = FALSE; nug = .01 * var(y)
+  } else fix.nug = TRUE
+  
+  ### covariance function
+  if(covfun == "matern_scaledim") {
+    
+    if(is.null(nu)) {
+      cur.oth     <- c(3.5, nug)
+      fix.nu      <- FALSE
+    } else {
+      cur.oth     <- c(nu, nug)
+      fix.nu      <- TRUE
+    }
+    
+  } else if(covfun %in% paste0("matern", (.5+1:4)*10, "_scaledim")) {
+    
+    cur.oth     <- c(nug)
+    fix.nu      <- FALSE
+    
+  } else if(covfun == "matern_spacetime") {
+    
+    if(is.null(nu)) {
+      cur.oth     <- c(3.5, nug)
+      fix.nu      <- FALSE
+    } else {
+      cur.oth     <- c(nu, nug)
+      fix.nu      <- TRUE
+    }
+    
+  } else {
+    
+    stop("invalid covfun specified")
+    
+  }
+  
+  ### only use subsample for estimation?
+  if(n.est < n){
+    ind.est = sample(1:n, n.est)
+    y.full = y; inputs.full = inputs; X.full = X
+    y = y[ind.est]; inputs = inputs[ind.est, , drop=FALSE]; X = X[ind.est, , drop=FALSE]
+  }
+  
+  ### decrease or remove m values larger than n
+  ms = unique(ifelse(ms < length(y), ms, length(y)-1))
+  
+  ### for increasing m
+  for(i.m in 1:length(ms)) {
+    
+    m = ms[i.m]
+    if(i.m < length(ms)){ tol = 10^(-tol.dec-2) } else {tol = 10^(-tol.dec)}
+    
+    ### increase maxit until convergence
+    conv = FALSE
+    maxit = 2
+    while(conv == FALSE & maxit <= max.it){
+      
+      if(print.level > 0) {
+        print(paste0('m = ', m, ', maxit = ', maxit)); print(cur.ranges)
+      }
+      
+      ## check for inactive input dims (large range params) --> This chunk is now  
+      
+      ## specify how to scale input dimensions
+      
+      ## define scale parameters using range parameters
+      if(covfun == "matern_spacetime") {
+        
+        if(scale == 'parms'){ scales = 1/c(rep(cur.ranges[1], d-1), cur.ranges[2])
+        } else if(scale == 'ranges'){ scales = 1/input.ranges
+        } else if(scale == 'none'){ scales = 1
+        } else stop(paste0('invalid argument scale = ', scale))
+        
+      } else {
+        
+        if(scale == 'parms'){ scales = 1/cur.ranges
+        } else if(scale == 'ranges'){ scales = 1/input.ranges
+        } else if(scale == 'none'){ scales = 1
+        } else stop(paste0('invalid argument scale = ', scale))
+        
+      }
+      
+      ## order and condition based on current params
+      ord = order_time(locs = inputs, coordinate = NULL) # timely ordering
+      inputs.ord = inputs[ord, , drop = FALSE]
+      y.ord = y[ord]
+      X.ord = X[ord, , drop = FALSE]
+      
+      if(baseline == 1) { # T-ord + T-NN
+        NNarray = matrix(NA, nrow = n, ncol = m + 1)
+        for(i in 1:n) {
+          ind               <- seq(from = 1, to = min(i, m + 1), by = 1)
+          NNarray[i, ind]   <- seq(from = i, by = -1, length.out = length(ind)) 
+        }
+      } else if(baseline == 2) { # T-ord + E-NN
+        NNarray = GpGp::find_ordered_nn(inputs.ord, m)
+      } else if(baseline == 3) { # T-ord + C-NN
+        NNarray = GpGp::find_ordered_nn(t(t(inputs.ord)*scales), m)
+      } else {
+        stop("The argument baseline must be 1, 2, or 3.")
+      }
+      
+      ## starting and fixed parameters
+      cur.parms     <- c(cur.var, cur.ranges, cur.oth)
+      ind.parms     <- c(rep("var", length(cur.var)), rep("range", length(cur.ranges)), rep("oth", length(cur.oth)))
+      
+      fixed         <- NULL
+      if(fix.nu) fixed <- c(fixed, length(cur.parms) - 1)
+      if(fix.nug) fixed <- c(fixed, length(cur.parms))
+      
+      ## fisher scoring
+      fit = GpGp::fit_model(y.ord, inputs.ord, X.ord, NNarray = NNarray, m_seq = m, convtol = tol, start_parms = cur.parms, max_iter = maxit, covfun_name = covfun, silent = (print.level < 2), reorder = FALSE, fixed_parms = fixed)
+      cur.var = fit$covparms[ind.parms == "var"]
+      cur.ranges = fit$covparms[ind.parms == "range"]
+      cur.oth = fit$covparms[ind.parms == "oth"]
+      conv = fit$conv
+      maxit = maxit * 2
+    }
+  }
+  
+  ### prepare fit object for subsequent prediction
+  fit$covparms=c(cur.var, cur.ranges, cur.oth)
+  fit$trend = trend
+  if(n.est < n){
+    fit$y = y.full
+    fit$locs = inputs.full
+    fit$X = X.full
+  } else {
+    fit$locs = inputs.ord
+  }
+  if(trend == 'zero') fit$X = as.matrix(rep(0, n))
+  return(fit)
+}
+
+
+
 #' Fitting parameters using correlation-based Vecchia approximation
 #'
 #' @param y see fit_scaled
