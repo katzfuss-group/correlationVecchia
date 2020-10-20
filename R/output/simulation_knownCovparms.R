@@ -301,6 +301,96 @@ ggplot2::ggsave("spti2_spgrid.pdf", vis_spgrid, width = 15.2, height = 5.7)
 
 rm(list = ls())
 
+### spacetime case - 10052020 #############################################################################################
+
+nsim    <- 2
+cand.m  <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+
+# legend  <- c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN") 
+# color   <- c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C")
+# shape   <- c(18, 15, 17, 16)
+
+## sim 1: covparms = c(1, 1, 0.1, 0.1)
+
+gen11 <- generate_gp_spacetime(nsim = 3, n = 300, d = 2, t.len = 1, method.locs = "all.random", covmodel = cov_spacetime_expo, covparms = c(1, 1, 0.1, 0.1))
+
+gen12 <- generate_gp_spacetime(nsim = 3, n = 25, d = 2, t.len = 10, method.locs = "space.random.time.grid", covmodel = cov_spacetime_expo, covparms = c(1, 1, 0.1, 0.1), method.modify = "eigen-I", pivot = FALSE, tol = 1e-3)
+
+gen13 <- generate_gp_spacetime(nsim = 3, n = 25, d = 2, t.len = 10, method.locs = "all.grid", covmodel = cov_spacetime_expo, covparms = c(1, 1, 0.1, 0.1), method.modify = "eigen-I", pivot = FALSE, tol = 1e-3)
+
+gen14 <- generate_gp_spacetime(nsim = 3, n = 300, d = 2, t.len = 1, method.locs = "satellite", covmodel = cov_spacetime_expo, covparms = c(1, 1, 0.1, 0.1))
+
+# fields::quilt.plot(gen11$sim$sim1$locs[, 1], gen11$sim$sim1$locs[, 2], gen11$sim$sim1$y)
+# # plot(gen11$sim$sim1$locs[, 3], gen11$sim$sim1$y)
+# 
+# fields::quilt.plot(gen12$sim$sim2$locs[, 1], gen12$sim$sim2$locs[, 2], gen12$sim$sim2$y)
+# plot(gen12$sim$sim1$locs[, 3], gen12$sim$sim1$y, type = 'o', col = as.factor(gen12$sim$sim1$locs[, 2]))
+
+out11 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t.len = 1, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 0.1, 0.1), method.locs = "all.random", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+
+out12 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 30, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 0.1, 0.1), method.locs = "space.random.time.grid", method.modify = "eigen-I", pivot = FALSE, tol = 1e-3, ncores = NULL)
+
+out13 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 30, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 0.1, 0.1), method.locs = "all.grid", method.modify = "eigen-I", pivot = FALSE, tol = 1e-3, ncores = NULL)
+
+out14 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t.len = 1, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 0.1, 0.1), method.locs = "satellite", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+
+save(out11, out12, out13, out14, file = "spti1_10052020.RData")
+
+## sim 2: covparms = c(1, 1, 15, 1)
+
+gen21 <- generate_gp_spacetime(nsim = 3, n = 300, d = 2, t.len = 1, method.locs = "all.random", covmodel = cov_spacetime_expo, covparms = c(1, 1, 15, 1))
+
+gen22 <- generate_gp_spacetime(nsim = 3, n = 25, d = 2, t.len = 10, method.locs = "space.random.time.grid", covmodel = cov_spacetime_expo, covparms = c(1, 1, 15, 1), method.modify = "eigen-I", pivot = FALSE, tol = 1e-3)
+
+gen23 <- generate_gp_spacetime(nsim = 3, n = 25, d = 2, t.len = 10, method.locs = "all.grid", covmodel = cov_spacetime_expo, covparms = c(1, 1, 15, 1), method.modify = "eigen-I", pivot = FALSE, tol = 1e-3)
+
+gen24 <- generate_gp_spacetime(nsim = 3, n = 300, d = 2, t.len = 1, method.locs = "satellite", covmodel = cov_spacetime_expo, covparms = c(1, 1, 15, 1))
+
+fields::quilt.plot(gen21$sim$sim1$locs[, 1], gen21$sim$sim1$locs[, 2], gen21$sim$sim1$y)
+# plot(gen21$sim$sim1$locs[, 3], gen21$sim$sim1$y)
+
+fields::quilt.plot(gen22$sim$sim2$locs[, 1], gen22$sim$sim2$locs[, 2], gen22$sim$sim2$y)
+plot(gen22$sim$sim1$locs[, 3], gen22$sim$sim1$y, type = 'o', col = as.factor(gen22$sim$sim1$locs[, 2]))
+
+out21 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t.len = 1, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 15, 1), method.locs = "all.random", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+
+out22 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 30, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 15, 1), method.locs = "space.random.time.grid", method.modify = "eigen-I", pivot = FALSE, tol = 1e-3, ncores = NULL)
+
+out23 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 30, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 15, 1), method.locs = "all.grid", method.modify = "eigen-I", pivot = FALSE, tol = 1e-3, ncores = NULL)
+
+out24 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t.len = 1, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 15, 1), method.locs = "satellite", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+
+save(out21, out22, out23, out24, file = "spti2_10052020.RData")
+
+## visualization
+
+vdat1         <- out11$vars %>% left_join(out11$kldiv, by = "index")
+vdat2         <- out12$vars %>% left_join(out12$kldiv, by = "index")
+vis_sprand    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+# vis_sprand    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+
+vdat1         <- out13$vars %>% left_join(out13$kldiv, by = "index") 
+vdat2         <- out14$vars %>% left_join(out14$kldiv, by = "index")
+vis_spgrid    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+# vis_spgrid    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+
+ggplot2::ggsave("spti1_sprand_10052020.pdf", vis_sprand, width = 15.2, height = 5.7)
+ggplot2::ggsave("spti1_spgrid_10052020.pdf", vis_spgrid, width = 15.2, height = 5.7)
+
+vdat1         <- out21$vars %>% left_join(out21$kldiv, by = "index")
+vdat2         <- out22$vars %>% left_join(out22$kldiv, by = "index")
+vis_sprand    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+# vis_sprand    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+
+vdat1         <- out23$vars %>% left_join(out23$kldiv, by = "index") 
+vdat2         <- out24$vars %>% left_join(out24$kldiv, by = "index")
+vis_spgrid    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+# vis_spgrid    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+
+ggplot2::ggsave("spti2_sprand_10052020.pdf", vis_sprand, width = 15.2, height = 5.7)
+ggplot2::ggsave("spti2_spgrid_10052020.pdf", vis_spgrid, width = 15.2, height = 5.7)
+
+rm(list = ls())
 
 ### derivative case #############################################################################################
 
