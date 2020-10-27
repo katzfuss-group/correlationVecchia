@@ -132,6 +132,18 @@ nsim      <- 100
 covparms  <- c(1, 0.1, 0.1, 3.5, 0) # var, range_space, range_time, nu, nugget
 m         <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 
+# covparms: not good
+# c(1, 0.1, 0.3, 1.5, 0)
+# c(1, 0.1, 0.3, 0.5, 0)
+# c(1, 0.1, 0.2, 0.5, 0)
+# c(1, 0.1, 0.1, 0.5, 0)
+# c(1, 0.1, 0.5, 0.5, 0)
+# c(1, 0.1, 1.0, 0.5, 0)
+# c(1, 1.0, 1.0, 0.5, 0)
+# c(1, 1.0, 0.1, 0.5, 0)
+# c(1, 0.5, 0.1, 0.5, 0)
+# c(1, 0.5, 0.1, 0.5, 0)
+
 out2      <- generate_gp_spacetime(nsim = nsim, n = 25, d = 2, t.len = 30, method.locs = "space.random.time.grid", covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 50, 25))
 
 locs      <- list()
