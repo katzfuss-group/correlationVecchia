@@ -4,4 +4,5 @@
 ^README-.*\.png$
 ^R/output$
 ^R/JSM2020$
+^R/SCSG2021$
 ^cpp$
