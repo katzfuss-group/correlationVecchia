@@ -229,9 +229,9 @@ visout <- rbind(tempdat.true, tempdat.b1, tempdat.b2, tempdat.b3, tempdat.b4, te
 # c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN")
 vis_posterior(visout, color = c("gray1", "#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), legend = c("True density", "S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"))
 
-ggsave("R/SCSG2021/posterior_b1_cpt.pdf", vis_posterior(out.b1 %>% filter(method != "approx1"), color = c("#984EA3", "gray1"), legend = c("S-E-MM + HH-E-NN", "true"), ylim = c(0, 0.03)), width = 5, height = 5.7)
-ggsave("R/SCSG2021/posterior_b2_cpt.pdf", vis_posterior(out.b2 %>% filter(method != "approx1"), color = c("#4DAF4A", "gray1"), legend = c("S-E-MM + J-E-NN", "true"), ylim = c(0, 0.03)), width = 5, height = 5.7)
-ggsave("R/SCSG2021/posterior_b3_cpt.pdf", vis_posterior(out.b3 %>% filter(method != "approx1"), color = c("#377EB8", "gray1"), legend = c("S-E-MM + S-E-NN", "true"), ylim = c(0, 0.03)), width = 5, height = 5.7)
-ggsave("R/SCSG2021/posterior_b4_cpt.pdf", vis_posterior(out.b4 %>% filter(method != "approx1"), color = c("#FF7F00", "gray1"), legend = c("S-E-MM + C-NN", "true"), ylim = c(0, 0.03)), width = 5, height = 5.7)
-ggsave("R/SCSG2021/posterior_cc_cpt.pdf", vis_posterior(out.cc %>% filter(method != "approx1"), color = c("#E41A1C", "gray1"), legend = c("C-MM + C-NN", "true"), ylim = c(0, 0.03)), width = 5, height = 5.7)
+ggsave("R/SCSG2021/posterior_b1_cpt.pdf", vis_posterior(out.b1 %>% filter(method != "approx1"), color = c("#984EA3", "gray1"), legend = c("S-E-MM + HH-E-NN", "exact"), ylim = c(0, 0.03)), width = 5, height = 5.7)
+ggsave("R/SCSG2021/posterior_b2_cpt.pdf", vis_posterior(out.b2 %>% filter(method != "approx1"), color = c("#4DAF4A", "gray1"), legend = c("S-E-MM + J-E-NN", "exact"), ylim = c(0, 0.03)), width = 5, height = 5.7)
+ggsave("R/SCSG2021/posterior_b3_cpt.pdf", vis_posterior(out.b3 %>% filter(method != "approx1"), color = c("#377EB8", "gray1"), legend = c("S-E-MM + S-E-NN", "exact"), ylim = c(0, 0.03)), width = 5, height = 5.7)
+ggsave("R/SCSG2021/posterior_b4_cpt.pdf", vis_posterior(out.b4 %>% filter(method != "approx1"), color = c("#FF7F00", "gray1"), legend = c("S-E-MM + C-NN", "exact"), ylim = c(0, 0.03)), width = 5, height = 5.7)
+ggsave("R/SCSG2021/posterior_cc_cpt.pdf", vis_posterior(out.cc %>% filter(method != "approx1"), color = c("#E41A1C", "gray1"), legend = c("C-MM + C-NN", "exact"), ylim = c(0, 0.03)), width = 5, height = 5.7)
 
