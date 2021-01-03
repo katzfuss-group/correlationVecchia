@@ -6,12 +6,15 @@
 #include "math.h"
 #include "Types.h"
 #include "SortSparse.h"
+#include <boost/math/special_functions/bessel.hpp>
+#include <boost/math/special_functions/gamma.hpp>
 // using namespace Rcpp;
 
 // via the depends attribute we tell Rcpp to create hooks for
 // RcppArmadillo so that the build process will know what to do
 //
 // [[Rcpp::depends(RcppArmadillo)]]
+// [[Rcpp::depends(BH)]]
 
 arma::vec fun_cpp(const double & a, const arma::vec & x) { return(a * x); }
 
@@ -31,6 +34,72 @@ double cov_expo_aniso_cpp(const arma::rowvec & x1, const arma::rowvec & x2, cons
     
     // arma::rowvec diagvector(size(x1)); diagvector.ones(); diagvector[0] = pow(covparms[2], 2);
     // return(covparms[0] * exp( - sqrt(dot(x1-x2, (x1-x2) * diagmat(diagvector))) / covparms[1] )); 
+}
+
+// [[Rcpp::export]]
+double cov_matern_iso_cpp(const arma::rowvec & x1, const arma::rowvec & x2, const arma::rowvec & covparms) {
+    
+    arma::rowvec diff = x1 - x2;
+    double d = norm(diff);
+    double covconst = covparms[0] / ( pow(2.0, covparms[2] - 1.0) * boost::math::tgamma(covparms[2]) );
+    double cov = -1.0;
+    
+    if(d == 0.0) {
+        
+        cov = covparms[0];
+        return(cov);
+        
+    } else {
+        
+        d = pow(2 * covparms[2], 0.5) * d / covparms[1];
+        cov = covconst * pow(d, covparms[2]) * boost::math::cyl_bessel_k(covparms[2], d);
+        return(cov);
+    }
+}
+
+// [[Rcpp::export]]
+double cov_matern_aniso_cpp(const arma::rowvec & x1, const arma::rowvec & x2, const arma::rowvec & covparms) {
+    
+    arma::rowvec diff = x1 - x2;
+    diff[0] = diff[0] * covparms[3];
+    
+    double d = norm(diff);
+    double covconst = covparms[0] / ( pow(2.0, covparms[2] - 1.0) * boost::math::tgamma(covparms[2]) );
+    double cov = -1.0;
+    
+    if(d == 0.0) {
+        
+        cov = covparms[0];
+        return(cov);
+        
+    } else {
+        
+        d = pow(2 * covparms[2], 0.5) * d / covparms[1];
+        cov = covconst * pow(d, covparms[2]) * boost::math::cyl_bessel_k(covparms[2], d);
+        return(cov);
+    }
+}
+
+// [[Rcpp::export]]
+double cov_matern_spacetime_cpp(const arma::rowvec & x1, const arma::rowvec & x2, const arma::rowvec & covparms) {
+    
+    arma::rowvec diff = x1 - x2;
+    unsigned int dim = x1.n_elem - 1;
+    arma::rowvec origin(dim + 1); origin.zeros();
+    
+    for(int i = 0; i < dim; i++) {
+        diff(i) = diff(i) / covparms(1);
+    }
+    
+    diff(dim) = diff(dim) / covparms(2);
+    
+    arma::rowvec newparms(3);
+    newparms(0) = covparms(0); // variance parameter
+    newparms(1) = 1.0; // range parameter = 1
+    newparms(2) = covparms(3); // smoothness parameter
+    
+    double cov = cov_matern_iso_cpp(diff, origin, newparms);
+    return(cov);
 }
 
 // [[Rcpp::export]]
@@ -72,12 +141,26 @@ covXptr putCovPtrInXptr(std::string fstr) {
         
         return(covXptr(new covPtr(&cov_matern_2p5_cpp)));
         
+    } else if (fstr == "cov_matern_iso" || fstr == "cov_matern_iso_cpp") {
+        
+        return(covXptr(new covPtr(&cov_matern_iso_cpp)));
+        
+    } else if (fstr == "cov_matern_aniso" || fstr == "cov_matern_aniso_cpp") {
+        
+        return(covXptr(new covPtr(&cov_matern_aniso_cpp)));
+        
+    } else if (fstr == "cov_matern_spacetime" || fstr == "cov_matern_spacetime_cpp") {
+        
+        return(covXptr(new covPtr(&cov_matern_spacetime_cpp)));
+        
     } else {
         
         return(covXptr(R_NilValue));
         
     }
 }
+
+
 
 // [[Rcpp::export]]
 Rcpp::List sortSparse_Rcpp(const arma::mat & x, const double & rho, const int & initInd, std::string distype, std::string fstr, const arma::rowvec & covparms) {
@@ -246,10 +329,3 @@ arma::mat conditioning_Rcpp(const arma::rowvec & indvec, const arma::rowvec & co
     
     return(condsets);
 }
-
-
-
-
-
-
-
