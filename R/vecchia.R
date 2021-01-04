@@ -431,21 +431,27 @@ corrvecchia_specify_knownCovparms_2 <- function(locs, m, ordering = "maxmin", or
 .find_ordered_cnn <- function(m, rho, corr.dist) 
 {
   if(corr.dist == "1-rho") {
-    cond.sets <- conditioning_nn(m = m, d = 1 - rho)
+    # cond.sets <- conditioning_nn(m = m, d = 1 - rho)
+    cond.sets <- conditioning_nn_Rcpp(m = m, d = 1- rho) + 1
   } else if(corr.dist == "1-abs(rho)") {
-    cond.sets <- conditioning_nn(m = m, d = 1 - abs(rho))
+    # cond.sets <- conditioning_nn(m = m, d = 1 - abs(rho))
+    cond.sets <- conditioning_nn_Rcpp(m = m, d = 1- abs(rho)) + 1
   } else if(corr.dist == "1-rho^2") {
     # cond.sets <- conditioning_nn(m = m, d = 1 - rho^2)
-    cond.sets <- conditioning_nn(m = m, d = 1 - abs(rho))
+    # cond.sets <- conditioning_nn(m = m, d = 1 - abs(rho))
+    cond.sets <- conditioning_nn_Rcpp(m = m, d = 1- abs(rho)) + 1
   } else if(corr.dist == "sqrt(1-rho)") {
     # cond.sets <- conditioning_nn(m = m, d = sqrt(1 - rho))
-    cond.sets <- conditioning_nn(m = m, d = 1 - rho)
+    # cond.sets <- conditioning_nn(m = m, d = 1 - rho)
+    cond.sets <- conditioning_nn_Rcpp(m = m, d = 1- rho) + 1
   } else if(corr.dist == "sqrt(1-abs(rho))") {
     # cond.sets <- conditioning_nn(m = m, d = sqrt(1 - abs(rho)))
-    cond.sets <- conditioning_nn(m = m, d = 1 - abs(rho))
+    # cond.sets <- conditioning_nn(m = m, d = 1 - abs(rho))
+    cond.sets <- conditioning_nn_Rcpp(m = m, d = 1- abs(rho)) + 1
   } else if(corr.dist == "sqrt(1-rho^2)") {
     # cond.sets <- conditioning_nn(m = m, d = sqrt(1 - rho^2))
-    cond.sets <- conditioning_nn(m = m, d = 1 - abs(rho))
+    # cond.sets <- conditioning_nn(m = m, d = 1 - abs(rho))
+    cond.sets <- conditioning_nn_Rcpp(m = m, d = 1- abs(rho)) + 1
   } else {
     stop("The argument corr.dist must be one of the followings: 1-rho, 1-abs(rho), 1-rho^2, sqrt(1-rho), sqrt(1-abs(rho)), and sqrt(1-rho^2).")
   }
