@@ -45,6 +45,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// cov_bivariate_expo_latDim_cpp
+double cov_bivariate_expo_latDim_cpp(const arma::rowvec& newx1, const arma::rowvec& newx2, const arma::rowvec& covparms);
+RcppExport SEXP _correlationVecchia_cov_bivariate_expo_latDim_cpp(SEXP newx1SEXP, SEXP newx2SEXP, SEXP covparmsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type newx1(newx1SEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type newx2(newx2SEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type covparms(covparmsSEXP);
+    rcpp_result_gen = Rcpp::wrap(cov_bivariate_expo_latDim_cpp(newx1, newx2, covparms));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cov_matern_iso_cpp
 double cov_matern_iso_cpp(const arma::rowvec& x1, const arma::rowvec& x2, const arma::rowvec& covparms);
 RcppExport SEXP _correlationVecchia_cov_matern_iso_cpp(SEXP x1SEXP, SEXP x2SEXP, SEXP covparmsSEXP) {
@@ -207,6 +220,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_correlationVecchia_cov_cpp", (DL_FUNC) &_correlationVecchia_cov_cpp, 3},
     {"_correlationVecchia_cov_expo_iso_cpp", (DL_FUNC) &_correlationVecchia_cov_expo_iso_cpp, 3},
     {"_correlationVecchia_cov_expo_aniso_cpp", (DL_FUNC) &_correlationVecchia_cov_expo_aniso_cpp, 3},
+    {"_correlationVecchia_cov_bivariate_expo_latDim_cpp", (DL_FUNC) &_correlationVecchia_cov_bivariate_expo_latDim_cpp, 3},
     {"_correlationVecchia_cov_matern_iso_cpp", (DL_FUNC) &_correlationVecchia_cov_matern_iso_cpp, 3},
     {"_correlationVecchia_cov_matern_aniso_cpp", (DL_FUNC) &_correlationVecchia_cov_matern_aniso_cpp, 3},
     {"_correlationVecchia_cov_matern_spacetime_cpp", (DL_FUNC) &_correlationVecchia_cov_matern_spacetime_cpp, 3},

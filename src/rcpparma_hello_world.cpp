@@ -37,6 +37,21 @@ double cov_expo_aniso_cpp(const arma::rowvec & x1, const arma::rowvec & x2, cons
 }
 
 // [[Rcpp::export]]
+double cov_bivariate_expo_latDim_cpp(const arma::rowvec & newx1, const arma::rowvec & newx2, const arma::rowvec & covparms) {
+    
+    // arma::rowvec diff = x1 - x2;
+    // unsigned int len = diff.n_elem;
+    
+    // diff.resize(len + 1);
+    // diff(len) = covparms(2);
+    
+    arma::rowvec diff = newx1 - newx2;
+    diff(diff.n_elem - 1) = diff(diff.n_elem - 1) * covparms(2);
+    
+    return( covparms[0] * exp(- norm(diff) / covparms(1)) );
+}
+
+// [[Rcpp::export]]
 double cov_matern_iso_cpp(const arma::rowvec & x1, const arma::rowvec & x2, const arma::rowvec & covparms) {
     
     arma::rowvec diff = x1 - x2;

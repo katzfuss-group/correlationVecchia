@@ -13,6 +13,10 @@ cov_expo_aniso_cpp <- function(x1, x2, covparms) {
     .Call(`_correlationVecchia_cov_expo_aniso_cpp`, x1, x2, covparms)
 }
 
+cov_bivariate_expo_latDim_cpp <- function(newx1, newx2, covparms) {
+    .Call(`_correlationVecchia_cov_bivariate_expo_latDim_cpp`, newx1, newx2, covparms)
+}
+
 cov_matern_iso_cpp <- function(x1, x2, covparms) {
     .Call(`_correlationVecchia_cov_matern_iso_cpp`, x1, x2, covparms)
 }

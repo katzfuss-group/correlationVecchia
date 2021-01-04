@@ -1173,6 +1173,77 @@ cov_matern_simple <- function(d, nu, alpha = 1, tol = .Machine$double.eps)
 
 
 
+#' Isotropic Matern covariance function (identical to \code{cov_matern})
+#'
+#' @param locs A matrix of locations
+#' @param covparms A numerical vector with covariance parameters = (sigma2, range, smoothness)
+#' @param tol A numerical tolerance for the damped sine function. At \code{.Machine$double.eps} by default
+#'
+#' @return A matrix with \code{n} rows and \code{n} columns, with the \code{(i, j)} entry containing the matern covariance between observations \code{locs[i, ]} and \code{locs[j, ]}
+#' 
+#' @export
+#'
+#' @examples
+#' locs <- matrix(runif(4), 2, 2)
+#' 
+#' cov_matern_iso(locs, c(1, 1, 0.5))
+#' cov_matern_iso_cpp(locs[1, ], locs[2, ], covparms = c(1, 1, 0.5))
+cov_matern_iso <- function(locs, covparms, tol = .Machine$double.eps)
+{
+  return(cov_matern(locs = locs, covparms = covparms, tol = tol))
+}
+
+
+
+#' Anisotropic Matern covariance function
+#'
+#' @param locs A matrix of locations
+#' @param covparms A numerical vector with covariance parameters = (sigma2, range, smoothness, anisotropy)
+#' @param tol A numerical tolerance for the damped sine function. At \code{.Machine$double.eps} by default
+#'
+#' @return A matrix with \code{n} rows and \code{n} columns, with the \code{(i, j)} entry containing the anisotropic matern covariance between observations \code{locs[i, ]} and \code{locs[j, ]}
+#' 
+#' @export
+#'
+#' @examples
+#' locs <- matrix(runif(4), 2, 2)
+#' 
+#' cov_matern_aniso(locs, covparms = c(1, 1, 0.5, 5))
+#' cov_matern_aniso_cpp(locs[1, ], locs[2, ], covparms = c(1, 1, 0.5, 5))
+cov_matern_aniso <- function(locs, covparms, tol = .Machine$double.eps)
+{
+  locs[, 1]             <- locs[, 1] * covparms[4]
+  
+  return(cov_matern(locs = locs, covparms = covparms[1:3], tol = tol))
+}
+
+
+
+#' Space-time Matern covariance function
+#'
+#' @param locs A matrix of locations
+#' @param covparms A numerical vector with covariance parameters = (sigma2, spatial range, temporal range, smoothness)
+#' @param tol A numerical tolerance for the damped sine function. At \code{.Machine$double.eps} by default
+#'
+#' @return A matrix with \code{n} rows and \code{n} columns, with the \code{(i, j)} entry containing the space-time matern covariance between observations \code{locs[i, ]} and \code{locs[j, ]}
+#' 
+#' @export
+#'
+#' @examples
+#' locs <- matrix(runif(6), 2, 3)
+#' 
+#' cov_matern_spacetime(locs, covparms = c(1, 0.1, 0.3, 0.5))
+#' cov_matern_spacetime_cpp(locs[1, ], locs[2, ], covparms = c(1, 0.1, 0.3, 0.5))
+cov_matern_spacetime <- function(locs, covparms, tol = .Machine$double.eps)
+{
+  locs[, -ncol(locs)]   <- locs[, -ncol(locs)] / covparms[2]
+  locs[, ncol(locs)]    <- locs[, ncol(locs)] / covparms[3]
+  
+  return(cov_matern(locs = locs, covparms = c(covparms[1], 1, covparms[4]), tol = tol))
+}
+
+
+
 #' @title Matern covariance matrix of (GP, dGP/dx) with respect to the smoothness parameter of 2.5 in 1-dimensional domain
 #'
 #' @param locs A matrix of locations
