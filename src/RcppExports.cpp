@@ -167,6 +167,41 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// index_smallest
+int index_smallest(const arma::rowvec target);
+RcppExport SEXP _correlationVecchia_index_smallest(SEXP targetSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::rowvec >::type target(targetSEXP);
+    rcpp_result_gen = Rcpp::wrap(index_smallest(target));
+    return rcpp_result_gen;
+END_RCPP
+}
+// index_smallestk
+arma::irowvec index_smallestk(const arma::rowvec target, const int k);
+RcppExport SEXP _correlationVecchia_index_smallestk(SEXP targetSEXP, SEXP kSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::rowvec >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const int >::type k(kSEXP);
+    rcpp_result_gen = Rcpp::wrap(index_smallestk(target, k));
+    return rcpp_result_gen;
+END_RCPP
+}
+// conditioning_nn_Rcpp
+arma::imat conditioning_nn_Rcpp(const int m, const arma::mat d);
+RcppExport SEXP _correlationVecchia_conditioning_nn_Rcpp(SEXP mSEXP, SEXP dSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type m(mSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type d(dSEXP);
+    rcpp_result_gen = Rcpp::wrap(conditioning_nn_Rcpp(m, d));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_correlationVecchia_cov_cpp", (DL_FUNC) &_correlationVecchia_cov_cpp, 3},
@@ -180,6 +215,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_correlationVecchia_predSortSparse_Rcpp", (DL_FUNC) &_correlationVecchia_predSortSparse_Rcpp, 7},
     {"_correlationVecchia_NNcheck_Rcpp", (DL_FUNC) &_correlationVecchia_NNcheck_Rcpp, 9},
     {"_correlationVecchia_conditioning_Rcpp", (DL_FUNC) &_correlationVecchia_conditioning_Rcpp, 8},
+    {"_correlationVecchia_index_smallest", (DL_FUNC) &_correlationVecchia_index_smallest, 1},
+    {"_correlationVecchia_index_smallestk", (DL_FUNC) &_correlationVecchia_index_smallestk, 2},
+    {"_correlationVecchia_conditioning_nn_Rcpp", (DL_FUNC) &_correlationVecchia_conditioning_nn_Rcpp, 2},
     {NULL, NULL, 0}
 };
 

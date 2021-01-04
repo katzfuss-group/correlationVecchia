@@ -737,6 +737,17 @@ order_maxmin_correlation_inverseDist <- function(locs, d.inv, initial.pt)
 #' d <- as.matrix(dist(locs))
 #' which(conditioning_nn(5, d) != GpGp::find_ordered_nn_brute(locs, 5), arr.ind = TRUE)
 #' which(conditioning_nn(5, d) != GpGp::find_ordered_nn(locs, 5), arr.ind = TRUE)
+#' 
+#' n <- 10 ; m <- 3
+#' 
+#' locs <- matrix(runif(n * 2), n, 2)
+#' d <- as.matrix(dist(locs))
+#' 
+#' conditioning_nn(m, d)
+#' conditioning_nn_Rcpp(m, d) + 1
+#' 
+#' require(microbenchmark)
+#' microbenchmark(conditioning_nn(m, d), conditioning_nn_Rcpp(m, d), times = 2)
 conditioning_nn <- function(m, d)
 {
   # initialize an output object NN which is a n*n matrix

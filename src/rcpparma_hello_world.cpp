@@ -329,3 +329,101 @@ arma::mat conditioning_Rcpp(const arma::rowvec & indvec, const arma::rowvec & co
     
     return(condsets);
 }
+
+
+
+// [[Rcpp::export]]
+int index_smallest(const arma::rowvec target) {
+    
+    int ind = target.n_elem - 1;
+    
+    for(int i = ind; i >= 0; i--) {
+        
+        if(target(i) < target(ind)) {
+            ind = i;
+        }
+    }
+    
+    return(ind);
+}
+
+// [[Rcpp::export]]
+arma::irowvec index_smallestk(const arma::rowvec target, const int k) {
+    
+    int len = target.n_elem;
+    arma::rowvec clone = target;
+    arma::irowvec ord(k); ord.fill(NA_INTEGER);
+    
+    if (len == 1) {
+        
+        ord(0) = 0;
+        return(ord);
+        
+    } else if (len == 2) {
+        
+        if(k == 1) {
+            
+            if(target(0) < target(1)) {
+                
+                ord(0) = 0;
+                
+            } else {
+                
+                ord(0) = 1;
+            }
+            
+            return(ord);
+            
+        } else {
+            
+            if(target(0) < target(1)) {
+                
+                ord(0) = 0; ord(1) = 1;
+                
+            } else {
+                
+                ord(0) = 1; ord(1) = 0;
+            }
+            
+            return(ord);
+        }
+        
+    } else {
+        
+        if(k == 1) {
+            
+            ord(0) = index_smallest(clone);
+            
+        } else {
+            
+            for(int i = 0; i < std::min(len, k); i++) {
+                
+                ord(i) = index_smallest(clone);
+                clone(ord(i)) = std::numeric_limits<double>::max();
+            }
+        }
+        
+        return(ord);
+    }
+}
+
+// [[Rcpp::export]]
+arma::imat conditioning_nn_Rcpp(const int m, const arma::mat d) {
+    
+    int n = d.n_rows;
+    arma::imat NN(n, m + 1);
+    
+    arma::rowvec target(n);
+    
+    for(int i = 0; i < n; i++) {
+        
+        target = d.row(i).head(i+1);
+        NN.row(i) = index_smallestk(target, m + 1);
+    }
+    
+    return( NN );
+}
+
+
+
+

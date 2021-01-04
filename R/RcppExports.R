@@ -45,3 +45,15 @@ conditioning_Rcpp <- function(indvec, condvec, P, maxsize, x, distype, fstr, cov
     .Call(`_correlationVecchia_conditioning_Rcpp`, indvec, condvec, P, maxsize, x, distype, fstr, covparms)
 }
 
+index_smallest <- function(target) {
+    .Call(`_correlationVecchia_index_smallest`, target)
+}
+
+index_smallestk <- function(target, k) {
+    .Call(`_correlationVecchia_index_smallestk`, target, k)
+}
+
+conditioning_nn_Rcpp <- function(m, d) {
+    .Call(`_correlationVecchia_conditioning_nn_Rcpp`, m, d)
+}
+
