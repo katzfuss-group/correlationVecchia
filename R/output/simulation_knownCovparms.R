@@ -9,7 +9,8 @@
 # use_build_ignore("R/output/simulation_knownCovparms.R", escape = TRUE)
 
 # set.seed(03222020)
-set.seed(04282020)
+# set.seed(04282020)
+set.seed(01032020)
 
 library(correlationVecchia)
 library(dplyr)
@@ -19,8 +20,10 @@ library(gridExtra)
 
 ### anisotropic case #############################################################################################
 
-nsim    <- 2
-cand.m  <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+Sys.time()
+
+nsim    <- 10
+cand.m  <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 cand.a  <- c(1, 5, 10, 15, 20, 25)
 
 # legend  <- c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN")
@@ -42,11 +45,14 @@ ggplot2::ggsave("aniso.pdf", vis, width = 15.2, height = 5.7)
 
 rm(list = ls())
 
+Sys.time()
 
 ### nonstationary case #############################################################################################
 
-nsim    <- 2
-cand.m  <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+Sys.time()
+
+nsim    <- 10
+cand.m  <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 
 # legend  <- c("E-Maxmin + E-NN", "E-Maxmin + C-NN", "C-Maxmin + E-NN", "C-Maxmin + C-NN", "X-Coord + E-NN", "Y-Coord + E-NN")
 # color   <- c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33")
@@ -161,11 +167,14 @@ ggplot2::ggsave("nonst.pdf", vis, width = 15.2, height = 5.7)
 
 rm(list = ls())
 
+Sys.time()
 
 ### Bivariate case #############################################################################################
 
-nsim    <- 2
-cand.m  <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+Sys.time()
+
+nsim    <- 10
+cand.m  <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 cand.d  <- c(0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6)
 
 # legend  <- c("Baseline 1", "Baseline 2", "Baseline 3", "Baseline 4", "C-Maxmin + C-NN") 
@@ -201,14 +210,18 @@ ggplot2::ggsave("multi_overlap.pdf", vis_lap, width = 15.2, height = 5.7)
 
 rm(list = ls())
 
+Sys.time()
+
 ### Trivariate case #############################################################################################
+
+Sys.time()
 
 # nsim    <- 2
 # cand.m  <- c(3, 6, 12, 15, 18, 24, 30, 36, 45)
 # cand.d  <- c(0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6)
 
-nsim    <- 2
-cand.m  <- c(2, 4, 8, 10, 16, 20, 25, 40, 50)
+nsim    <- 10
+cand.m  <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 cand.d  <- c(0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6)
 
 ## sim 1: randomly selected locations
@@ -238,10 +251,14 @@ ggplot2::ggsave("triva_overlap.pdf", vis_lap, width = 15.2, height = 5.7)
 
 rm(list = ls())
 
+Sys.time()
+
 ### spacetime case #############################################################################################
 
-nsim    <- 2
-cand.m  <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+Sys.time()
+
+nsim    <- 10
+cand.m  <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 
 # legend  <- c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN") 
 # color   <- c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C")
@@ -251,9 +268,9 @@ cand.m  <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 
 out11 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t.len = 1, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 50, 25), method.locs = "all.random", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 
-out12 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 30, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 50, 25), method.locs = "space.random.time.grid", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+out12 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 36, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 50, 25), method.locs = "space.random.time.grid", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 
-out13 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 30, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 50, 25), method.locs = "all.grid", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+out13 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 36, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 50, 25), method.locs = "all.grid", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 
 out14 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t.len = 1, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 50, 25), method.locs = "satellite", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 
@@ -263,9 +280,9 @@ save(out11, out12, out13, out14, file = "spti1.RData")
 
 out21 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t.len = 1, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 500, 2.5), method.locs = "all.random", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 
-out22 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 30, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 500, 2.5), method.locs = "space.random.time.grid", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+out22 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 36, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 500, 2.5), method.locs = "space.random.time.grid", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 
-out23 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 30, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 500, 2.5), method.locs = "all.grid", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+out23 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 36, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 500, 2.5), method.locs = "all.grid", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 
 out24 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t.len = 1, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.75, 500, 2.5), method.locs = "satellite", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 
@@ -301,10 +318,14 @@ ggplot2::ggsave("spti2_spgrid.pdf", vis_spgrid, width = 15.2, height = 5.7)
 
 rm(list = ls())
 
+Sys.time()
+
 ### spacetime case - 10052020 #############################################################################################
 
-nsim    <- 2
-cand.m  <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+Sys.time()
+
+nsim    <- 10
+cand.m  <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 
 # legend  <- c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN") 
 # color   <- c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C")
@@ -328,9 +349,9 @@ gen14 <- generate_gp_spacetime(nsim = 3, n = 300, d = 2, t.len = 1, method.locs 
 
 out11 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t.len = 1, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 0.1, 0.1), method.locs = "all.random", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 
-out12 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 30, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 0.1, 0.1), method.locs = "space.random.time.grid", method.modify = "eigen-I", pivot = FALSE, tol = 1e-3, ncores = NULL)
+out12 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 36, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 0.1, 0.1), method.locs = "space.random.time.grid", method.modify = "eigen-I", pivot = FALSE, tol = 1e-3, ncores = NULL)
 
-out13 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 30, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 0.1, 0.1), method.locs = "all.grid", method.modify = "eigen-I", pivot = FALSE, tol = 1e-3, ncores = NULL)
+out13 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 36, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 0.1, 0.1), method.locs = "all.grid", method.modify = "eigen-I", pivot = FALSE, tol = 1e-3, ncores = NULL)
 
 out14 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t.len = 1, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 0.1, 0.1), method.locs = "satellite", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 
@@ -354,13 +375,39 @@ plot(gen22$sim$sim1$locs[, 3], gen22$sim$sim1$y, type = 'o', col = as.factor(gen
 
 out21 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t.len = 1, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 15, 1), method.locs = "all.random", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 
-out22 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 30, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 15, 1), method.locs = "space.random.time.grid", method.modify = "eigen-I", pivot = FALSE, tol = 1e-3, ncores = NULL)
+out22 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 36, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 15, 1), method.locs = "space.random.time.grid", method.modify = "eigen-I", pivot = FALSE, tol = 1e-3, ncores = NULL)
 
-out23 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 30, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 15, 1), method.locs = "all.grid", method.modify = "eigen-I", pivot = FALSE, tol = 1e-3, ncores = NULL)
+out23 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 36, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 15, 1), method.locs = "all.grid", method.modify = "eigen-I", pivot = FALSE, tol = 1e-3, ncores = NULL)
 
 out24 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t.len = 1, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 1, 15, 1), method.locs = "satellite", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 
 save(out21, out22, out23, out24, file = "spti2_10052020.RData")
+
+## sim 3: covparms = c(1, 0.1, 0.2, 0.5)
+
+gen31 <- generate_gp_spacetime(nsim = 3, n = 300, d = 2, t.len = 1, method.locs = "all.random", covmodel = cov_spacetime_expo, covparms = c(1, 0.1, 0.2, 0.5))
+
+gen32 <- generate_gp_spacetime(nsim = 3, n = 25, d = 2, t.len = 10, method.locs = "space.random.time.grid", covmodel = cov_spacetime_expo, covparms = c(1, 0.1, 0.2, 0.5), method.modify = "eigen-I", pivot = FALSE, tol = 1e-3)
+
+gen33 <- generate_gp_spacetime(nsim = 3, n = 25, d = 2, t.len = 10, method.locs = "all.grid", covmodel = cov_spacetime_expo, covparms = c(1, 0.1, 0.2, 0.5), method.modify = "eigen-I", pivot = FALSE, tol = 1e-3)
+
+gen34 <- generate_gp_spacetime(nsim = 3, n = 300, d = 2, t.len = 1, method.locs = "satellite", covmodel = cov_spacetime_expo, covparms = c(1, 0.1, 0.2, 0.5))
+
+fields::quilt.plot(gen31$sim$sim1$locs[, 1], gen31$sim$sim1$locs[, 2], gen31$sim$sim1$y)
+# plot(gen31$sim$sim1$locs[, 3], gen31$sim$sim1$y)
+
+fields::quilt.plot(gen32$sim$sim2$locs[, 1], gen32$sim$sim2$locs[, 2], gen32$sim$sim2$y)
+plot(gen32$sim$sim1$locs[, 3], gen32$sim$sim1$y, type = 'o', col = as.factor(gen32$sim$sim1$locs[, 2]))
+
+out31 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t.len = 1, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.1, 0.2, 0.5), method.locs = "all.random", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+
+out32 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 36, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.1, 0.2, 0.5), method.locs = "space.random.time.grid", method.modify = "eigen-I", pivot = FALSE, tol = 1e-3, ncores = NULL)
+
+out33 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t.len = 36, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.1, 0.2, 0.5), method.locs = "all.grid", method.modify = "eigen-I", pivot = FALSE, tol = 1e-3, ncores = NULL)
+
+out34 <- parallel_simulate_spacetime_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t.len = 1, corr.dist = "sqrt(1-abs(rho))", covmodel = cov_spacetime_expo, covparms = c(1, 0.1, 0.2, 0.5), method.locs = "satellite", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
+
+save(out31, out32, out33, out34, file = "spti3_10052020.RData")
 
 ## visualization
 
@@ -390,12 +437,29 @@ vis_spgrid    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("T-ord + T
 ggplot2::ggsave("spti2_sprand_10052020.pdf", vis_sprand, width = 15.2, height = 5.7)
 ggplot2::ggsave("spti2_spgrid_10052020.pdf", vis_spgrid, width = 15.2, height = 5.7)
 
+vdat1         <- out31$vars %>% left_join(out31$kldiv, by = "index")
+vdat2         <- out32$vars %>% left_join(out32$kldiv, by = "index")
+vis_sprand    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+# vis_sprand    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+
+vdat1         <- out33$vars %>% left_join(out33$kldiv, by = "index") 
+vdat2         <- out34$vars %>% left_join(out34$kldiv, by = "index")
+vis_spgrid    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+# vis_spgrid    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("Baseline 1", "Baseline 2", "Baseline 3", "C-Maxmin + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+
+ggplot2::ggsave("spti3_sprand_10052020.pdf", vis_sprand, width = 15.2, height = 5.7)
+ggplot2::ggsave("spti3_spgrid_10052020.pdf", vis_spgrid, width = 15.2, height = 5.7)
+
 rm(list = ls())
+
+Sys.time()
 
 ### derivative case #############################################################################################
 
-nsim    <- 2
-cand.m  <- c(2, 10, 15, 20, 25, 30, 35, 40, 45)
+Sys.time()
+
+nsim    <- 10
+cand.m  <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 cand.r  <- c(0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4)
 
 #####
@@ -443,13 +507,13 @@ vis.d3    <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("S-E-MM + HH-E
 
 save(out.d3, vis.d3, file = "deriv3.RData")
 
-#####
+##### not work
 
 n <- 20^2
 d <- 2
 covmodel <- corr_derivative_matern_4.5_2d
 
-out.d4 <- parallel_simulate_derivative_knownCovparms(cand.m = cand.m, cand.r = cand.r, nsim = nsim, n = n, d = d, corr.dist = "sqrt(1-abs(rho))", covmodel = covmodel, covparms = c(1, NA), method.locs = "random", method.modify = "eigen-I", pivot = FALSE, tol = 1e-6)
+out.d4 <- parallel_simulate_derivative_knownCovparms(cand.m = cand.m, cand.r = cand.r, nsim = nsim, n = n, d = d, corr.dist = "sqrt(1-abs(rho))", covmodel = covmodel, covparms = c(1, NA), method.locs = "random", method.modify = "eigen-I", pivot = FALSE, tol = 1e-4)
 
 vdat1     <- out.d4$vars %>% left_join(out.d4$kldiv, by = "index") %>% filter(r == 0.1) %>% select(-r)
 vdat2     <- out.d4$vars %>% left_join(out.d4$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
@@ -499,15 +563,18 @@ ggplot2::ggsave("deriv4.pdf", vis.d4, width = 15.2, height = 5.7)
 ggplot2::ggsave("deriv5.pdf", vis.d5, width = 15.2, height = 5.7)
 ggplot2::ggsave("deriv6.pdf", vis.d6, width = 15.2, height = 5.7)
 
+Sys.time()
 
 ### periodic case #############################################################################################
 
-nsim    <- 2
-n <- 30^2
+Sys.time()
 
-##### d = 2
+nsim    <- 10
+n       <- 30^2
 
-cand.m <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+##### d = 2 
+
+cand.m <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 cand.period <- c(0.05, 0.1, 0.15, 0.2, 0.25, 0.30, 0.35, 0.4)
 
 out.p1 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = cand.period, nsim = nsim, n = n, d = 2, covmodel = cov_wave, type = "Dampedsine", covparms = c(1), method.locs = 'random', corr.dist = "sqrt(1-abs(rho))", method.modify = "eigen-I", pivot = FALSE, tol = 1e-4, ncores = NULL)
@@ -521,7 +588,7 @@ save(out.p1, vis.p1, file = "wave1.RData")
 
 ##### d = 2
 
-cand.m <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+cand.m <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 cand.period <- c(0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4)
 
 out.p2 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = cand.period, nsim = nsim, n = n, d = 2, covmodel = cov_wave, type = "Dampedcosine", covparms = c(1, 0.1), method.locs = 'random', corr.dist = "sqrt(1-abs(rho))", method.modify = "eigen-I", pivot = FALSE, tol = 1e-4, ncores = NULL)
@@ -533,9 +600,9 @@ vis.p2  <- vis_arrange(vdat1 = vdat1, vdat2 = vdat2, legend = c("E-MM + E-NN", "
 
 save(out.p2, vis.p2, file = "wave2.RData")
 
-##### d = 2
+##### d = 2 ## not work
 
-cand.m <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+cand.m <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 cand.period <- c(0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4)
 
 out.p3 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = cand.period, nsim = nsim, n = n, d = 2, covmodel = cov_wave, type = "BesselJ", covparms = c(1, 0), method.locs = 'random', corr.dist = "sqrt(1-abs(rho))", method.modify = "eigen-I", pivot = FALSE, tol = 1e-4, ncores = NULL)
@@ -557,7 +624,7 @@ ggplot2::ggsave("wave3.pdf", vis.p3, width = 15.2, height = 5.7)
 
 ##### d = 1
 
-cand.m <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+cand.m <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 cand.period <- c(0.05, 0.1, 0.15, 0.2, 0.25, 0.30, 0.35, 0.4)
 
 out.p1d1 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = cand.period, nsim = nsim, n = n, d = 1, covmodel = cov_wave, type = "Dampedsine", covparms = c(1), method.locs = 'random', corr.dist = "sqrt(1-abs(rho))", method.modify = "eigen-I", pivot = FALSE, tol = 1e-4, ncores = NULL)
@@ -571,7 +638,7 @@ save(out.p1d1, vis.p1d1, file = "wave1_d1.RData")
 
 ##### d = 1
 
-cand.m <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+cand.m <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 cand.period <- c(0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4)
 
 out.p2d1 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = cand.period, nsim = nsim, n = n, d = 1, covmodel = cov_wave, type = "Dampedcosine", covparms = c(1, 0.1), method.locs = 'random', corr.dist = "sqrt(1-abs(rho))", method.modify = "eigen-I", pivot = FALSE, tol = 1e-4, ncores = NULL)
@@ -585,7 +652,7 @@ save(out.p2d1, vis.p2d1, file = "wave2_d1.RData")
 
 ##### d = 1
 
-cand.m <- c(1, 5, 10, 15, 20, 25, 30, 35, 40, 45)
+cand.m <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 cand.period <- c(0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4)
 
 out.p3d1 <- parallel_simulate_wave_knownCovparms(cand.m = cand.m, cand.period = cand.period, nsim = nsim, n = n, d = 1, covmodel = cov_wave, type = "BesselJ", covparms = c(1, 0), method.locs = 'random', corr.dist = "sqrt(1-abs(rho))", method.modify = "eigen-I", pivot = FALSE, tol = 1e-4, ncores = NULL)
@@ -605,3 +672,4 @@ ggplot2::ggsave("wave1_d1.pdf", vis.p1d1, width = 15.2, height = 5.7)
 ggplot2::ggsave("wave2_d1.pdf", vis.p2d1, width = 15.2, height = 5.7)
 ggplot2::ggsave("wave3_d1.pdf", vis.p3d1, width = 15.2, height = 5.7)
 
+Sys.time()
