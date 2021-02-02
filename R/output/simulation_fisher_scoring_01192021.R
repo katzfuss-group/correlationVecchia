@@ -1407,7 +1407,7 @@ vis_fisher <- function(vdat1, vdat2, vdat3, ylim_vdat1, ylim_vdat2, ylim_vdat3, 
   vis1      <- vdat1 %>% tidyr::gather(key = "approx", value = "kldiv", -index, -vars1)
   
   # plot vis1
-  plot1     <- vis1 %>% ggplot(aes(x = get(vars1), y = kldiv, col = approx, shape = approx)) + 
+  plot1     <- vis1 %>% ggplot(aes(x = get(vars1), y = log10(kldiv), col = approx, shape = approx)) + 
     geom_point(size = size.point) + 
     geom_line(size = size.line, alpha = alpha) + 
     scale_x_continuous(name = vars1, limits = range(xlabel1), breaks = xlabel1) +
@@ -1489,7 +1489,7 @@ vis_fisher <- function(vdat1, vdat2, vdat3, ylim_vdat1, ylim_vdat2, ylim_vdat3, 
   return(result)
 }
 
-ylim_vdat1 <- vdat1 %>% select(approx_1, approx_2, approx_3, approx_4, approx_5) %>% range()
+ylim_vdat1 <- vdat1 %>% select(approx_1, approx_2, approx_3, approx_4, approx_5) %>% log10() %>% range()
 ylim_vdat2 <- vdat2 %>% select(approx_1, approx_2, approx_3, approx_4) %>% range()
 ylim_vdat3 <- vdat3 %>% select(approx_2, approx_3, approx_4) %>% range()
 
