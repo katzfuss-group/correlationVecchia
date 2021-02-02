@@ -284,7 +284,6 @@ for(i in 1:length(m)) {
 }
 
 parallel::stopCluster(cl)
-
 Sys.time()
 
 #####
@@ -1190,21 +1189,24 @@ par(mfrow = c(1, 1))
 
 par(mfrow = c(2, 3))
 
-plot(m, mae_trange[[2]], col = "#4DAF4A", type = 'o', lwd = 2, pch = 16, main = "MAE for temporal range parameter estimation", xlab = "m", ylab = "mae", ylim = range(c(mae_trange[[2]], mae_trange[[3]], mae_trange[[4]], mae_trange[[5]])))
+# plot(m, mae_trange[[2]], col = "#4DAF4A", type = 'o', lwd = 2, pch = 16, main = "MAE for temporal range parameter estimation", xlab = "m", ylab = "mae", ylim = range(c(mae_trange[[2]], mae_trange[[3]], mae_trange[[4]], mae_trange[[5]])))
+plot(m, mae_trange[[2]], col = "#4DAF4A", type = 'o', lwd = 2, pch = 16, main = "MAE for temporal range parameter estimation", xlab = "m", ylab = "mae", ylim = range(c(mae_trange[[1]], mae_trange[[2]], mae_trange[[3]], mae_trange[[4]], mae_trange[[5]])))
 lines(m, mae_trange[[1]], col = "#984EA3", type = 'o', lwd = 2, pch = 16)
 lines(m, mae_trange[[3]], col = "#377EB8", type = 'o', lwd = 2, pch = 16)
 lines(m, mae_trange[[4]], col = "#E41A1C", type = 'o', lwd = 2, pch = 16)
 lines(m, mae_trange[[5]], col = "gray70", type = 'o', lwd = 2, pch = 16)
 legend("topright", legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN", "exact GP"), col = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "gray70"), lty = 1, lwd = 2)
 
-plot(m, mse_trange[[2]], col = "#4DAF4A", type = 'o', lwd = 2, pch = 16, main = "MSE for temporal range parameter estimation", xlab = "m", ylab = "MSE", ylim = range(c(mse_trange[[2]], mse_trange[[3]], mse_trange[[4]], mse_trange[[5]])))
+# plot(m, mse_trange[[2]], col = "#4DAF4A", type = 'o', lwd = 2, pch = 16, main = "MSE for temporal range parameter estimation", xlab = "m", ylab = "MSE", ylim = range(c(mse_trange[[2]], mse_trange[[3]], mse_trange[[4]], mse_trange[[5]])))
+plot(m, mse_trange[[2]], col = "#4DAF4A", type = 'o', lwd = 2, pch = 16, main = "MSE for temporal range parameter estimation", xlab = "m", ylab = "MSE", ylim = range(c(mse_trange[[1]], mse_trange[[2]], mse_trange[[3]], mse_trange[[4]], mse_trange[[5]])))
 lines(m, mse_trange[[1]], col = "#984EA3", type = 'o', lwd = 2, pch = 16)
 lines(m, mse_trange[[3]], col = "#377EB8", type = 'o', lwd = 2, pch = 16)
 lines(m, mse_trange[[4]], col = "#E41A1C", type = 'o', lwd = 2, pch = 16)
 lines(m, mse_trange[[5]], col = "gray70", type = 'o', lwd = 2, pch = 16)
 legend("topright", legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN", "exact GP"), col = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "gray70"), lty = 1, lwd = 2)
 
-plot(m, sqrt(mse_trange[[2]]), col = "#4DAF4A", type = 'o', lwd = 2, pch = 16, main = "RMSE for temporal range parameter estimation", xlab = "m", ylab = "RMSE", ylim = sqrt(range(c(mse_trange[[2]], mse_trange[[3]], mse_trange[[4]], mse_trange[[5]]))))
+# plot(m, sqrt(mse_trange[[2]]), col = "#4DAF4A", type = 'o', lwd = 2, pch = 16, main = "RMSE for temporal range parameter estimation", xlab = "m", ylab = "RMSE", ylim = sqrt(range(c(mse_trange[[2]], mse_trange[[3]], mse_trange[[4]], mse_trange[[5]]))))
+plot(m, sqrt(mse_trange[[2]]), col = "#4DAF4A", type = 'o', lwd = 2, pch = 16, main = "RMSE for temporal range parameter estimation", xlab = "m", ylab = "RMSE", ylim = sqrt(range(c(mse_trange[[1]], mse_trange[[2]], mse_trange[[3]], mse_trange[[4]], mse_trange[[5]]))))
 lines(m, sqrt(mse_trange[[1]]), col = "#984EA3", type = 'o', lwd = 2, pch = 16)
 lines(m, sqrt(mse_trange[[3]]), col = "#377EB8", type = 'o', lwd = 2, pch = 16)
 lines(m, sqrt(mse_trange[[4]]), col = "#E41A1C", type = 'o', lwd = 2, pch = 16)
@@ -1362,4 +1364,135 @@ vis_est   <- vis_mxx(vdat1 = vdat1, vdat2 = vdat2, ylab_vdat1 = "MSD for spatial
 
 ggplot2::ggsave("spest_msd.pdf", vis_est, width = 15.2, height = 5.7)
 
+vdat1     <- data.frame(index = seq(length(m)), m = m, approx_1 = sqrt(mse_srange[[1]]), approx_2 = sqrt(mse_srange[[2]]), approx_3 = sqrt(mse_srange[[3]]), approx_4 = sqrt(mse_srange[[4]]), approx_5 = sqrt(mse_srange[[5]]))
+vdat2     <- data.frame(index = seq(length(m)), m = m, approx_1 = sqrt(mse_trange[[1]]), approx_2 = sqrt(mse_trange[[2]]), approx_3 = sqrt(mse_trange[[3]]), approx_4 = sqrt(mse_trange[[4]]), approx_5 = sqrt(mse_trange[[5]]))
+# vis_est   <- vis_mxx(vdat1 = vdat1, vdat2 = vdat2, ylab_vdat1 = "RMSE for spatial range", ylab_vdat2 = "RMSE for temporal range", ylim_vdat2 = sqrt(range(c(mse_trange[[1]], mse_trange[[2]], mse_trange[[3]], mse_trange[[4]], mse_trange[[5]]))), legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN", "Exact GP"), color =  c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "gray30"), shape = c(18, 15, 17, 16, NA))
+vis_est   <- vis_mxx(vdat1 = vdat1, vdat2 = vdat2, ylab_vdat1 = "RMSE for spatial range", ylab_vdat2 = "RMSE for temporal range", ylim_vdat2 = sqrt(range(c(mse_trange[[2]], mse_trange[[3]], mse_trange[[4]], mse_trange[[5]]))), legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN", "Exact GP"), color =  c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "gray30"), shape = c(18, 15, 17, 16, NA))
 
+ggplot2::ggsave("spest_rmse.pdf", vis_est, width = 15.2, height = 5.7)
+
+vdat1     <- data.frame(index = seq(length(m)), m = m, approx_1 = sqrt(msd_srange[[1]]), approx_2 = sqrt(msd_srange[[2]]), approx_3 = sqrt(msd_srange[[3]]), approx_4 = sqrt(msd_srange[[4]]))
+vdat2     <- data.frame(index = seq(length(m)), m = m, approx_1 = sqrt(msd_trange[[1]]), approx_2 = sqrt(msd_trange[[2]]), approx_3 = sqrt(msd_trange[[3]]), approx_4 = sqrt(msd_trange[[4]]))
+# vis_est   <- vis_mxx(vdat1 = vdat1, vdat2 = vdat2, ylab_vdat1 = "RMSD for spatial range", ylab_vdat2 = "RMSD for temporal range", ylim_vdat2 = sqrt(range(c(msd_trange[[1]], msd_trange[[2]], msd_trange[[3]], msd_trange[[4]]))), legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color =  c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+vis_est   <- vis_mxx(vdat1 = vdat1, vdat2 = vdat2, ylab_vdat1 = "RMSD for spatial range", ylab_vdat2 = "RMSD for temporal range", ylim_vdat2 = sqrt(range(c(msd_trange[[2]], msd_trange[[3]], msd_trange[[4]]))), legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color =  c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+
+ggplot2::ggsave("spest_rmsd.pdf", vis_est, width = 15.2, height = 5.7)
+
+### figures - KLD, RMSE, RMSD at the same figure #############################################################################################
+
+vdat1   <- data.frame(index = seq(length(m)), m = m, approx_1 = meankld_b1, approx_2 = meankld_b2, approx_3 = meankld_b3, approx_4 = meankld_cc, approx_5 = meankld_gp)
+vdat2   <- data.frame(index = seq(length(m)), m = m, approx_1 = sqrt(msd_srange[[1]]), approx_2 = sqrt(msd_srange[[2]]), approx_3 = sqrt(msd_srange[[3]]), approx_4 = sqrt(msd_srange[[4]]))
+vdat3   <- data.frame(index = seq(length(m)), m = m, approx_1 = sqrt(msd_trange[[1]]), approx_2 = sqrt(msd_trange[[2]]), approx_3 = sqrt(msd_trange[[3]]), approx_4 = sqrt(msd_trange[[4]]))
+
+vdat1   <- vdat1 %>% filter(m != 3)
+vdat2   <- vdat2 %>% filter(m != 3)
+vdat3   <- vdat3 %>% filter(m != 3)
+
+vis_fisher <- function(vdat1, vdat2, vdat3, ylim_vdat1, ylim_vdat2, ylim_vdat3, ylab_vdat1, ylab_vdat2, ylab_vdat3, legend, color, shape, alpha = 0.7, size.point = 4, size.line = 1, size.legend = 14, size.lab = 14, size.text = 12, size.margin = c(5.5, 20, 5.5, 5.5))
+{
+  # library(ggplot2) ; library(dplyr) ; library(RColorBrewer) ; library(gridExtra)
+  
+  # n.space   <- 10
+  # legend    <- paste0( legend, paste0(rep(" ", n.space), collapse = "") )
+  
+  ### Visualize the first data table ###
+  
+  size.margin.plot1 = size.margin + c(0, 100, 0, 100)
+  
+  # Gathering vdat1
+  vars1     <- vdat1 %>% select(-index, -starts_with("approx")) %>% colnames()
+  if(length(vars1) > 1) stop("Please check the argument vdat1.")
+  
+  xlabel1   <- vdat1 %>% pull(vars1) %>% unique() %>% sort()
+  vis1      <- vdat1 %>% tidyr::gather(key = "approx", value = "kldiv", -index, -vars1)
+  
+  # plot vis1
+  plot1     <- vis1 %>% ggplot(aes(x = get(vars1), y = kldiv, col = approx, shape = approx)) + 
+    geom_point(size = size.point) + 
+    geom_line(size = size.line, alpha = alpha) + 
+    scale_x_continuous(name = vars1, limits = range(xlabel1), breaks = xlabel1) +
+    scale_color_manual(values = color, labels = legend, guide = guide_legend(nrow = 2, byrow = TRUE)) + 
+    scale_shape_manual(values = shape, labels = legend, guide = guide_legend(nrow = 2, byrow = TRUE)) +
+    xlab(vars1) + ylab(ylab_vdat1) + 
+    theme(axis.title.x = element_text(size = size.lab), 
+          axis.text.x = element_text(size = size.text), 
+          axis.title.y = element_text(size = size.lab), 
+          axis.text.y = element_text(size = size.text), 
+          legend.title = element_blank(), 
+          legend.text = element_text(size = size.legend, margin = margin(r = 25, unit = 'pt')), 
+          legend.direction = 'horizontal', 
+          legend.spacing.x = unit(15, 'pt'),
+          plot.margin = unit(size.margin.plot1, "pt")) # t, r, b, l
+  
+  ### Visualize the second data table ###
+  
+  # Gathering vdat2
+  vars2     <- vdat2 %>% select(-index, -starts_with("approx")) %>% colnames()
+  if(length(vars2) > 1) stop("Please check the argument vdat2.")
+  
+  xlabel2   <- vdat2 %>% pull(vars2) %>% unique() %>% sort()
+  vis2      <- vdat2 %>% tidyr::gather(key = "approx", value = "kldiv", -index, -vars2)
+  
+  # plot vis2
+  plot2     <- vis2 %>% ggplot(aes(x = get(vars2), y = kldiv, col = approx, shape = approx)) + 
+    geom_point(size = size.point) + 
+    geom_line(size = size.line, alpha = alpha) + 
+    scale_x_continuous(name = vars2, limits = range(xlabel2), breaks = xlabel2) +
+    scale_color_manual(values = color, labels = legend) + 
+    scale_shape_manual(values = shape, labels = legend) +
+    xlab(vars2) + ylab(ylab_vdat2) + coord_cartesian(ylim = ylim_vdat2) +
+    theme(axis.title.x = element_text(size = size.lab), 
+          axis.text.x = element_text(size = size.text), 
+          axis.title.y = element_text(size = size.lab), 
+          axis.text.y = element_text(size = size.text), 
+          legend.title = element_blank(), 
+          legend.text = element_text(size = size.legend), 
+          legend.direction = 'horizontal', 
+          plot.margin = unit(size.margin, "pt")) # t, r, b, l
+  
+  ### Visualize the third data table ###
+  
+  # Gathering vdat3
+  vars3     <- vdat3 %>% select(-index, -starts_with("approx")) %>% colnames()
+  if(length(vars3) > 1) stop("Please check the argument vdat3.")
+  
+  xlabel3   <- vdat3 %>% pull(vars3) %>% unique() %>% sort()
+  vis3      <- vdat3 %>% tidyr::gather(key = "approx", value = "kldiv", -index, -vars3)
+  
+  # plot vis3
+  plot3     <- vis3 %>% ggplot(aes(x = get(vars3), y = kldiv, col = approx, shape = approx)) + 
+    geom_point(size = size.point) + 
+    geom_line(size = size.line, alpha = alpha) + 
+    scale_x_continuous(name = vars3, limits = range(xlabel3), breaks = xlabel3) +
+    scale_color_manual(values = color, labels = legend) + 
+    scale_shape_manual(values = shape, labels = legend) +
+    xlab(vars3) + ylab(ylab_vdat3) + coord_cartesian(ylim = ylim_vdat3) +
+    theme(axis.title.x = element_text(size = size.lab), 
+          axis.text.x = element_text(size = size.text), 
+          axis.title.y = element_text(size = size.lab), 
+          axis.text.y = element_text(size = size.text), 
+          legend.title = element_blank(), 
+          legend.text = element_text(size = size.legend), 
+          legend.direction = 'horizontal', 
+          plot.margin = unit(size.margin, "pt")) # t, r, b, l
+  
+  ### Creating the legend ###
+  
+  tmp       <- ggplot_gtable(ggplot_build(plot1))
+  leg       <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  mylegend  <- tmp$grobs[[leg]]
+  
+  ### Merge the two plots ###
+  
+  result    <- grid.arrange(mylegend, arrangeGrob(plot1 + theme(legend.position="none"), plot2 + theme(legend.position="none"), plot3 + theme(legend.position="none"), layout_matrix = rbind(c(1, 1), c(2, 3))), nrow=2, heights=c(1, 10))
+  
+  return(result)
+}
+
+ylim_vdat1 <- vdat1 %>% select(approx_1, approx_2, approx_3, approx_4, approx_5) %>% range()
+ylim_vdat2 <- vdat2 %>% select(approx_1, approx_2, approx_3, approx_4) %>% range()
+ylim_vdat3 <- vdat3 %>% select(approx_2, approx_3, approx_4) %>% range()
+
+vis_est   <- vis_fisher(vdat1 = vdat1, vdat2 = vdat2, vdat3 = vdat3, ylim_vdat1 = ylim_vdat1, ylim_vdat2 = ylim_vdat2, ylim_vdat3 = ylim_vdat3, ylab_vdat1 = "log10(KL)", ylab_vdat2 = "RMSD for spatial range", ylab_vdat3 = "RMSD for temporal range", legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN", "Exact GP"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "gray30"), shape = c(18, 15, 17, 16, NA), alpha = 0.7, size.point = 2, size.line = 0.7, size.legend = 14, size.lab = 14, size.text = 12, size.margin = c(5.5, 20, 5.5, 5.5))
+
+ggplot2::ggsave("spest_final.pdf", vis_est, width = 9.0, height = 7.0)
