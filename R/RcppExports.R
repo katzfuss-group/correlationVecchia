@@ -25,6 +25,10 @@ cov_matern_aniso_cpp <- function(x1, x2, covparms) {
     .Call(`_correlationVecchia_cov_matern_aniso_cpp`, x1, x2, covparms)
 }
 
+cov_matern_scaledim_cpp <- function(x1, x2, covparms) {
+    .Call(`_correlationVecchia_cov_matern_scaledim_cpp`, x1, x2, covparms)
+}
+
 cov_matern_spacetime_cpp <- function(x1, x2, covparms) {
     .Call(`_correlationVecchia_cov_matern_spacetime_cpp`, x1, x2, covparms)
 }

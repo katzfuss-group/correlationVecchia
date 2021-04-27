@@ -96,6 +96,35 @@ double cov_matern_aniso_cpp(const arma::rowvec & x1, const arma::rowvec & x2, co
 }
 
 // [[Rcpp::export]]
+double cov_matern_scaledim_cpp(const arma::rowvec & x1, const arma::rowvec & x2, const arma::rowvec & covparms) {
+    
+    // CAUTION: different argument setting: please see ?GpGp::matern_scaledim()
+    
+    arma::rowvec diff = x1 - x2;
+    double nu = covparms[covparms.n_elem-1];
+    
+    for(int i = 0; i < diff.n_elem; i++) {
+        diff(i) = diff(i) / covparms(i+1);
+    }
+    
+    double d = norm(diff);
+    double covconst = covparms[0] / ( pow(2.0, nu - 1.0) * boost::math::tgamma(nu) );
+    double cov = -1.0;
+    
+    if(d == 0.0) {
+        
+        cov = covparms[0];
+        return(cov);
+        
+    } else {
+        
+        d = pow(2 * nu, 0.5) * d;
+        cov = covconst * pow(d, nu) * boost::math::cyl_bessel_k(nu, d);
+        return(cov);
+    }
+}
+
+// [[Rcpp::export]]
 double cov_matern_spacetime_cpp(const arma::rowvec & x1, const arma::rowvec & x2, const arma::rowvec & covparms) {
     
     arma::rowvec diff = x1 - x2;
@@ -163,6 +192,10 @@ covXptr putCovPtrInXptr(std::string fstr) {
     } else if (fstr == "cov_matern_aniso" || fstr == "cov_matern_aniso_cpp") {
         
         return(covXptr(new covPtr(&cov_matern_aniso_cpp)));
+        
+    } else if (fstr == "cov_matern_scaledim" || fstr == "cov_matern_scaledim_cpp") {
+        
+        return(covXptr(new covPtr(&cov_matern_scaledim_cpp)));
         
     } else if (fstr == "cov_matern_spacetime" || fstr == "cov_matern_spacetime_cpp") {
         
