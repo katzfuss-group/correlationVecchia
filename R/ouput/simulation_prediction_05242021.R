@@ -17,12 +17,12 @@ memory.size() # memory.limit()
 
 ##
 
-library(vecchia) ; library(dplyr) ; library(tidyr) ; library(ggplot2) ; library(gridExtra) 
+library(correlationVecchia) ; library(dplyr) ; library(tidyr) ; library(ggplot2) ; library(gridExtra)
 
 ### setting ########################################################################
 
 nsim            <- 200
-covparms        <- c(1, 0.1, 1.0, 0.5) 
+covparms        <- c(1, 0.1, 1.0, 0.5)
 nugget          <- 1e-6
 
 m               <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)

@@ -17,7 +17,7 @@ memory.size() # memory.limit()
 
 ##
 
-library(vecchia)
+library(correlationVecchia)
 library(foreach)
 
 ##### ncores #######################################################################
@@ -37,7 +37,7 @@ d               <- 2
 
 t               <- 1
 
-## 
+##
 
 Sys.time()
 

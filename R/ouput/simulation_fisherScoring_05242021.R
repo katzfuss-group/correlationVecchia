@@ -17,7 +17,7 @@ memory.size() # memory.limit()
 
 ##
 
-library(vecchia) ; library(dplyr) ; library(tidyr) ; library(ggplot2) ; library(gridExtra) 
+library(correlationVecchia) ; library(dplyr) ; library(tidyr) ; library(ggplot2) ; library(gridExtra)
 
 ### setting ########################################################################
 
@@ -62,7 +62,7 @@ vdat3   <- data.frame(index = seq(length(output.monitoring$kls.average$m)), m = 
 vdat1   <- vdat1 %>% filter(m != 3)
 vdat2   <- vdat2 %>% filter(m != 3)
 vdat3   <- vdat3 %>% filter(m != 3)
-  
+
 ylim1   <- vdat1 %>% select(approx_1, approx_2, approx_3, approx_4, approx_5) %>% range()
 ylim2   <- vdat2 %>% select(approx_1, approx_2, approx_3, approx_4) %>% range()
 ylim3   <- vdat3 %>% select(approx_2, approx_3, approx_4) %>% range()

@@ -17,7 +17,7 @@ memory.size() # memory.limit()
 
 ##
 
-library(vecchia) ; library(dplyr) ; library(tidyr) ; library(ggplot2) ; library(gridExtra) 
+library(correlationVecchia) ; library(dplyr) ; library(tidyr) ; library(ggplot2) ; library(gridExtra)
 
 ### anisotropic case ############################################################### (~ 45 min)
 
@@ -52,18 +52,18 @@ cand.m  <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 ## sim 1: smoothness
 
 kernel <- function(loc) {
-  
+
   d         <- length(loc)
-  
+
   a         <- function(loc) 10 # please use your own a function for the first coordinate
   b         <- function(loc) 10 # please use your own a function for the second coordinate
   angle     <- function(loc) 0 # please use your own spatially varying rotation angle
-  
+
   eta       <- angle(loc)
   rot.mat   <- matrix(c(cos(eta), sin(eta), -sin(eta), cos(eta)), nrow = d, ncol = d, byrow = TRUE)
-  
+
   range     <- c(a(loc)^(-2), b(loc)^(-2))
-  
+
   return( t(rot.mat) %*% diag(range, nrow = d) %*% rot.mat )
 }
 
@@ -76,18 +76,18 @@ output.nonst1 <- parSim_nonst_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30
 ## sim 2: range
 
 kernel <- function(loc) {
-  
+
   d         <- length(loc)
-  
+
   a         <- function(loc) 10 * (1 + 10 * loc[1]) # please use your own a function for the first coordinate
   b         <- function(loc) 10 * (1 + 10 * loc[1]) # please use your own a function for the second coordinate
   angle     <- function(loc) 0 # please use your own spatially varying rotation angle
-  
+
   eta       <- angle(loc)
   rot.mat   <- matrix(c(cos(eta), sin(eta), -sin(eta), cos(eta)), nrow = d, ncol = d, byrow = TRUE)
-  
+
   range     <- c(a(loc)^(-2), b(loc)^(-2))
-  
+
   return( t(rot.mat) %*% diag(range, nrow = d) %*% rot.mat )
 }
 
@@ -100,18 +100,18 @@ output.nonst2 <- parSim_nonst_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30
 ## sim 3: anisotropy
 
 kernel <- function(loc) {
-  
+
   d         <- length(loc)
-  
+
   a         <- function(loc) 10 * (1 + 10 * loc[1]) # please use your own a function for the first coordinate
   b         <- function(loc) 10 # please use your own a function for the second coordinate
   angle     <- function(loc) 0 # please use your own spatially varying rotation angle
-  
+
   eta       <- angle(loc)
   rot.mat   <- matrix(c(cos(eta), sin(eta), -sin(eta), cos(eta)), nrow = d, ncol = d, byrow = TRUE)
-  
+
   range     <- c(a(loc)^(-2), b(loc)^(-2))
-  
+
   return( t(rot.mat) %*% diag(range, nrow = d) %*% rot.mat )
 }
 
@@ -124,18 +124,18 @@ output.nonst3 <- parSim_nonst_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30
 ## sim 4: rotation
 
 kernel <- function(loc) {
-  
+
   d         <- length(loc)
-  
+
   a         <- function(loc) 10 * 10 # please use your own a function for the first coordinate
   b         <- function(loc) 10 # please use your own a function for the second coordinate
   angle     <- function(loc) pi * loc[1] / 2 # please use your own spatially varying rotation angle
-  
+
   eta       <- angle(loc)
   rot.mat   <- matrix(c(cos(eta), sin(eta), -sin(eta), cos(eta)), nrow = d, ncol = d, byrow = TRUE)
-  
+
   range     <- c(a(loc)^(-2), b(loc)^(-2))
-  
+
   return( t(rot.mat) %*% diag(range, nrow = d) %*% rot.mat )
 }
 
@@ -183,14 +183,14 @@ save(nsim, cand.m, cand.d, output.biv.random, output.biv.overlap, file = "simout
 
 ## visualization
 
-out1      <- output.biv.random 
+out1      <- output.biv.random
 vdat1     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(d == 0.4) %>% select(-d)
 vdat2     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
 vis.rand  <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "d"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
 ggplot2::ggsave("visout_biv_rand_05242021.pdf", vis.rand, width = 15.2, height = 5.7)
 
-out2      <- output.biv.overlap 
+out2      <- output.biv.overlap
 vdat1     <- out2$vars %>% left_join(out2$kldiv, by = "index") %>% filter(d == 0.4) %>% select(-d)
 vdat2     <- out2$vars %>% left_join(out2$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
 vis.over  <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "d"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
@@ -213,14 +213,14 @@ save(nsim, cand.m, cand.d, output.triv.random, output.triv.overlap, file = "simo
 
 ## visualization
 
-out1      <- output.triv.random 
+out1      <- output.triv.random
 vdat1     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(d == 0.4) %>% select(-d)
 vdat2     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
 vis.rand  <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "d"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
 ggplot2::ggsave("visout_triv_rand_05242021.pdf", vis.rand, width = 15.2, height = 5.7)
 
-out2      <- output.triv.overlap 
+out2      <- output.triv.overlap
 vdat1     <- out2$vars %>% left_join(out2$kldiv, by = "index") %>% filter(d == 0.4) %>% select(-d)
 vdat2     <- out2$vars %>% left_join(out2$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
 vis.over  <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "d"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
@@ -235,11 +235,11 @@ nsim    <- 10
 cand.m  <- c(3, 5, 10, 15, 20, 25, 30, 35, 40, 45)
 
 output.sptm.gen1 <- parSim_sptm_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t = 1, covmodel = cov_expo_spacetime, covparms = c(1, 0.1, 1.0), abs.corr = FALSE, method.locs = "random", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
-  
+
 output.sptm.gen2 <- parSim_sptm_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t = 36, covmodel = cov_expo_spacetime, covparms = c(1, 0.1, 1.0), abs.corr = FALSE, method.locs = "monitoring", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
-  
+
 output.sptm.gen3 <- parSim_sptm_knownCovparms(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t = 36, covmodel = cov_expo_spacetime, covparms = c(1, 0.1, 1.0), abs.corr = FALSE, method.locs = "grid", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
-  
+
 output.sptm.gen4 <- parSim_sptm_knownCovparms(cand.m = cand.m, nsim = nsim, n = 30^2, d = 2, t = 1, covmodel = cov_expo_spacetime, covparms = c(1, 0.1, 1.0), abs.corr = FALSE, method.locs = "satellite", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
 
 ## save
@@ -258,7 +258,7 @@ ggplot2::ggsave("visout_sptm_rand_05242021.pdf", vis.rand, width = 15.2, height 
 
 out13         <- output.sptm.gen3
 out14         <- output.sptm.gen4
-vdat1         <- out13$vars %>% left_join(out13$kldiv, by = "index") 
+vdat1         <- out13$vars %>% left_join(out13$kldiv, by = "index")
 vdat2         <- out14$vars %>% left_join(out14$kldiv, by = "index")
 vis.grid      <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "m"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
 
