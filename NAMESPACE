@@ -1,3 +1,4 @@
 useDynLib(correlationVecchia, .registration=TRUE)
-exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
+exportPattern("^[[:alpha:]]+")
+
