@@ -42,6 +42,8 @@ vis     <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("
 
 ggplot2::ggsave("visout_aniso_05242021.pdf", vis, width = 15.2, height = 5.7)
 
+rm(nsim, cand.m, cand.a, output.aniso)
+
 ### nonstationary case ############################################################# (~ 35 min)
 
 Sys.time()
@@ -159,6 +161,8 @@ vis     <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("
 
 ggplot2::ggsave("visout_nonst_05242021.pdf", vis, width = 15.2, height = 5.7)
 
+rm(nsim, cand.m, output.nonst1, output.nonst2, output.nonst3, output.nonst4)
+
 ### multivariate case ############################################################## (~ 6.5 hours)
 
 ## sim 1: bivariate
@@ -186,16 +190,18 @@ save(nsim, cand.m, cand.d, output.biv.random, output.biv.overlap, file = "simout
 out1      <- output.biv.random
 vdat1     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(d == 0.4) %>% select(-d)
 vdat2     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-vis.rand  <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "d"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+vis.rand  <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "d"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + D-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
 ggplot2::ggsave("visout_biv_rand_05242021.pdf", vis.rand, width = 15.2, height = 5.7)
 
 out2      <- output.biv.overlap
 vdat1     <- out2$vars %>% left_join(out2$kldiv, by = "index") %>% filter(d == 0.4) %>% select(-d)
 vdat2     <- out2$vars %>% left_join(out2$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-vis.over  <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "d"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+vis.over  <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "d"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + D-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
 ggplot2::ggsave("visout_biv_over_05242021.pdf", vis.over, width = 15.2, height = 5.7)
+
+rm(output.biv.random, output.biv.overlap)
 
 ## sim 2: trivariate
 
@@ -216,16 +222,18 @@ save(nsim, cand.m, cand.d, output.triv.random, output.triv.overlap, file = "simo
 out1      <- output.triv.random
 vdat1     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(d == 0.4) %>% select(-d)
 vdat2     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-vis.rand  <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "d"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+vis.rand  <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "d"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + D-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
 ggplot2::ggsave("visout_triv_rand_05242021.pdf", vis.rand, width = 15.2, height = 5.7)
 
 out2      <- output.triv.overlap
 vdat1     <- out2$vars %>% left_join(out2$kldiv, by = "index") %>% filter(d == 0.4) %>% select(-d)
 vdat2     <- out2$vars %>% left_join(out2$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-vis.over  <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "d"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+vis.over  <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "d"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + D-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
 
 ggplot2::ggsave("visout_triv_over_05242021.pdf", vis.over, width = 15.2, height = 5.7)
+
+rm(nsim, cand.m, cand.d, output.triv.random, output.triv.overlap)
 
 ### spacetime case ################################################################# (~ 20 min)
 
@@ -264,6 +272,8 @@ vis.grid      <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab
 
 ggplot2::ggsave("visout_sptm_grid_05242021.pdf", vis.grid, width = 15.2, height = 5.7)
 
+rm(nsim, cand.m, output.sptm.gen1, output.sptm.gen2, output.sptm.gen3, output.sptm.gen4)
+
 ### derivative case ################################################################
 
 Sys.time()
@@ -290,19 +300,21 @@ save(nsim, cand.m, cand.r, output.deriv.matern25.1d, output.deriv.matern25.2d, o
 
 ## visualization
 
-out.d1    <- output.deriv.sqexpo.1d
-vdat1     <- out.d1$vars %>% left_join(out.d1$kldiv, by = "index") %>% filter(r == 0.1) %>% select(-r)
-vdat2     <- out.d1$vars %>% left_join(out.d1$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-vis.d1    <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "r"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+# out.d1    <- output.deriv.sqexpo.1d
+# vdat1     <- out.d1$vars %>% left_join(out.d1$kldiv, by = "index") %>% filter(r == 0.1) %>% select(-r)
+# vdat2     <- out.d1$vars %>% left_join(out.d1$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
+# vis.d1    <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "r"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+#
+# ggplot2::ggsave("visout_deriv_1d_05242021.pdf", vis.d1, width = 15.2, height = 5.7)
+#
+# out.d2    <- output.deriv.sqexpo.2d
+# vdat1     <- out.d2$vars %>% left_join(out.d2$kldiv, by = "index") %>% filter(r == 0.1) %>% select(-r)
+# vdat2     <- out.d2$vars %>% left_join(out.d2$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
+# vis.d2    <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "r"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
+#
+# ggplot2::ggsave("visout_deriv_2d_05242021.pdf", vis.d2, width = 15.2, height = 5.7)
 
-ggplot2::ggsave("visout_deriv_1d_05242021.pdf", vis.d1, width = 15.2, height = 5.7)
-
-out.d2    <- output.deriv.sqexpo.2d
-vdat1     <- out.d2$vars %>% left_join(out.d2$kldiv, by = "index") %>% filter(r == 0.1) %>% select(-r)
-vdat2     <- out.d2$vars %>% left_join(out.d2$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-vis.d2    <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "r"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("S-E-MM + HH-E-NN", "S-E-MM + J-E-NN", "S-E-MM + S-E-NN", "S-E-MM + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#FF7F00", "#E41A1C"), shape = c(18, 15, 17, 8, 16))
-
-ggplot2::ggsave("visout_deriv_2d_05242021.pdf", vis.d2, width = 15.2, height = 5.7)
+rm(nsim, cand.m, cand.r, output.deriv.matern25.1d, output.deriv.matern25.2d, output.deriv.matern45.1d, output.deriv.matern45.2d, output.deriv.sqexpo.1d, output.deriv.sqexpo.2d)
 
 ### wave case ###################################################################### (~ 5.5 hours)
 
@@ -329,6 +341,8 @@ output.wave.bj.d2 <- parSim_wave_knownCovparms(cand.m = cand.m, cand.l = cand.l,
 save(nsim, cand.m, cand.l, output.wave.ds.d1, output.wave.ds.d2, output.wave.dc.d1, output.wave.dc.d2, output.wave.bj.d1, output.wave.bj.d2, file = "simout_wave_05242021.RData")
 
 ## visualization
+
+rm(nsim, cand.m, cand.l, output.wave.ds.d1, output.wave.ds.d2, output.wave.dc.d1, output.wave.dc.d2, output.wave.bj.d1, output.wave.bj.d2)
 
 ### end ############################################################################
 
