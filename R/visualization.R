@@ -541,6 +541,160 @@ vis_arrange_posterior <- function(output, legend = c("T-ord + T-NN", "T-ord + E-
 
 #' @title Visualization
 #'
+#' @param vdat1 vdat1
+#' @param vdat2 vdat2
+#' @param vdat3 vdat3
+#' @param vdat4 vdat4
+#' @param legend legend
+#' @param color color
+#' @param shape shape
+#' @param ftn ftn
+#' @param xlabs xlabs
+#' @param ylabs ylabs
+#' @param xlims xlims
+#' @param ylims ylims
+#' @param alpha alpha
+#' @param size.point size.point
+#' @param size.line size.line
+#' @param size.legend size.legend
+#' @param size.lab size.lab
+#' @param size.text size.text
+#' @param size.margin size.margin
+#'
+#' @return plot
+#'
+#' @export
+#'
+#' @examples
+#' 1 + 1
+vis_arrange_tetra <- function(vdat1, vdat2, vdat3, vdat4, legend, color, shape, ftn = log10, xlabs = c("m", "m", "m", "m"), ylabs = c("log10(KL)", "log10(KL)", "log10(KL)", "log10(KL)"), xlims = list(xl1 = NULL, xl2 = NULL, xl3 = NULL, xl4 = NULL), ylims = list(yl1 = NULL, yl2 = NULL, yl3 = NULL, yl4 = NULL), alpha = 0.7, size.point = 2, size.line = 1, size.legend = 14, size.lab = 14, size.text = 12, size.margin = c(5.5, 20, 5.5, 5.5))
+{
+  ### Visualize the first data table ###
+
+  # Gathering vdat1
+  vars1     <- vdat1 %>% select(-index, -starts_with("approx")) %>% colnames()
+  if(length(vars1) > 1) stop("Please check the argument vdat1.")
+
+  xlabel1   <- vdat1 %>% pull(all_of(vars1)) %>% unique() %>% sort()
+  vis1      <- vdat1 %>% tidyr::gather(key = "approx", value = "kldiv", -index, -all_of(vars1))
+
+  # plot vis1
+  plot1     <- vis1 %>% ggplot(aes(x = get(vars1), y = ftn(kldiv), col = approx, shape = approx)) +
+    geom_point(size = size.point) +
+    geom_line(size = size.line, alpha = alpha) +
+    # scale_x_continuous(name = vars1, limits = range(xlabel1), breaks = xlabel1) +
+    scale_color_manual(values = color, labels = legend, guide = guide_legend(nrow = 1, byrow = TRUE)) +
+    scale_shape_manual(values = shape, labels = legend, guide = guide_legend(nrow = 1, byrow = TRUE)) +
+    xlab(xlabs[1]) + ylab(ylabs[1]) + coord_cartesian(xlim = xlims[[1]], ylim = ylims[[1]]) +
+    theme(axis.title.x = element_text(size = size.lab),
+          axis.text.x = element_text(size = size.text),
+          axis.title.y = element_text(size = size.lab),
+          axis.text.y = element_text(size = size.text),
+          legend.title = element_blank(),
+          legend.text = element_text(size = size.legend, margin = margin(r = 25, unit = 'pt')),
+          legend.direction = 'horizontal',
+          legend.spacing.x = unit(15, 'pt'),
+          plot.margin = unit(size.margin, "pt")) # t, r, b, l
+
+  ### Visualize the second data table ###
+
+  # Gathering vdat2
+  vars2     <- vdat2 %>% select(-index, -starts_with("approx")) %>% colnames()
+  if(length(vars2) > 1) stop("Please check the argument vdat2.")
+
+  xlabel2   <- vdat2 %>% pull(all_of(vars2)) %>% unique() %>% sort()
+  vis2      <- vdat2 %>% tidyr::gather(key = "approx", value = "kldiv", -index, -all_of(vars2))
+
+  # plot vis2
+  plot2     <- vis2 %>% ggplot(aes(x = get(vars2), y = ftn(kldiv), col = approx, shape = approx)) +
+    geom_point(size = size.point) +
+    geom_line(size = size.line, alpha = alpha) +
+    # scale_x_continuous(name = vars2, limits = range(xlabel2), breaks = xlabel2) +
+    scale_color_manual(values = color, labels = legend) +
+    scale_shape_manual(values = shape, labels = legend) +
+    xlab(xlabs[2]) + ylab(ylabs[2]) + coord_cartesian(xlim = xlims[[2]], ylim = ylims[[2]]) +
+    theme(axis.title.x = element_text(size = size.lab),
+          axis.text.x = element_text(size = size.text),
+          axis.title.y = element_text(size = size.lab),
+          axis.text.y = element_text(size = size.text),
+          legend.title = element_blank(),
+          legend.text = element_text(size = size.legend),
+          legend.direction = 'horizontal',
+          plot.margin = unit(size.margin, "pt")) # t, r, b, l
+
+  ### Visualize the third data table ###
+
+  # Gathering vdat3
+  vars3     <- vdat3 %>% select(-index, -starts_with("approx")) %>% colnames()
+  if(length(vars3) > 1) stop("Please check the argument vdat3.")
+
+  xlabel3   <- vdat3 %>% pull(all_of(vars3)) %>% unique() %>% sort()
+  vis3      <- vdat3 %>% tidyr::gather(key = "approx", value = "kldiv", -index, -all_of(vars3))
+
+  # plot vis3
+  plot3     <- vis3 %>% ggplot(aes(x = get(vars3), y = ftn(kldiv), col = approx, shape = approx)) +
+    geom_point(size = size.point) +
+    geom_line(size = size.line, alpha = alpha) +
+    # scale_x_continuous(name = vars1, limits = range(xlabel3), breaks = xlabel3) +
+    scale_color_manual(values = color, labels = legend, guide = guide_legend(nrow = 1, byrow = TRUE)) +
+    scale_shape_manual(values = shape, labels = legend, guide = guide_legend(nrow = 1, byrow = TRUE)) +
+    xlab(xlabs[3]) + ylab(ylabs[3]) + coord_cartesian(xlim = xlims[[3]], ylim = ylims[[3]]) +
+    theme(axis.title.x = element_text(size = size.lab),
+          axis.text.x = element_text(size = size.text),
+          axis.title.y = element_text(size = size.lab),
+          axis.text.y = element_text(size = size.text),
+          legend.title = element_blank(),
+          legend.text = element_text(size = size.legend, margin = margin(r = 25, unit = 'pt')),
+          legend.direction = 'horizontal',
+          legend.spacing.x = unit(15, 'pt'),
+          plot.margin = unit(size.margin, "pt")) # t, r, b, l
+
+  ### Visualize the fourth data table ###
+
+  # Gathering vdat4
+  vars4     <- vdat4 %>% select(-index, -starts_with("approx")) %>% colnames()
+  if(length(vars4) > 1) stop("Please check the argument vdat4.")
+
+  xlabel4   <- vdat4 %>% pull(all_of(vars4)) %>% unique() %>% sort()
+  vis4      <- vdat4 %>% tidyr::gather(key = "approx", value = "kldiv", -index, -all_of(vars4))
+
+  # plot vis4
+  plot4     <- vis4 %>% ggplot(aes(x = get(vars4), y = ftn(kldiv), col = approx, shape = approx)) +
+    geom_point(size = size.point) +
+    geom_line(size = size.line, alpha = alpha) +
+    # scale_x_continuous(name = vars1, limits = range(xlabel4), breaks = xlabel4) +
+    scale_color_manual(values = color, labels = legend, guide = guide_legend(nrow = 1, byrow = TRUE)) +
+    scale_shape_manual(values = shape, labels = legend, guide = guide_legend(nrow = 1, byrow = TRUE)) +
+    xlab(xlabs[4]) + ylab(ylabs[4]) + coord_cartesian(xlim = xlims[[4]], ylim = ylims[[4]]) +
+    theme(axis.title.x = element_text(size = size.lab),
+          axis.text.x = element_text(size = size.text),
+          axis.title.y = element_text(size = size.lab),
+          axis.text.y = element_text(size = size.text),
+          legend.title = element_blank(),
+          legend.text = element_text(size = size.legend, margin = margin(r = 25, unit = 'pt')),
+          legend.direction = 'horizontal',
+          legend.spacing.x = unit(15, 'pt'),
+          plot.margin = unit(size.margin, "pt")) # t, r, b, l
+
+  ### Creating the legend ###
+
+  tmp       <- ggplot_gtable(ggplot_build(plot1))
+  leg       <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  mylegend  <- tmp$grobs[[leg]]
+
+  ### Merge the two plots ###
+
+  result    <- grid.arrange(mylegend, arrangeGrob(plot1 + theme(legend.position="none"),
+                                                  plot2 + theme(legend.position="none"),
+                                                  plot3 + theme(legend.position="none"),
+                                                  plot4 + theme(legend.position="none"),
+                                                  nrow=2), nrow=2, heights=c(1, 10))
+
+  return( result )
+}
+
+#' @title Visualization
+#'
 #' @param output output from posterior_... functions
 #' @param legend legend
 #' @param color color
