@@ -38,8 +38,8 @@ scens <- c("random", "station", "gridded", "satellite")
 ####################################################################################
 
 out1  <- generate_gp_spacetime(nsim = 1, n = 30^2, d = 2, t.len = 1, method.locs = "all.random", covmodel = cov_expo_spacetime, covparms = c(1, 0.1, 1.0))
-out2  <- generate_gp_spacetime(nsim = 1, n = 5^2, d = 2, t.len = 36, method.locs = "space.random.time.grid", covmodel = cov_expo_spacetime, covparms = c(1, 0.1, 1.0))
-out3  <- generate_gp_spacetime(nsim = 1, n = 5^2, d = 2, t.len = 36, method.locs = "all.grid", covmodel = cov_expo_spacetime, covparms = c(1, 0.1, 1.0))
+out2  <- generate_gp_spacetime(nsim = 1, n = 10^2, d = 2, t.len = 9, method.locs = "space.random.time.grid", covmodel = cov_expo_spacetime, covparms = c(1, 0.1, 1.0))
+out3  <- generate_gp_spacetime(nsim = 1, n = 10^2, d = 2, t.len = 9, method.locs = "all.grid", covmodel = cov_expo_spacetime, covparms = c(1, 0.1, 1.0))
 out4  <- generate_gp_spacetime(nsim = 1, n = 30^2, d = 2, t.len = 1, method.locs = "satellite", covmodel = cov_expo_spacetime, covparms = c(1, 0.1, 1.0))
 
 locs <- list()

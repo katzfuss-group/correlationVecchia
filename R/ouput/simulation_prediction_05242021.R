@@ -43,7 +43,7 @@ save(nsim, covparms, nugget, n, t, n.pred, m, output.sptm.pred.random, file = "s
 ### 2. Monitoring-station locations ################################################ (~31 min)
 
 n               <- 30^2
-t               <- 36
+t               <- 9
 n.pred          <- 5 * t
 
 output.sptm.pred.monitoring <- parSim_sptm_prediction(cand.m = m, nsim = nsim, n = n/t, n.pred = n.pred, d = 2, t = t, nuggets = nugget, covmodel = cov_matern_spacetime, covparms = covparms, abs.corr = FALSE, method.locs = "monitoring", method.locs.pred = "subset", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL)
@@ -68,14 +68,14 @@ save(nsim, covparms, nugget, n, t, n.pred, m, output.sptm.pred.satellite, file =
 
 ### visualization ##################################################################
 
-vdat1 <- data.frame(index = seq(length(output.sptm.pred.random$setting$m)), m = output.sptm.pred.random$setting$m, approx_1 = output.sptm.pred.random$output$logscore[[1]], approx_2 = output.sptm.pred.random$output$logscore[[2]], approx_3 = output.sptm.pred.random$output$logscore[[3]], approx_4 = output.sptm.pred.random$output$logscore[[4]])
-vdat2 <- data.frame(index = seq(length(output.sptm.pred.monitoring$setting$m)), m = output.sptm.pred.monitoring$setting$m, approx_1 = output.sptm.pred.monitoring$output$logscore[[1]], approx_2 = output.sptm.pred.monitoring$output$logscore[[2]], approx_3 = output.sptm.pred.monitoring$output$logscore[[3]], approx_4 = output.sptm.pred.monitoring$output$logscore[[4]])
-vdat3 <- data.frame(index = seq(length(output.sptm.pred.satellite$setting$m)), m = output.sptm.pred.satellite$setting$m, approx_1 = output.sptm.pred.satellite$output$logscore[[1]], approx_2 = output.sptm.pred.satellite$output$logscore[[2]], approx_3 = output.sptm.pred.satellite$output$logscore[[3]], approx_4 = output.sptm.pred.satellite$output$logscore[[4]])
-
-vdat1   <- vdat1 %>% filter(m != 3)
-vdat2   <- vdat2 %>% filter(m != 3)
-vdat3   <- vdat3 %>% filter(m != 3)
-
-vis <- vis_arrange_tria_simple(vdat1 = vdat1, vdat2 = vdat2, vdat3 = vdat3, ftn = function(x) log10(-x), xlim = list(xl1 = NULL, xl2 = NULL, xl3 = NULL), ylim = list(yl1 = NULL, yl2 = NULL, yl3 = NULL), xlab = c("m", "m", "m"), ylab = c("log10(logscore)", "log10(logscore)", "log10(logscore)"), legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
-
-ggplot2::ggsave("visout_prediction_05242021.pdf", vis, width = 15.2, height = 5.7)
+# vdat1 <- data.frame(index = seq(length(output.sptm.pred.random$setting$m)), m = output.sptm.pred.random$setting$m, approx_1 = output.sptm.pred.random$output$logscore[[1]], approx_2 = output.sptm.pred.random$output$logscore[[2]], approx_3 = output.sptm.pred.random$output$logscore[[3]], approx_4 = output.sptm.pred.random$output$logscore[[4]])
+# vdat2 <- data.frame(index = seq(length(output.sptm.pred.monitoring$setting$m)), m = output.sptm.pred.monitoring$setting$m, approx_1 = output.sptm.pred.monitoring$output$logscore[[1]], approx_2 = output.sptm.pred.monitoring$output$logscore[[2]], approx_3 = output.sptm.pred.monitoring$output$logscore[[3]], approx_4 = output.sptm.pred.monitoring$output$logscore[[4]])
+# vdat3 <- data.frame(index = seq(length(output.sptm.pred.satellite$setting$m)), m = output.sptm.pred.satellite$setting$m, approx_1 = output.sptm.pred.satellite$output$logscore[[1]], approx_2 = output.sptm.pred.satellite$output$logscore[[2]], approx_3 = output.sptm.pred.satellite$output$logscore[[3]], approx_4 = output.sptm.pred.satellite$output$logscore[[4]])
+#
+# vdat1   <- vdat1 %>% filter(m != 3)
+# vdat2   <- vdat2 %>% filter(m != 3)
+# vdat3   <- vdat3 %>% filter(m != 3)
+#
+# vis <- vis_arrange_tria_simple(vdat1 = vdat1, vdat2 = vdat2, vdat3 = vdat3, ftn = function(x) log10(-x), xlim = list(xl1 = NULL, xl2 = NULL, xl3 = NULL), ylim = list(yl1 = NULL, yl2 = NULL, yl3 = NULL), xlab = c("m", "m", "m"), ylab = c("log10(logscore)", "log10(logscore)", "log10(logscore)"), legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C"), shape = c(18, 15, 17, 16))
+#
+# ggplot2::ggsave("visout_prediction_05242021.pdf", vis, width = 15.2, height = 5.7)

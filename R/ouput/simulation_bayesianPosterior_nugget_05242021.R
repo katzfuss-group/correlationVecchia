@@ -41,7 +41,7 @@ t               <- 1
 
 Sys.time()
 
-output.sptm.posterior.satellite.srange <- parSim_sptm_posterior(cand.m = ms, target = "srange", ordfix = TRUE, n = n, d = d, t = t, nuggets = nugget, method.locs = "satellite", N = 200, xlim = c(0.005, 0.155), sdlog = 0.6, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = FALSE, tol.dec = -4, covparms = covparms, ncores = NULL)
+output.sptm.posterior.satellite.srange <- parSim_sptm_posterior(cand.m = ms, target = "srange", ordfix = TRUE, n = n, d = d, t = t, nuggets = nugget, method.locs = "satellite", N = 200, xlim = c(0.05, 0.16), sdlog = 0.6, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = FALSE, tol.dec = -4, covparms = covparms, ncores = NULL)
 
 Sys.time()
 
@@ -51,17 +51,17 @@ Sys.time()
 
 ##
 
-par(mfrow = c(1, 5))
-
-for(i in 1:length(output.sptm.posterior.satellite.srange$simout)) matplot(output.sptm.posterior.satellite.srange$simout[[i]]$alpha, output.sptm.posterior.satellite.srange$simout[[i]]$post.norm, type = "l")
-
-for(i in 1:length(output.sptm.posterior.satellite.srange$simout.ic0)) matplot(output.sptm.posterior.satellite.srange$simout.ic0[[i]]$alpha, output.sptm.posterior.satellite.srange$simout.ic0[[i]]$post.norm, type = "l")
-
-for(i in 1:length(output.sptm.posterior.satellite.trange$simout)) matplot(output.sptm.posterior.satellite.trange$simout[[i]]$alpha, output.sptm.posterior.satellite.trange$simout[[i]]$post.norm, type = "l")
-
-for(i in 1:length(output.sptm.posterior.satellite.trange$simout.ic0)) matplot(output.sptm.posterior.satellite.trange$simout.ic0[[i]]$alpha, output.sptm.posterior.satellite.trange$simout.ic0[[i]]$post.norm, type = "l")
-
-par(mfrow = c(1, 1))
+# par(mfrow = c(1, 5))
+#
+# for(i in 1:length(output.sptm.posterior.satellite.srange$simout)) matplot(output.sptm.posterior.satellite.srange$simout[[i]]$alpha, output.sptm.posterior.satellite.srange$simout[[i]]$post.norm, type = "l")
+#
+# for(i in 1:length(output.sptm.posterior.satellite.srange$simout.ic0)) matplot(output.sptm.posterior.satellite.srange$simout.ic0[[i]]$alpha, output.sptm.posterior.satellite.srange$simout.ic0[[i]]$post.norm, type = "l")
+#
+# for(i in 1:length(output.sptm.posterior.satellite.trange$simout)) matplot(output.sptm.posterior.satellite.trange$simout[[i]]$alpha, output.sptm.posterior.satellite.trange$simout[[i]]$post.norm, type = "l")
+#
+# for(i in 1:length(output.sptm.posterior.satellite.trange$simout.ic0)) matplot(output.sptm.posterior.satellite.trange$simout.ic0[[i]]$alpha, output.sptm.posterior.satellite.trange$simout.ic0[[i]]$post.norm, type = "l")
+#
+# par(mfrow = c(1, 1))
 
 ##
 
@@ -69,13 +69,13 @@ save(ms, covparms, nugget, n, t, d, output.sptm.posterior.satellite.srange, outp
 
 ### n = 900, monitoring station #######################################
 
-t               <- 36
+t               <- 9
 
 ## (~ 4.5 hrs)
 
 Sys.time()
 
-output.sptm.posterior.monitoring.srange <- parSim_sptm_posterior(cand.m = ms, target = "srange", ordfix = TRUE, n = n/t, d = d, t = t, nuggets = nugget, method.locs = "monitoring", N = 200, xlim = c(0.005, 0.115), sdlog = 0.6, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = FALSE, tol.dec = 4, covparms = covparms, ncores = NULL)
+output.sptm.posterior.monitoring.srange <- parSim_sptm_posterior(cand.m = ms, target = "srange", ordfix = TRUE, n = n/t, d = d, t = t, nuggets = nugget, method.locs = "monitoring", N = 200, xlim = c(0.03, 0.145), sdlog = 0.6, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = FALSE, tol.dec = 4, covparms = covparms, ncores = NULL)
 
 Sys.time()
 
@@ -85,17 +85,17 @@ Sys.time()
 
 ##
 
-par(mfrow = c(1, 5))
-
-for(i in 1:length(output.sptm.posterior.monitoring.srange$simout)) matplot(output.sptm.posterior.monitoring.srange$simout[[i]]$alpha, output.sptm.posterior.monitoring.srange$simout[[i]]$post.norm, type = "l")
-
-for(i in 1:length(output.sptm.posterior.monitoring.srange$simout.ic0)) matplot(output.sptm.posterior.monitoring.srange$simout.ic0[[i]]$alpha, output.sptm.posterior.monitoring.srange$simout.ic0[[i]]$post.norm, type = "l")
-
-for(i in 1:length(output.sptm.posterior.monitoring.trange$simout)) matplot(output.sptm.posterior.monitoring.trange$simout[[i]]$alpha, output.sptm.posterior.monitoring.trange$simout[[i]]$post.norm, type = "l")
-
-for(i in 1:length(output.sptm.posterior.monitoring.trange$simout.ic0)) matplot(output.sptm.posterior.monitoring.trange$simout.ic0[[i]]$alpha, output.sptm.posterior.monitoring.trange$simout.ic0[[i]]$post.norm, type = "l")
-
-par(mfrow = c(1, 1))
+# par(mfrow = c(1, 5))
+#
+# for(i in 1:length(output.sptm.posterior.monitoring.srange$simout)) matplot(output.sptm.posterior.monitoring.srange$simout[[i]]$alpha, output.sptm.posterior.monitoring.srange$simout[[i]]$post.norm, type = "l")
+#
+# for(i in 1:length(output.sptm.posterior.monitoring.srange$simout.ic0)) matplot(output.sptm.posterior.monitoring.srange$simout.ic0[[i]]$alpha, output.sptm.posterior.monitoring.srange$simout.ic0[[i]]$post.norm, type = "l")
+#
+# for(i in 1:length(output.sptm.posterior.monitoring.trange$simout)) matplot(output.sptm.posterior.monitoring.trange$simout[[i]]$alpha, output.sptm.posterior.monitoring.trange$simout[[i]]$post.norm, type = "l")
+#
+# for(i in 1:length(output.sptm.posterior.monitoring.trange$simout.ic0)) matplot(output.sptm.posterior.monitoring.trange$simout.ic0[[i]]$alpha, output.sptm.posterior.monitoring.trange$simout.ic0[[i]]$post.norm, type = "l")
+#
+# par(mfrow = c(1, 1))
 
 ##
 
@@ -109,7 +109,7 @@ t               <- 1
 
 Sys.time()
 
-output.sptm.posterior.random.srange <- parSim_sptm_posterior(cand.m = ms, target = "srange", ordfix = TRUE, n = n, d = d, t = t, nuggets = nugget, method.locs = "random", N = 200, xlim = c(0.04, 0.16), sdlog = 0.6, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = FALSE, tol.dec = 4, covparms = covparms, ncores = NULL)
+output.sptm.posterior.random.srange <- parSim_sptm_posterior(cand.m = ms, target = "srange", ordfix = TRUE, n = n, d = d, t = t, nuggets = nugget, method.locs = "random", N = 200, xlim = c(0.03, 0.13), sdlog = 0.6, method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, verbose = FALSE, tol.dec = 4, covparms = covparms, ncores = NULL)
 
 Sys.time()
 
@@ -119,17 +119,17 @@ Sys.time()
 
 ##
 
-par(mfrow = c(1, 5))
-
-for(i in 1:length(output.sptm.posterior.random.srange$simout)) matplot(output.sptm.posterior.random.srange$simout[[i]]$alpha, output.sptm.posterior.random.srange$simout[[i]]$post.norm, type = "l")
-
-for(i in 1:length(output.sptm.posterior.random.srange$simout.ic0)) matplot(output.sptm.posterior.random.srange$simout.ic0[[i]]$alpha, output.sptm.posterior.random.srange$simout.ic0[[i]]$post.norm, type = "l")
-
-for(i in 1:length(output.sptm.posterior.random.trange$simout)) matplot(output.sptm.posterior.random.trange$simout[[i]]$alpha, output.sptm.posterior.random.trange$simout[[i]]$post.norm, type = "l")
-
-for(i in 1:length(output.sptm.posterior.random.trange$simout.ic0)) matplot(output.sptm.posterior.random.trange$simout.ic0[[i]]$alpha, output.sptm.posterior.random.trange$simout.ic0[[i]]$post.norm, type = "l")
-
-par(mfrow = c(1, 1))
+# par(mfrow = c(1, 5))
+#
+# for(i in 1:length(output.sptm.posterior.random.srange$simout)) matplot(output.sptm.posterior.random.srange$simout[[i]]$alpha, output.sptm.posterior.random.srange$simout[[i]]$post.norm, type = "l")
+#
+# for(i in 1:length(output.sptm.posterior.random.srange$simout.ic0)) matplot(output.sptm.posterior.random.srange$simout.ic0[[i]]$alpha, output.sptm.posterior.random.srange$simout.ic0[[i]]$post.norm, type = "l")
+#
+# for(i in 1:length(output.sptm.posterior.random.trange$simout)) matplot(output.sptm.posterior.random.trange$simout[[i]]$alpha, output.sptm.posterior.random.trange$simout[[i]]$post.norm, type = "l")
+#
+# for(i in 1:length(output.sptm.posterior.random.trange$simout.ic0)) matplot(output.sptm.posterior.random.trange$simout.ic0[[i]]$alpha, output.sptm.posterior.random.trange$simout.ic0[[i]]$post.norm, type = "l")
+#
+# par(mfrow = c(1, 1))
 
 ##
 

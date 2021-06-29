@@ -33,7 +33,7 @@ covparms  <- c(1, 0.1, 1.0, 0.5, 0)
 
 Sys.time()
 
-output.monitoring <- parSim_sptm_Fisher(cand.m = cand.m, nsim = nsim, n = 25, d = 2, t = 36, covmodel = GpGp::matern_spacetime, srange.ini = covparms[2], trange.ini = covparms[2], covparms = covparms, method.locs = "monitoring", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL, tol.dec = 4)
+output.monitoring <- parSim_sptm_Fisher(cand.m = cand.m, nsim = nsim, n = 10^2, d = 2, t = 9, covmodel = GpGp::matern_spacetime, srange.ini = covparms[2], trange.ini = covparms[2], covparms = covparms, method.locs = "monitoring", method.modify = NULL, pivot = FALSE, tol = .Machine$double.eps, ncores = NULL, tol.dec = 4)
 
 Sys.time()
 
