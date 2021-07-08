@@ -180,6 +180,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// GpGp_matern_spacetime_cpp
+double GpGp_matern_spacetime_cpp(const arma::rowvec& x1, const arma::rowvec& x2, const arma::rowvec covparms);
+RcppExport SEXP _correlationVecchia_GpGp_matern_spacetime_cpp(SEXP x1SEXP, SEXP x2SEXP, SEXP covparmsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type x1(x1SEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec& >::type x2(x2SEXP);
+    Rcpp::traits::input_parameter< const arma::rowvec >::type covparms(covparmsSEXP);
+    rcpp_result_gen = Rcpp::wrap(GpGp_matern_spacetime_cpp(x1, x2, covparms));
+    return rcpp_result_gen;
+END_RCPP
+}
 // fun_Rcpp_example
 arma::vec fun_Rcpp_example(const double& a, const arma::vec& x);
 RcppExport SEXP _correlationVecchia_fun_Rcpp_example(SEXP aSEXP, SEXP xSEXP) {
@@ -302,6 +315,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_correlationVecchia_cov_matern_ns_cpp", (DL_FUNC) &_correlationVecchia_cov_matern_ns_cpp, 5},
     {"_correlationVecchia_cov_latentDim_biv_cpp", (DL_FUNC) &_correlationVecchia_cov_latentDim_biv_cpp, 3},
     {"_correlationVecchia_cov_latentDim_triv_cpp", (DL_FUNC) &_correlationVecchia_cov_latentDim_triv_cpp, 3},
+    {"_correlationVecchia_GpGp_matern_spacetime_cpp", (DL_FUNC) &_correlationVecchia_GpGp_matern_spacetime_cpp, 3},
     {"_correlationVecchia_fun_Rcpp_example", (DL_FUNC) &_correlationVecchia_fun_Rcpp_example, 2},
     {"_correlationVecchia_mat2vals", (DL_FUNC) &_correlationVecchia_mat2vals, 3},
     {"_correlationVecchia_sortSparse_Rcpp", (DL_FUNC) &_correlationVecchia_sortSparse_Rcpp, 6},

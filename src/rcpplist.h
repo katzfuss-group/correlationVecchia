@@ -44,6 +44,8 @@ double cov_latentDim_biv_cpp(const arma::rowvec & x1, const arma::rowvec & x2, c
 
 double cov_latentDim_triv_cpp(const arma::rowvec & x1, const arma::rowvec & x2, const arma::rowvec covparms);
 
+double GpGp_matern_spacetime_cpp(const arma::rowvec & x1, const arma::rowvec & x2, const arma::rowvec covparms);
+
 // MutHeap.cpp
 
 struct Node
@@ -51,7 +53,7 @@ struct Node
   double val; // value
   signed int id; // id
   signed int rank; // larger ranks get picked last
-  
+
   bool operator>(const Node& other) const;
   bool operator>=(const Node& other) const;
 };
@@ -82,7 +84,7 @@ struct Member
 {
   double val;
   signed int id;
-  
+
   bool operator<(const Member& other) const;
 };
 
@@ -95,7 +97,7 @@ Member assignMember(double val, signed int id);
 struct ChildList
 {
   signed int NParents = 0, NChildren = 0, NBuffer = 0;
-  
+
   vector<signed int> P; // This array gives for contains the ordering.The i-th parent in the daycare has id P[i]
   vector<signed int> revP; // This array contains as the i-th element the number that the ith parent has with respect to the multiresolution ordering.
   vector<signed int> colptr; // The array that contains the first "child" for every parent

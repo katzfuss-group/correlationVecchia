@@ -175,6 +175,19 @@ cov_latentDim_triv_cpp <- function(x1, x2, covparms) {
     .Call(`_correlationVecchia_cov_latentDim_triv_cpp`, x1, x2, covparms)
 }
 
+#' @name GpGp_matern_spacetime
+#'
+#' @title GpGp package's matern_spacetime function (C++ version) (CAUTION: different from cov_matern_spacetime)
+#'
+#' @param x1 First location (vector)
+#' @param x2 Second location (vector)
+#' @param covparms A numerical vector with covariance parameters = (sigma2, spatial range, temporal range, smoothness, nugget)
+#'
+#' @return The space-time Matern covariance between the locations provided (CAUTION: different from cov_matern_spacetime)
+GpGp_matern_spacetime_cpp <- function(x1, x2, covparms) {
+    .Call(`_correlationVecchia_GpGp_matern_spacetime_cpp`, x1, x2, covparms)
+}
+
 #' @name fun_Rcpp_example
 #'
 #' @title Example function

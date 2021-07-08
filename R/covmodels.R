@@ -609,7 +609,7 @@ cov_matern_ns_bruteforce <- function(locs1, locs2 = NULL, sigma, smoothness, ker
       #   print(fields::Matern( sqrt(q.ij), nu = smooth.ij))
       #   print(base::determinant(kernel.ij, logarithm = FALSE)[[1]][1])
       # }
-      
+
       mat.cov[i,j]  <- sigma.ij * fields::Matern( sqrt(q.ij), nu = smooth.ij) / sqrt( base::determinant(kernel.ij, logarithm = FALSE)[[1]][1] )
     }
   }
@@ -640,54 +640,54 @@ cov_matern_ns_bruteforce <- function(locs1, locs2 = NULL, sigma, smoothness, ker
 #'
 #' @examples
 #' aniso <- function(loc) {
-#'   
+#'
 #'   d         <- length(loc)
-#'   
+#'
 #'   a         <- function(loc) 1
 #'   b         <- function(loc) 10
 #'   angle     <- function(loc) pi/2
-#'   
+#'
 #'   eta       <- angle(loc)
 #'   rot.mat   <- matrix(c(cos(eta), sin(eta), -sin(eta), cos(eta)), nrow = d, ncol = d, byrow = TRUE)
-#'   
+#'
 #'   range     <- c(a(loc)^(-2), b(loc)^(-2))
-#'   
+#'
 #'   return( t(rot.mat) %*% diag(range, nrow = d) %*% rot.mat )
 #' }
-#' 
+#'
 #' sigma <- function(loc) determinant(aniso(loc), logarithm = FALSE)[[1]][1]^0.25
-#' 
+#'
 #' smoothness <- function(loc) 0.5
-#' 
+#'
 #' locs <- matrix(runif(6), 3, 2)
-#' 
+#'
 #' cov_matern_ns(locs = locs,
 #'               sigma = sigma, smoothness = smoothness, kernel = aniso)
-#' 
+#'
 #' cov_matern_ns_bruteforce(locs1 = locs, locs2 = locs,
 #'                         sigma = sigma, smoothness = smoothness, kernel = aniso)
-#' 
+#'
 #' \dontrun{
-#'   
+#'
 #'   locs <- matrix(runif(800), 400, 2)
-#'   
+#'
 #'   microbenchmark::microbenchmark(
 #'     cov_matern_ns(locs = locs,
 #'                   sigma = sigma, smoothness = smoothness, kernel = aniso),
 #'     cov_matern_ns_bruteforce(locs1 = locs, locs2 = NULL,
 #'                              sigma = sigma, smoothness = smoothness, kernel = aniso),
 #'     times = 5)
-#'  
+#'
 #' }
 cov_matern_ns <- function(locs, sigma, smoothness, kernel)
 {
   # https://stackoverflow.com/questions/17958168/rcpp-function-to-be-slower-than-same-r-function
   # https://stackoverflow.com/questions/27391472/passing-r-function-as-parameter-to-rcpp-function
-  
+
   # checkargs: locs
   if(!is.matrix(locs) & !is.data.frame(locs)) stop("The argument locs is neither matrix nor data.frame.")
   if(!is.numeric(locs)) stop("The argument locs is not numeric.")
-  
+
   # checkargs: sigma, smootheness, kernel
   if(!is.function(sigma)) stop("The argument sigma must be a function.")
   if(!is.function(smoothness)) stop("The argument smoothness must be a function.")
@@ -695,12 +695,12 @@ cov_matern_ns <- function(locs, sigma, smoothness, kernel)
 
   # basic information
   n <- nrow(locs) ; d <- ncol(locs)
-  
+
   # calculation
-  sigvec  <- rep(NA, n) 
-  nuvec   <- rep(NA, n) 
-  kerList <- list() 
-  
+  sigvec  <- rep(NA, n)
+  nuvec   <- rep(NA, n)
+  kerList <- list()
+
   for(i in 1:n) {
     sigvec[i]     <- sigma(locs[i, ])
     nuvec[i]      <- smoothness(locs[i, ])
@@ -710,7 +710,7 @@ cov_matern_ns <- function(locs, sigma, smoothness, kernel)
   covmat  <- cal_matern_ns(locs, sigvec, nuvec, kerList)
   covmat  <- t(covmat) + covmat
   diag(covmat) <- diag(covmat) / 2
-  
+
   # return
   return( covmat )
 }
@@ -1670,7 +1670,7 @@ cov_matern_deriv <- function(locs, covparms, tol = .Machine$double.eps)
   if(is.list(locs)) locs <- as.matrix(locs[[1]])
 
   d <- ncol(locs)
-  
+
   if(d != 1 & d != 2) stop("For now this function only works for either 1-dim'l or 2-dim'l domains.")
 
   if(covparms[3] != 2.5 & covparms[3] != 4.5) stop("For now this function only works for matern covariances of smoothness of 2.5 or 4.5.")
@@ -1742,7 +1742,7 @@ cor_matern_deriv <- function(locs, covparms, tol = .Machine$double.eps)
 {
   ### checkargs
   if(is.list(locs)) locs <- as.matrix(locs[[1]])
-  
+
   d <- ncol(locs)
 
   if(d != 1 & d != 2) stop("For now this function only works for either 1-dim'l or 2-dim'l domains.")
@@ -1806,7 +1806,7 @@ cov_sqexpo_deriv <- function(locs, covparms, tol = .Machine$double.eps)
 {
   ### checkargs
   if(is.list(locs)) locs <- as.matrix(locs[[1]])
-  
+
   d <- ncol(locs)
 
   if(d != 1 & d != 2) stop("For now this function only works for either 1-dim'l or 2-dim'l domains.")
@@ -1860,7 +1860,7 @@ cor_sqexpo_deriv <- function(locs, covparms, tol = .Machine$double.eps)
 {
   ### checkargs
   if(is.list(locs)) locs <- as.matrix(locs[[1]])
-  
+
   d <- ncol(locs)
 
   if(d != 1 & d != 2) stop("For now this function only works for either 1-dim'l or 2-dim'l domains.")
@@ -2328,4 +2328,49 @@ cor_sqexpo_deriv <- function(locs, covparms, tol = .Machine$double.eps)
   yterm     <- matrix(locs[, 2], nrow = nrow(locs), ncol = nrow(locs), byrow = FALSE) - matrix(locs[, 2], nrow = nrow(locs), ncol = nrow(locs), byrow = TRUE)
 
   return( const * xterm * yterm * exp(- 0.5 * D.scaled^2) )
+}
+
+####################################################################################
+
+#' @title Space-time Matern covariance function (CAUTION: different from cov_matern_spacetime)
+#'
+#' @description From a location matrix \code{locs} and a vector with covariance parameters \code{covparms}, this function returns an space-time matern covariance matrix.
+#'
+#' @param locs A numerical matrix with \code{n} rows and \code{d} columns. Each row of locs gives a point in R^d
+#' @param covparms A numerical vector with covariance parameters = (sigma2, spatial range, temporal range, smoothness, nugget)
+#'
+#' @return A matrix with \code{n} rows and \code{n} columns, with the \code{(i, j)} entry containing the space-time matern covariance between observations \code{locs[i, ]} and \code{locs[j, ]}
+#'
+#' @export
+#'
+#' @examples
+#' locs <- matrix(runif(6), 2, 3)
+#'
+#' GpGp_matern_spacetime(locs, covparms = c(1, 0.1, 0.1, 0.3, 0.5))
+#' cov_matern_spacetime(locs, covparms = c(1, 0.1, 0.3, 0.5))
+#'
+#' ### more complex case
+#'
+#' locs <- matrix(runif(15), 5, 3)
+#' covparms <- c(1, 0.1, 1.0, 0.9, 0.3)
+#'
+#' covmat1 <- GpGp_matern_spacetime(locs = locs, covparms = covparms)
+#' covmat2 <- GpGp::matern_spacetime(covparms = covparms, locs = locs)
+#'
+#' sum((covmat1 - covmat2)^2)
+#'
+#' covmat1[1, 2]
+#' GpGp_matern_spacetime_cpp(locs[1, ], locs[2, ], covparms)
+#'
+#' covmat2[1, 2]
+#' cov_matern_scaledim_cpp(locs[1, ], locs[2, ], c(1, 0.1, 0.1, 1, 0.9))
+#'
+#' covparms <- c(1, 0.1, 0.2, 0.3, 0.9)
+#'
+#' cov_matern_scaledim(locs = locs, covparms = covparms)
+#' cov_matern_scaledim_cpp(locs[1, ], locs[2, ], covparms)
+#' GpGp::matern_scaledim(covparms = c(covparms, 0), locs = locs)
+GpGp_matern_spacetime <- function(locs, covparms)
+{
+  return( GpGp::matern_spacetime(covparms = covparms, locs = locs) )
 }

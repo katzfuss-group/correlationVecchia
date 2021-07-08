@@ -23,18 +23,18 @@ From a location matrix \code{locs} and functions \code{sigma}, \code{smoothness}
 }
 \examples{
 aniso <- function(loc) {
-  
+
   d         <- length(loc)
-  
+
   a         <- function(loc) 1
   b         <- function(loc) 10
   angle     <- function(loc) pi/2
-  
+
   eta       <- angle(loc)
   rot.mat   <- matrix(c(cos(eta), sin(eta), -sin(eta), cos(eta)), nrow = d, ncol = d, byrow = TRUE)
-  
+
   range     <- c(a(loc)^(-2), b(loc)^(-2))
-  
+
   return( t(rot.mat) \%*\% diag(range, nrow = d) \%*\% rot.mat )
 }
 
@@ -51,16 +51,16 @@ cov_matern_ns_bruteforce(locs1 = locs, locs2 = locs,
                         sigma = sigma, smoothness = smoothness, kernel = aniso)
 
 \dontrun{
-  
+
   locs <- matrix(runif(800), 400, 2)
-  
+
   microbenchmark::microbenchmark(
     cov_matern_ns(locs = locs,
                   sigma = sigma, smoothness = smoothness, kernel = aniso),
     cov_matern_ns_bruteforce(locs1 = locs, locs2 = NULL,
                              sigma = sigma, smoothness = smoothness, kernel = aniso),
     times = 5)
- 
+
 }
 }
 \references{
