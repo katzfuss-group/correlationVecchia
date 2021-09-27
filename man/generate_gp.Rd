@@ -59,14 +59,14 @@ List. Please check generate_gp_space() and generate_gp_spacetime().
 Generating realizations of mean-zero Gaussian Process (GP) using a user-defined covariance function
 }
 \examples{
-out <- generate_gp(nsim = 1, n = 100, d = 2, domain = "space", 
-                   p = 1, method.locs = "random", 
+out <- generate_gp(nsim = 1, n = 100, d = 2, domain = "space",
+                   p = 1, method.locs = "random",
                    covmodel = cov_expo_iso, covparms = c(1, 0.1))
 
 plot(as.data.frame(out$sim$sim1$locs), col = 'red', lwd = 2, main = 'Spatial locations')
 
-out <- generate_gp(nsim = 1, n = 100, d = 2, domain = "spacetime", 
-                   t = 1, method.locs = "random", 
+out <- generate_gp(nsim = 1, n = 100, d = 2, domain = "spacetime",
+                   t = 1, method.locs = "random",
                    covmodel = cov_expo_spacetime, covparms = c(1, 0.1, 1.0))
 
 plot(as.data.frame(out$sim$sim1$locs[, 1:2]), col = 'red', lwd = 2, main = "Spatial locations")

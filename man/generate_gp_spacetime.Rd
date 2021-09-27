@@ -67,30 +67,30 @@ Generating realizations of spatio-temporal mean-zero Gaussian Process (GP) using
 \examples{
 par(mfrow = c(4, 2))
 
-out <- generate_gp_spacetime(nsim = 2, n = 300, d = 2, t.len = 3, 
-                             method.locs = "all.random", 
-                             covmodel = cov_expo_spacetime_nonsep, 
+out <- generate_gp_spacetime(nsim = 2, n = 300, d = 2, t.len = 3,
+                             method.locs = "all.random",
+                             covmodel = cov_expo_spacetime_nonsep,
                              covparms = c(1, 0.75, 50, 25))
 plot(as.data.frame(out$sim$sim1$locs[, 1:2]), main = "Spatial locations")
 plot(out$sim$sim1$locs[, 3], main = "Measurement time against index")
 
-out <- generate_gp_spacetime(nsim = 2, n = 300, d = 2, t.len = 3, 
-                             method.locs = "space.random.time.grid", 
-                             covmodel = cov_expo_spacetime_nonsep, 
+out <- generate_gp_spacetime(nsim = 2, n = 300, d = 2, t.len = 3,
+                             method.locs = "space.random.time.grid",
+                             covmodel = cov_expo_spacetime_nonsep,
                              covparms = c(1, 0.75, 50, 25))
 plot(as.data.frame(out$sim$sim1$locs[, 1:2]), main = "Spatial locations")
 plot(out$sim$sim1$locs[, 3], main = "Measurement time against index")
 
-out <- generate_gp_spacetime(nsim = 2, n = 300, d = 2, t.len = 3, 
-                             method.locs = "all.grid", 
-                             covmodel = cov_expo_spacetime_nonsep, 
+out <- generate_gp_spacetime(nsim = 2, n = 300, d = 2, t.len = 3,
+                             method.locs = "all.grid",
+                             covmodel = cov_expo_spacetime_nonsep,
                              covparms = c(1, 0.75, 50, 25))
 plot(as.data.frame(out$sim$sim1$locs[, 1:2]), main = "Spatial locations")
 plot(out$sim$sim1$locs[, 3], main = "Measurement time against index")
 
-out <- generate_gp_spacetime(nsim = 2, n = 300, d = 2, t.len = 3, 
-                             method.locs = "satellite", 
-                             covmodel = cov_expo_spacetime_nonsep, 
+out <- generate_gp_spacetime(nsim = 2, n = 300, d = 2, t.len = 3,
+                             method.locs = "satellite",
+                             covmodel = cov_expo_spacetime_nonsep,
                              covparms = c(1, 0.75, 50, 25))
 plot(as.data.frame(out$sim$sim1$locs[, 1:2]), main = "Spatial locations")
 plot(out$sim$sim1$locs[, 3], main = "Measurement time against index")

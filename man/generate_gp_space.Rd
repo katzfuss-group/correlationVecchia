@@ -66,58 +66,58 @@ Generating realizations of spatial mean-zero Gaussian Process (GP) using a user-
 \examples{
 par(mfrow = c(2, 3))
 
-out <- generate_gp_space(nsim = 2, n = 19, d = 2, p = 1, 
-                         method.locs = 'random', covmodel = cov_expo_iso, 
-                         method.modify = NULL, pivot = FALSE, 
-                         tol = .Machine$double.eps, 
+out <- generate_gp_space(nsim = 2, n = 19, d = 2, p = 1,
+                         method.locs = 'random', covmodel = cov_expo_iso,
+                         method.modify = NULL, pivot = FALSE,
+                         tol = .Machine$double.eps,
                          covparms = c(1, 0.1))
-plot(as.data.frame(out$sim$sim1$locs), col = 'red', lwd = 2, 
+plot(as.data.frame(out$sim$sim1$locs), col = 'red', lwd = 2,
      main = 'Random locs for univariate GP')
 
-out <- generate_gp_space(nsim = 2, n = 19, d = 2, p = 1, 
-                         method.locs = 'overlap', covmodel = cov_expo_iso, 
-                         method.modify = NULL, pivot = FALSE, 
-                         tol = .Machine$double.eps, 
+out <- generate_gp_space(nsim = 2, n = 19, d = 2, p = 1,
+                         method.locs = 'overlap', covmodel = cov_expo_iso,
+                         method.modify = NULL, pivot = FALSE,
+                         tol = .Machine$double.eps,
                          covparms = c(1, 0.1))
-plot(as.data.frame(out$sim$sim1$locs), col = 'red', lwd = 2, 
+plot(as.data.frame(out$sim$sim1$locs), col = 'red', lwd = 2,
      main = 'Overlapped locs for univariate GP')
 
-out <- generate_gp_space(nsim = 2, n = 19, d = 2, p = 1, 
-                         method.locs = 'grid', covmodel = cov_expo_iso, 
-                         method.modify = NULL, pivot = FALSE, 
-                         tol = .Machine$double.eps, 
+out <- generate_gp_space(nsim = 2, n = 19, d = 2, p = 1,
+                         method.locs = 'grid', covmodel = cov_expo_iso,
+                         method.modify = NULL, pivot = FALSE,
+                         tol = .Machine$double.eps,
                          covparms = c(1, 0.1))
-plot(as.data.frame(out$sim$sim1$locs), col = 'red', lwd = 2, 
+plot(as.data.frame(out$sim$sim1$locs), col = 'red', lwd = 2,
      main = 'Grid locs for univariate GP')
 
-out <- generate_gp_space(nsim = 2, n = 19, d = 2, p = 2, 
-                         method.locs = 'random', covmodel = cov_flexMatern_biv, 
-                         method.modify = NULL, pivot = FALSE, 
-                         tol = .Machine$double.eps, 
-                         sigma.mat = matrix(c(1, 0.5, 0.5, 1), 2, 2), 
-                         nu.mat = matrix(0.5, 2, 2), 
+out <- generate_gp_space(nsim = 2, n = 19, d = 2, p = 2,
+                         method.locs = 'random', covmodel = cov_flexMatern_biv,
+                         method.modify = NULL, pivot = FALSE,
+                         tol = .Machine$double.eps,
+                         sigma.mat = matrix(c(1, 0.5, 0.5, 1), 2, 2),
+                         nu.mat = matrix(0.5, 2, 2),
                          alpha.mat = matrix(1, 2, 2))
-plot(as.data.frame(out$sim$sim1$locs[[1]]), col = 'red', lwd = 2, 
+plot(as.data.frame(out$sim$sim1$locs[[1]]), col = 'red', lwd = 2,
      main = 'Random locs for bivariate GP')
 points((as.data.frame(out$sim$sim1$locs[[2]])), col = 'blue')
 
-out <- generate_gp_space(nsim = 2, n = 19, d = 2, p = 2, 
-                         method.locs = 'overlap', covmodel = cov_flexMatern_biv, 
-                         method.modify = NULL, pivot = FALSE, 
-                         tol = .Machine$double.eps, 
-                         sigma.mat = matrix(c(1, 0.5, 0.5, 1), 2, 2), 
-                         nu.mat = matrix(0.5, 2, 2), 
+out <- generate_gp_space(nsim = 2, n = 19, d = 2, p = 2,
+                         method.locs = 'overlap', covmodel = cov_flexMatern_biv,
+                         method.modify = NULL, pivot = FALSE,
+                         tol = .Machine$double.eps,
+                         sigma.mat = matrix(c(1, 0.5, 0.5, 1), 2, 2),
+                         nu.mat = matrix(0.5, 2, 2),
                          alpha.mat = matrix(1, 2, 2))
-plot(as.data.frame(out$sim$sim1$locs[[1]]), col = 'red', lwd = 2, 
+plot(as.data.frame(out$sim$sim1$locs[[1]]), col = 'red', lwd = 2,
      main = 'Overlapped locs for bivariate GP')
 points((as.data.frame(out$sim$sim1$locs[[2]])), col = 'blue')
 
-out <- generate_gp_space(nsim = 2, n = 19, d = 2, p = 2, 
-                         method.locs = 'grid', covmodel = cov_flexMatern_biv, 
-                         method.modify = NULL, pivot = FALSE, 
-                         tol = .Machine$double.eps, 
-                         sigma.mat = matrix(c(1, 0.5, 0.5, 1), 2, 2), 
-                         nu.mat = matrix(0.5, 2, 2), 
+out <- generate_gp_space(nsim = 2, n = 19, d = 2, p = 2,
+                         method.locs = 'grid', covmodel = cov_flexMatern_biv,
+                         method.modify = NULL, pivot = FALSE,
+                         tol = .Machine$double.eps,
+                         sigma.mat = matrix(c(1, 0.5, 0.5, 1), 2, 2),
+                         nu.mat = matrix(0.5, 2, 2),
                          alpha.mat = matrix(1, 2, 2))
 plot(as.data.frame(out$sim$sim1$locs[[1]]), col = 'red', lwd = 2,
      main = 'Grid locs for bivariate GP')
