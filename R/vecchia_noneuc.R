@@ -102,3 +102,124 @@ find_ordered_cnn_noneuc <- function(corord, m)
 {
   return( conditioning_m_Rcpp(m = m, d = 1 - corord) + 1 )
 }
+
+#' @title Specify Lexicographic Vecchia approximation without locations
+#'
+#' @param cormat Correlation matrix
+#' @param m Number of nearby points to condition on
+#'
+#' @return An object that specifies the vecchia approximation for later use in likelihood evaluation or prediction.
+#'
+#' @export
+#'
+#' @examples
+#' 1 + 1
+lvecchia_specify_noneuc <- function(cormat, m)
+{
+  ### setting
+  n             <- nrow(cormat)
+
+  ### ordering and conditioning
+  ord           <- 1:n
+  cond.sets     <- find_ordered_cnn_noneuc(cormat, m)
+
+  ### return
+  Cond          <- matrix(NA, nrow(cond.sets), ncol(cond.sets)); Cond[!is.na(cond.sets)] <- TRUE
+  obs           <- rep(TRUE, n)
+  U.prep        <- GPvecchia:::U_sparsity(matrix(NA, n, 1), cond.sets, obs, Cond)
+
+  vecchia.approx <- list(locsord = matrix(NA, n, 1), obs = obs, ord = ord, ord.z = ord, ord.pred='general', U.prep = U.prep, cond.yz = 'false', ordering = 'MM', conditioning = 'NN')
+  return(vecchia.approx)
+}
+
+#' @title Constructing conditioning sets randomly
+#'
+#' @param n Number of inputs
+#' @param m Number of nearby points to condition on
+#'
+#' @return Check \code{conditioning_m_Rcpp()}
+#'
+#' @export
+#'
+#' @examples
+#' 1 + 1
+find_ordered_rn <- function(n, m)
+{
+  cond.sets <- matrix(NA, nrow = n, ncol = m + 1)
+  cond.sets[, 1] <- 1:n
+
+  for(i in 2:n) {
+
+    idx <- sample( x = seq(i-1), size = min(m, i-1) )
+
+    if(length(idx) < m) idx <- c(idx, rep(NA, m - length(idx)))
+
+    cond.sets[i, 2:ncol(cond.sets)] <- idx
+  }
+
+  return(cond.sets)
+}
+
+#' @title Specify Random Vecchia approximation without locations
+#'
+#' @param cormat Correlation matrix
+#' @param m Number of nearby points to condition on
+#'
+#' @return An object that specifies the vecchia approximation for later use in likelihood evaluation or prediction.
+#'
+#' @export
+#'
+#' @examples
+#' 1 + 1
+rvecchia_specify_noneuc <- function(cormat, m)
+{
+  ### setting
+  n             <- nrow(cormat)
+
+  ### ordering and conditioning
+  ord           <- sample(1:n)
+  cond.sets     <- find_ordered_rn(n, m)
+
+  ### return
+  Cond          <- matrix(NA, nrow(cond.sets), ncol(cond.sets)); Cond[!is.na(cond.sets)] <- TRUE
+  obs           <- rep(TRUE, n)
+  U.prep        <- GPvecchia:::U_sparsity(matrix(NA, n, 1), cond.sets, obs, Cond)
+
+  vecchia.approx <- list(locsord = matrix(NA, n, 1), obs = obs, ord = ord, ord.z = ord, ord.pred='general', U.prep = U.prep, cond.yz = 'false', ordering = 'MM', conditioning = 'NN')
+  return(vecchia.approx)
+}
+
+#' @title Specify Random Vecchia approximations with different values of m but without locations
+#'
+#' @param cormat Correlation matrix
+#' @param ms A numeric vector of numbers of nearby points to condition on
+#'
+#' @return An list of objects that specify the vecchia approximation for later use in likelihood evaluation or prediction.
+#'
+#' @export
+#'
+#' @examples
+#' 1 + 1
+rvecchias_specify_noneuc <- function(cormat, ms)
+{
+  ### setting
+  n             <- nrow(cormat)
+
+  ### ordering and conditioning
+  ord           <- sample(1:n)
+  cond.sets.lar <- find_ordered_rn(n, max(ms))
+
+  vecchia.approxs <- list()
+  for(i in 1:length(ms)) {
+
+    cond.sets     <- cond.sets.lar[, seq(ms[i]+1)]
+
+    Cond          <- matrix(NA, nrow(cond.sets), ncol(cond.sets)); Cond[!is.na(cond.sets)] <- TRUE
+    obs           <- rep(TRUE, n)
+    U.prep        <- GPvecchia:::U_sparsity(matrix(NA, n, 1), cond.sets, obs, Cond)
+
+    vecchia.approxs[[i]] <- list(locsord = matrix(NA, n, 1), obs = obs, ord = ord, ord.z = ord, ord.pred='general', U.prep = U.prep, cond.yz = 'false', ordering = 'MM', conditioning = 'NN')
+  }
+
+  return(vecchia.approxs)
+}
