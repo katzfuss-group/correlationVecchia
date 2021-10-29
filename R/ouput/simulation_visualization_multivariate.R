@@ -12,7 +12,7 @@ library(dplyr) ; library(ggplot2) ; library(gridExtra) ; library(grid)
 
 ####################################################################################
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06222021/output/simout_biv_05242021.RData")
+load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/knownCovparms/simout_biv_05242021.RData")
 
 out1      <- output.biv.random
 vdat1     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(d == 0.4) %>% select(-d)
@@ -20,7 +20,7 @@ vdat2     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(m == 2
 
 rm(out1, output.biv.random, output.biv.overlap, cand.m, cand.d, nsim)
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06222021/output/simout_triv_05242021.RData")
+load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/knownCovparms/simout_triv_05242021.RData")
 
 out1      <- output.triv.random
 vdat3     <- out1$vars %>% left_join(out1$kldiv, by = "index") %>% filter(d == 0.4) %>% select(-d)

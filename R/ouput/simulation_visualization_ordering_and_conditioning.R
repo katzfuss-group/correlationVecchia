@@ -142,11 +142,24 @@ visdat4   <- visdat1[grp == 4, ]
 
 eps <- 0.07
 
-p1 <- ggplot() + geom_point(data = visdat1, aes(x, y), colour = "gray") +
-  geom_point(data = visdat2, aes(x, y), colour = "gray") + geom_text(data = visdat2, aes(x, y), label = seq(visn), size = 5) +
-  geom_point(data = visdat3, aes(x, y), colour = "#377EB8", shape = 1, size = 8, stroke = 2) +
-  geom_point(data = visdat4, aes(x, y), colour = "#E41A1C", shape = 0, size = 8, stroke = 2) +
-  theme_bw() + xlim(0+eps, 1-eps) + ylim(0+eps, 1-eps) + xlab("time") + ylab("space") + theme(axis.text.x = element_text(size = 12), axis.title.x = element_text(size = 12), axis.text.y = element_text(size = 12), axis.title.y = element_text(size = 12))
+##
+
+p0 <- ggplot() + geom_point(data = visdat1, aes(x, y), colour = "gray90") +
+  geom_point(data = visdat2, aes(x, y), colour = "gray90") + # geom_text(data = visdat2, aes(x, y), label = seq(visn), size = 5) +
+  geom_point(data = visdat3, aes(x, y), colour = "#377EB8", shape = 0, size = 8, stroke = 2) +
+  geom_point(data = visdat4, aes(x, y), colour = "#E41A1C", shape = 1, size = 10, stroke = 2) + geom_text(data = visdat2, aes(x, y), label = seq(visn), size = 5) +
+  theme_bw() + xlim(0+eps, 1-eps) + ylim(0+eps, 1-eps) + xlab("") + ylab("") + theme(axis.text.x = element_text(size = 12), axis.title.x = element_text(size = 14), axis.text.y = element_text(size = 12), axis.title.y = element_text(size = 14))
+p0
+
+ggplot2::ggsave("visualization_E-MN.pdf", p0, width = 5.7, height = 5.7)
+
+##
+
+p1 <- ggplot() + geom_point(data = visdat1, aes(x, y), colour = "gray90") +
+  geom_point(data = visdat2, aes(x, y), colour = "gray90") + # geom_text(data = visdat2, aes(x, y), label = seq(visn), size = 5) +
+  geom_point(data = visdat3, aes(x, y), colour = "#377EB8", shape = 0, size = 8, stroke = 2) +
+  geom_point(data = visdat4, aes(x, y), colour = "#E41A1C", shape = 1, size = 10, stroke = 2) + geom_text(data = visdat2, aes(x, y), label = seq(visn), size = 5) +
+  theme_bw() + xlim(0+eps, 1-eps) + ylim(0+eps, 1-eps) + xlab("time") + ylab("space") + theme(axis.text.x = element_text(size = 12), axis.title.x = element_text(size = 14), axis.text.y = element_text(size = 12), axis.title.y = element_text(size = 14))
 p1
 
 idx             <- visout.euc$cond.sets[pivot, ]
@@ -162,11 +175,11 @@ visdat4   <- visdat1[grp == 4, ]
 
 eps <- 0.075
 
-p2 <- ggplot() + geom_point(data = visdat1, aes(x, y), colour = "gray") +
-  geom_point(data = visdat2, aes(x, y), colour = "gray") + geom_text(data = visdat2, aes(x, y), label = seq(visn), size = 5) +
-  geom_point(data = visdat3, aes(x, y), colour = "#377EB8", shape = 1, size = 8, stroke = 2) +
-  geom_point(data = visdat4, aes(x, y), colour = "#E41A1C", shape = 0, size = 8, stroke = 2) +
-  theme_bw() + xlim(covparms[3]*(0+eps), covparms[3]*(1-eps)) + ylim(0+eps, 1-eps) + xlab("scaled time") + ylab("space") + theme(axis.text.x = element_text(size = 12), axis.title.x = element_text(size = 12), axis.text.y = element_text(size = 12), axis.title.y = element_text(size = 12))
+p2 <- ggplot() + geom_point(data = visdat1, aes(x, y), colour = "gray90") +
+  geom_point(data = visdat2, aes(x, y), colour = "gray90") + # geom_text(data = visdat2, aes(x, y), label = seq(visn), size = 5) +
+  geom_point(data = visdat3, aes(x, y), colour = "#377EB8", shape = 0, size = 8, stroke = 2) +
+  geom_point(data = visdat4, aes(x, y), colour = "#E41A1C", shape = 1, size = 10, stroke = 2) + geom_text(data = visdat2, aes(x, y), label = seq(visn), size = 5) +
+  theme_bw() + xlim(covparms[3]*(0+eps), covparms[3]*(1-eps)) + ylim(0+eps, 1-eps) + xlab("scaled time") + ylab("scaled space") + theme(axis.text.x = element_text(size = 12), axis.title.x = element_text(size = 14), axis.text.y = element_text(size = 12), axis.title.y = element_text(size = 14))
 p2
 
 idx             <- visout.cor$cond.sets[pivot, ]
@@ -182,11 +195,11 @@ visdat4   <- visdat1[grp == 4, ]
 
 eps <- 0.07
 
-p3 <- ggplot() + geom_point(data = visdat1, aes(x, y), colour = "gray") +
-  geom_point(data = visdat2, aes(x, y), colour = "gray") + geom_text(data = visdat2, aes(x, y), label = seq(visn), size = 5) +
-  geom_point(data = visdat3, aes(x, y), colour = "#4DAF4A", shape = 1, size = 8, stroke = 2) +
-  geom_point(data = visdat4, aes(x, y), colour = "#E41A1C", shape = 0, size = 8, stroke = 2) +
-  theme_bw() + xlim(0+eps, 1-eps) + ylim(0+eps, 1-eps) + xlab("time") + ylab("space") + theme(axis.text.x = element_text(size = 12), axis.title.x = element_text(size = 12), axis.text.y = element_text(size = 12), axis.title.y = element_text(size = 12))
+p3 <- ggplot() + geom_point(data = visdat1, aes(x, y), colour = "gray90") +
+  geom_point(data = visdat2, aes(x, y), colour = "gray90") + # geom_text(data = visdat2, aes(x, y), label = seq(visn), size = 5) +
+  geom_point(data = visdat3, aes(x, y), colour = "#4DAF4A", shape = 0, size = 8, stroke = 2) +
+  geom_point(data = visdat4, aes(x, y), colour = "#E41A1C", shape = 1, size = 10, stroke = 2) + geom_text(data = visdat2, aes(x, y), label = seq(visn), size = 5) +
+  theme_bw() + xlim(0+eps, 1-eps) + ylim(0+eps, 1-eps) + xlab("time") + ylab("space") + theme(axis.text.x = element_text(size = 12), axis.title.x = element_text(size = 14), axis.text.y = element_text(size = 12), axis.title.y = element_text(size = 14))
 p3
 
 idx             <- visout.cor$cond.sets[pivot, ]
@@ -202,11 +215,11 @@ visdat4   <- visdat1[grp == 4, ]
 
 eps <- 0.07
 
-p4 <- ggplot() + geom_point(data = visdat1, aes(x, y), colour = "gray") +
-  geom_point(data = visdat2, aes(x, y), colour = "gray") + geom_text(data = visdat2, aes(x, y), label = seq(visn), size = 5) +
-  geom_point(data = visdat3, aes(x, y), colour = "#4DAF4A", shape = 1, size = 8, stroke = 2) +
-  geom_point(data = visdat4, aes(x, y), colour = "#E41A1C", shape = 0, size = 8, stroke = 2) +
-  theme_bw() + xlim(covparms[3]*(0+eps), covparms[3]*(1-eps)) + ylim(0+eps, 1-eps) + xlab("scaled time") + ylab("space") + theme(axis.text.x = element_text(size = 12), axis.title.x = element_text(size = 12), axis.text.y = element_text(size = 12), axis.title.y = element_text(size = 12))
+p4 <- ggplot() + geom_point(data = visdat1, aes(x, y), colour = "gray90") +
+  geom_point(data = visdat2, aes(x, y), colour = "gray90") + # geom_text(data = visdat2, aes(x, y), label = seq(visn), size = 5) +
+  geom_point(data = visdat3, aes(x, y), colour = "#4DAF4A", shape = 0, size = 8, stroke = 2) +
+  geom_point(data = visdat4, aes(x, y), colour = "#E41A1C", shape = 1, size = 10, stroke = 2) + geom_text(data = visdat2, aes(x, y), label = seq(visn), size = 5) +
+  theme_bw() + xlim(covparms[3]*(0+eps), covparms[3]*(1-eps)) + ylim(0+eps, 1-eps) + xlab("scaled time") + ylab("scaled space") + theme(axis.text.x = element_text(size = 12), axis.title.x = element_text(size = 14), axis.text.y = element_text(size = 12), axis.title.y = element_text(size = 14))
 p4
 
 p.all <- grid.arrange(p1, p2, p3, p4, nrow = 2, ncol = 2, widths = c(1, covparms[3]))

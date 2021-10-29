@@ -12,15 +12,15 @@ library(dplyr) ; library(ggplot2) ; library(gridExtra) ; library(grid)
 
 ####################################################################################
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06222021/output/prediction/simout_prediction_allrandom_05242021.RData")
+load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/prediction/simout_prediction_allrandom_05242021.RData")
 
 rm(nsim, n, n.pred, m, t, nugget, covparms)
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06222021/output/prediction/simout_prediction_monitoring_05242021.RData")
+load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/prediction/simout_prediction_monitoring_05242021.RData")
 
 rm(nsim, n, n.pred, m, t, nugget, covparms)
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06222021/output/prediction/simout_prediction_satellite_05242021.RData")
+load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/prediction/simout_prediction_satellite_05242021.RData")
 
 rm(nsim, n, n.pred, m, t, nugget, covparms)
 
