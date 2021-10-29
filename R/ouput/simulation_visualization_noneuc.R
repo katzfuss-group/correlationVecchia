@@ -12,7 +12,7 @@ library(dplyr) ; library(ggplot2) ; library(gridExtra) ; library(grid)
 
 ####################################################################################
 
-load("simout_noneuc_09272021.RData")
+load("simout_noneuc_10012021.RData")
 
 vdat1       <- matrix(NA, nrow = length(ms), ncol = 4 + length(kls3))
 vdat1[, 1]  <- seq(length(ms))
@@ -43,17 +43,17 @@ vdat5      <- vdat5 %>% select(-index) %>% tidyr::gather(key = "approx", value =
 
 ####################################################################################
 
-legs        <- c("Random-ord + Random-conditioning", "Lexical-ord + C-NN", "C-MM + C-NN")
+legs        <- c("R-ord + R-N", "L-ord + C-NN", "C-MM + C-NN")
 cols        <- c("#377EB8", "#4DAF4A", "#E41A1C")
 shps        <- c(15, 17, 16)
 ftn         <- log10
 alpha       <- 0.7
-size.point  <- 7
+size.point  <- 5
 size.tick   <- 1
-size.line   <- 1.4
-size.legend <- 22
-size.lab    <- 22
-size.text   <- 20
+size.line   <- 1
+size.legend <- 18
+size.lab    <- 18
+size.text   <- 16
 size.margin <- c(5.5, 20, 5.5, 5.5)
 
 ####################################################################################
@@ -103,6 +103,6 @@ p1 <- ggplot() +
 
 result    <- grid.arrange(mylegend, p1 + theme(legend.position="none"), nrow=2, heights=c(1, 10))
 
-ggplot2::ggsave("simulation_noneuc.pdf", result, width = 15.2, height = 10)
+ggplot2::ggsave("simulation_noneuc.pdf", result, width = 7.6, height = 5)
 
 ####################################################################################
