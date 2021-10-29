@@ -18,6 +18,9 @@ out     <- output.aniso
 vdat1   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(a == 10) %>% select(-a)
 vdat2   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(m == 30) %>% select(-m)
 
+xticks1 <- cand.m
+xticks2 <- cand.a
+
 rm(out, output.aniso, cand.a, cand.m, nsim)
 
 load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/knownCovparms/simout_nonst_05242021.RData")
@@ -27,7 +30,10 @@ out2    <- output.nonst4
 vdat3   <- out1$vars %>% left_join(out1$kldiv, by = "index")
 vdat4   <- out2$vars %>% left_join(out2$kldiv, by = "index")
 
-rm(out1, out2, output.nonst1, output.nonst2, output.nonst3, output.nonst4, cand.m, nsim)
+xticks3 <- cand.m
+xticks4 <- cand.m
+
+rm(out1, out2, output.nonst1, output.nonst2, output.nonst3, output.nonst4, nsim)
 
 ####################################################################################
 
@@ -67,6 +73,7 @@ p1 <- vdat1 %>% ggplot(aes(x = m, y = ftn(kldiv), col = approx, shape = approx))
   scale_color_manual(values = cols, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   xlab(xlabs[1]) + ylab(NULL) + coord_cartesian(xlim = xlims[[1]], ylim = ylims[[1]]) +
+  scale_x_continuous(breaks = xticks1) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),
@@ -84,6 +91,7 @@ p2 <- vdat2 %>% ggplot(aes(x = a, y = ftn(kldiv), col = approx, shape = approx))
   scale_color_manual(values = cols, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   xlab(xlabs[2]) + ylab(NULL) + coord_cartesian(xlim = xlims[[2]], ylim = ylims[[2]]) +
+  scale_x_continuous(breaks = xticks2) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),
@@ -101,6 +109,7 @@ p3 <- vdat3 %>% ggplot(aes(x = m, y = ftn(kldiv), col = approx, shape = approx))
   scale_color_manual(values = cols, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   xlab(xlabs[3]) + ylab(NULL) + coord_cartesian(xlim = xlims[[3]], ylim = ylims[[3]]) +
+  scale_x_continuous(breaks = xticks3) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),
@@ -118,6 +127,7 @@ p4 <- vdat4 %>% ggplot(aes(x = m, y = ftn(kldiv), col = approx, shape = approx))
   scale_color_manual(values = cols, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   xlab(xlabs[4]) + ylab(NULL) + coord_cartesian(xlim = xlims[[4]], ylim = ylims[[4]]) +
+  scale_x_continuous(breaks = xticks4) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),

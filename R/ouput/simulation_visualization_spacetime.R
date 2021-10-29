@@ -14,6 +14,8 @@ library(dplyr) ; library(ggplot2) ; library(gridExtra) ; library(grid)
 
 load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/knownCovparms/simout_sptm_05242021.RData")
 
+xticks        <- cand.m
+
 out1          <- output.sptm.gen1
 out2          <- output.sptm.gen2
 vdat1         <- out1$vars %>% left_join(out1$kldiv, by = "index")
@@ -64,6 +66,7 @@ p1 <- vdat1 %>% ggplot(aes(x = m, y = ftn(kldiv), col = approx, shape = approx))
   scale_color_manual(values = cols, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   xlab(NULL) + ylab(NULL) + coord_cartesian(xlim = xlims[[1]], ylim = ylims[[1]]) +
+  scale_x_continuous(breaks = xticks) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),
@@ -81,6 +84,7 @@ p2 <- vdat2 %>% ggplot(aes(x = m, y = ftn(kldiv), col = approx, shape = approx))
   scale_color_manual(values = cols, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   xlab(NULL) + ylab(NULL) + coord_cartesian(xlim = xlims[[2]], ylim = ylims[[2]]) +
+  scale_x_continuous(breaks = xticks) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),
@@ -98,6 +102,7 @@ p3 <- vdat3 %>% ggplot(aes(x = m, y = ftn(kldiv), col = approx, shape = approx))
   scale_color_manual(values = cols, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   xlab(NULL) + ylab(NULL) + coord_cartesian(xlim = xlims[[3]], ylim = ylims[[3]]) +
+  scale_x_continuous(breaks = xticks) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),
@@ -115,6 +120,7 @@ p4 <- vdat4 %>% ggplot(aes(x = m, y = ftn(kldiv), col = approx, shape = approx))
   scale_color_manual(values = cols, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   xlab(NULL) + ylab(NULL) + coord_cartesian(xlim = xlims[[4]], ylim = ylims[[4]]) +
+  scale_x_continuous(breaks = xticks) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),

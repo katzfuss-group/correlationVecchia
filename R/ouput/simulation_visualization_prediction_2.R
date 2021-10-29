@@ -14,13 +14,19 @@ library(dplyr) ; library(ggplot2) ; library(gridExtra) ; library(grid)
 
 load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/prediction/simout_prediction_allrandom_05242021.RData")
 
+xticks1 <- m
+
 rm(nsim, n, n.pred, m, t, nugget, covparms)
 
 load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/prediction/simout_prediction_monitoring_05242021.RData")
 
+xticks2 <- m
+
 rm(nsim, n, n.pred, m, t, nugget, covparms)
 
 load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/prediction/simout_prediction_satellite_05242021.RData")
+
+xticks3 <- m
 
 rm(nsim, n, n.pred, m, t, nugget, covparms)
 
@@ -30,9 +36,9 @@ vdat1 <- data.frame(index = seq(length(output.sptm.pred.random$setting$m)), m = 
 vdat2 <- data.frame(index = seq(length(output.sptm.pred.monitoring$setting$m)), m = output.sptm.pred.monitoring$setting$m, approx_1 = output.sptm.pred.monitoring$output$logscore[[1]], approx_2 = output.sptm.pred.monitoring$output$logscore[[2]], approx_3 = output.sptm.pred.monitoring$output$logscore[[3]], approx_4 = output.sptm.pred.monitoring$output$logscore[[4]])
 vdat3 <- data.frame(index = seq(length(output.sptm.pred.satellite$setting$m)), m = output.sptm.pred.satellite$setting$m, approx_1 = output.sptm.pred.satellite$output$logscore[[1]], approx_2 = output.sptm.pred.satellite$output$logscore[[2]], approx_3 = output.sptm.pred.satellite$output$logscore[[3]], approx_4 = output.sptm.pred.satellite$output$logscore[[4]])
 
-vdat1   <- vdat1 %>% filter(m != 3)
-vdat2   <- vdat2 %>% filter(m != 3)
-vdat3   <- vdat3 %>% filter(m != 3)
+vdat1   <- vdat1 %>% filter(m != 3) ; xticks1 <- xticks1[-1]
+vdat2   <- vdat2 %>% filter(m != 3) ; xticks2 <- xticks2[-1]
+vdat3   <- vdat3 %>% filter(m != 3) ; xticks3 <- xticks3[-1]
 
 vdat1      <- vdat1 %>% select(-index) %>% tidyr::gather(key = "approx", value = "kldiv", -m)
 vdat2      <- vdat2 %>% select(-index) %>% tidyr::gather(key = "approx", value = "kldiv", -m)
@@ -75,6 +81,7 @@ p1 <- vdat1 %>% ggplot(aes(x = m, y = ftn(kldiv), col = approx, shape = approx))
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   xlab(NULL) + ylab(NULL) + coord_cartesian(xlim = xlims[[1]], ylim = ylims[[1]]) +
   scale_y_continuous(trans='log10', breaks = c(0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5)) +
+  scale_x_continuous(breaks = xticks1) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),
@@ -93,6 +100,7 @@ p2 <- vdat2 %>% ggplot(aes(x = m, y = ftn(kldiv), col = approx, shape = approx))
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   xlab(NULL) + ylab(NULL) + coord_cartesian(xlim = xlims[[2]], ylim = ylims[[2]]) +
   scale_y_continuous(trans='log10', breaks = c(0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5)) +
+  scale_x_continuous(breaks = xticks2) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),
@@ -111,6 +119,7 @@ p3 <- vdat3 %>% ggplot(aes(x = m, y = ftn(kldiv), col = approx, shape = approx))
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   xlab(NULL) + ylab(NULL) + coord_cartesian(xlim = xlims[[3]], ylim = ylims[[3]]) +
   scale_y_continuous(trans='log10', breaks = c(0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5)) +
+  scale_x_continuous(breaks = xticks3) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),

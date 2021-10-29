@@ -12,7 +12,9 @@ library(dplyr) ; library(ggplot2) ; library(gridExtra) ; library(grid)
 
 ####################################################################################
 
-load("simout_noneuc_10012021.RData")
+load("C:/Users/kmjst/Dropbox/4_PhD_Personal/13_2021F/1_Research/10052021/simout_noneuc_10012021.RData")
+
+xticks      <- ms
 
 vdat1       <- matrix(NA, nrow = length(ms), ncol = 4 + length(kls3))
 vdat1[, 1]  <- seq(length(ms))
@@ -63,6 +65,7 @@ p2 <- vdat2 %>% ggplot(aes(x = m, y = ftn(kldiv), col = approx, shape = approx))
   scale_color_manual(values = cols, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   xlab("increasing m") + ylab("log10(KL)") + # coord_cartesian(xlim = xlims[[1]], ylim = ylims[[1]]) +
+  scale_x_continuous(breaks = xticks) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),
@@ -88,6 +91,7 @@ p1 <- ggplot() +
   geom_point(data = vdat5, aes(x = m, y = ftn(kldiv), group = approx), colour = cols[1], shape = shps[1], size = size.point) +
   geom_line(data = vdat5, aes(x = m, y = ftn(kldiv), group = approx), colour = cols[1], size = size.line, alpha = alpha) +
   xlab("increasing m") + ylab("log10(KL)") + # coord_cartesian(xlim = xlims[[1]], ylim = ylims[[1]]) +
+  scale_x_continuous(breaks = xticks) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),

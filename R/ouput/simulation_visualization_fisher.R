@@ -14,19 +14,25 @@ library(dplyr) ; library(ggplot2) ; library(gridExtra) ; library(grid)
 
 load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/fisher/simout_fisher_random_05242021.RData")
 
+xticks1 <- cand.m
+
 rm(cand.m, covparms, nsim)
 
 load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/fisher/simout_fisher_monitoring_05242021.RData")
+
+xticks2 <- cand.m
 
 rm(cand.m, covparms, nsim)
 
 load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/fisher/simout_fisher_satellite_05242021.RData")
 
+xticks3 <- cand.m
+
 rm(cand.m, covparms, nsim)
 
 ####################################################################################
 
-vis_arrange_fisher <- function(vdat1, vdat2, vdat3, legend, color, shape, ftn = log10, xlim = list(xl1 = NULL, xl2 = NULL, xl3 = NULL), ylim = list(yl1 = NULL, yl2 = NULL, yl3 = NULL), xlab = c("xl1", "xl2", "xl3"), ylab = c("yl1", "yl2", "yl3"), alpha = 0.7, size.point = 4, size.line = 1, size.legend = 18, size.lab = 18, size.text = 16, size.margin = c(5.5, 20, 5.5, 5.5))
+vis_arrange_fisher <- function(vdat1, vdat2, vdat3, legend, color, shape, ftn = log10, xticks, xlim = list(xl1 = NULL, xl2 = NULL, xl3 = NULL), ylim = list(yl1 = NULL, yl2 = NULL, yl3 = NULL), xlab = c("xl1", "xl2", "xl3"), ylab = c("yl1", "yl2", "yl3"), alpha = 0.7, size.point = 4, size.line = 1, size.legend = 18, size.lab = 18, size.text = 16, size.margin = c(5.5, 20, 5.5, 5.5))
 {
   size.margin.plot1 = size.margin # + c(0, 100, 0, 100)
 
@@ -47,6 +53,7 @@ vis_arrange_fisher <- function(vdat1, vdat2, vdat3, legend, color, shape, ftn = 
     scale_color_manual(values = color, labels = legend, guide = guide_legend(nrow = 1, byrow = TRUE)) +
     scale_shape_manual(values = shape, labels = legend, guide = guide_legend(nrow = 1, byrow = TRUE)) +
     xlab(NULL) + ylab(ylab[1]) + coord_cartesian(xlim = xlim[[1]], ylim = ylim[[1]]) +
+    scale_x_continuous(breaks = xticks) +
     theme(axis.title.x = element_text(size = size.lab),
           axis.text.x = element_text(size = size.text),
           axis.title.y = element_text(size = size.lab),
@@ -74,6 +81,7 @@ vis_arrange_fisher <- function(vdat1, vdat2, vdat3, legend, color, shape, ftn = 
     scale_color_manual(values = color, labels = legend) +
     scale_shape_manual(values = shape, labels = legend) +
     xlab(NULL) + ylab(ylab[2]) + coord_cartesian(xlim = xlim[[2]], ylim = ylim[[2]]) +
+    scale_x_continuous(breaks = xticks) +
     theme(axis.title.x = element_text(size = size.lab),
           axis.text.x = element_text(size = size.text),
           axis.title.y = element_text(size = size.lab-4),
@@ -100,6 +108,7 @@ vis_arrange_fisher <- function(vdat1, vdat2, vdat3, legend, color, shape, ftn = 
     scale_color_manual(values = color, labels = legend) +
     scale_shape_manual(values = shape, labels = legend) +
     xlab(NULL) + ylab(ylab[3]) + coord_cartesian(xlim = xlim[[3]], ylim = ylim[[3]]) +
+    scale_x_continuous(breaks = xticks) +
     theme(axis.title.x = element_text(size = size.lab),
           axis.text.x = element_text(size = size.text),
           axis.title.y = element_text(size = size.lab-4),
@@ -140,7 +149,7 @@ ylim1   <- vdat1 %>% select(approx_1, approx_2, approx_3, approx_4, approx_5) %>
 ylim2   <- vdat2 %>% select(approx_1, approx_2, approx_3, approx_4) %>% range()
 ylim3   <- vdat3 %>% select(approx_2, approx_3, approx_4) %>% range()
 
-vis.mon <- vis_arrange_fisher(vdat1 = vdat1, vdat2 = vdat2, vdat3 = vdat3, ftn = function(x) x, xlim = list(xl1 = NULL, xl2 = NULL, xl3 = NULL), ylim = list(yl1 = ylim1, yl2 = ylim2, yl3 = ylim3), xlab = c("increasing m", "increasing m", "increasing m"), ylab = c("log10(KL)", "RMSD for spatial range", "RMSD for temporal range"), legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN", "Exact GP"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "gray30"), shape = c(18, 15, 17, 16, NA))
+vis.mon <- vis_arrange_fisher(vdat1 = vdat1, vdat2 = vdat2, vdat3 = vdat3, ftn = function(x) x, xticks = xticks1[-1], xlim = list(xl1 = NULL, xl2 = NULL, xl3 = NULL), ylim = list(yl1 = ylim1, yl2 = ylim2, yl3 = ylim3), xlab = c("increasing m", "increasing m", "increasing m"), ylab = c("log10(KL)", "RMSD for spatial range", "RMSD for temporal range"), legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN", "Exact GP"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "gray30"), shape = c(18, 15, 17, 16, NA))
 
 ggplot2::ggsave("simulation_spacetime_fisher_mon.pdf", vis.mon, width = 12.0, height = 5.7)
 
@@ -159,7 +168,7 @@ ylim1   <- vdat1 %>% select(approx_1, approx_2, approx_3, approx_4, approx_5) %>
 ylim2   <- vdat2 %>% select(approx_1, approx_2, approx_3, approx_4) %>% range()
 ylim3   <- vdat3 %>% select(approx_2, approx_3, approx_4) %>% range()
 
-vis.sat <- vis_arrange_fisher(vdat1 = vdat1, vdat2 = vdat2, vdat3 = vdat3, ftn = function(x) x, xlim = list(xl1 = NULL, xl2 = NULL, xl3 = NULL), ylim = list(yl1 = ylim1, yl2 = ylim2, yl3 = ylim3), xlab = c("increasing m", "increasing m", "increasing m"), ylab = c("log10(KL)", "RMSD for spatial range", "RMSD for temporal range"), legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN", "Exact GP"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "gray30"), shape = c(18, 15, 17, 16, NA))
+vis.sat <- vis_arrange_fisher(vdat1 = vdat1, vdat2 = vdat2, vdat3 = vdat3, ftn = function(x) x, xticks = xticks2[-1], xlim = list(xl1 = NULL, xl2 = NULL, xl3 = NULL), ylim = list(yl1 = ylim1, yl2 = ylim2, yl3 = ylim3), xlab = c("increasing m", "increasing m", "increasing m"), ylab = c("log10(KL)", "RMSD for spatial range", "RMSD for temporal range"), legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN", "Exact GP"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "gray30"), shape = c(18, 15, 17, 16, NA))
 
 ggplot2::ggsave("simulation_spacetime_fisher_sat.pdf", vis.sat, width = 12.0, height = 5.7)
 
@@ -180,7 +189,7 @@ ylim3   <- vdat3 %>% select(approx_2, approx_3, approx_4) %>% range()
 
 ylim3[2]<- 0.2
 
-vis.ran <- vis_arrange_fisher(vdat1 = vdat1, vdat2 = vdat2, vdat3 = vdat3, ftn = function(x) x, xlim = list(xl1 = NULL, xl2 = NULL, xl3 = NULL), ylim = list(yl1 = ylim1, yl2 = ylim2, yl3 = ylim3), xlab = c("increasing m", "increasing m", "increasing m"), ylab = c("log10(KL)", "RMSD for spatial range", "RMSD for temporal range"), legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN", "Exact GP"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "gray30"), shape = c(18, 15, 17, 16, NA))
+vis.ran <- vis_arrange_fisher(vdat1 = vdat1, vdat2 = vdat2, vdat3 = vdat3, ftn = function(x) x, xticks = xticks3[-1], xlim = list(xl1 = NULL, xl2 = NULL, xl3 = NULL), ylim = list(yl1 = ylim1, yl2 = ylim2, yl3 = ylim3), xlab = c("increasing m", "increasing m", "increasing m"), ylab = c("log10(KL)", "RMSD for spatial range", "RMSD for temporal range"), legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN", "Exact GP"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "gray30"), shape = c(18, 15, 17, 16, NA))
 
 ggplot2::ggsave("simulation_spacetime_fisher_ran.pdf", vis.ran, width = 12.0, height = 5.7)
 
