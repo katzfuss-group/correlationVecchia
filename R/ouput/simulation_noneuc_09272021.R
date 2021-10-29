@@ -21,7 +21,7 @@ library(correlationVecchia)
 
 ###################################################################
 
-output                <- generate_hnm(mu0 = 0, sig20 = 1, k = 8, mlt = 2)
+output                <- generate_hnm(mu0 = 0, sig20 = 1, k = 12, mlt = 2)
 
 length(output$y)
 
@@ -142,5 +142,5 @@ legend("bottomleft", legend = c("RVecchia", "LVecchia", "CVecchia"), lty = 1, lw
 
 ###################################################################
 
-save(output, cormat, ms, kls1, kls2, kls3, file = "simout_noneuc_09272021.RData")
+save(output, cormat, ms, kls1, kls2, kls3, file = "simout_noneuc_10012021.RData")
 
