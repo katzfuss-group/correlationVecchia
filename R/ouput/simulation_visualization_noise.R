@@ -93,14 +93,14 @@ plots_post <- function(output.s, output.t, label, legend = c("T-ord + T-NN", "T-
     visdat.s.str[[i]]$method <- "naive"
     visdat.t.str[[i]]$method <- "naive"
 
-    visdat.s.ic0[[i]]$method <- "ic0-based"
-    visdat.t.ic0[[i]]$method <- "ic0-based"
+    visdat.s.ic0[[i]]$method <- "IC-based"
+    visdat.t.ic0[[i]]$method <- "IC-based"
   }
 
   visdat <- bind_rows(visdat.s.str, visdat.t.str, visdat.s.ic0, visdat.t.ic0)
   visdat$scen <- label
 
-  visdat$method <- factor(visdat$method, levels = c("naive", "ic0-based"))
+  visdat$method <- factor(visdat$method, levels = c("naive", "IC-based"))
 
   result <- visdat %>% ggplot(aes(x = x, y = y, col = gp)) +
     geom_line(size = size.line, alpha = alpha) +
@@ -139,7 +139,7 @@ rm(tmp, leg,
 
 ####################################################################################
 
-result    <- grid.arrange(mylegend, arrangeGrob(ps_random + theme(legend.position="none"),
+result    <- grid.arrange(mylegend, arrangeGrob(ps_random + theme(legend.position="none") + scale_y_continuous(breaks = c(0.00, 0.01, 0.02, 0.03)),
                                                 ps_monitoring + theme(legend.position="none"),
                                                 ps_satellite + theme(legend.position="none"),
                                                 nrow=3), nrow=2, heights=c(1, 20))
