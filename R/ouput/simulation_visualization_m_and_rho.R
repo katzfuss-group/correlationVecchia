@@ -34,7 +34,8 @@ vdat3       <- vdat3 %>% tidyr::gather(key = "approx", value = "kldiv", -index)
 
 ###
 
-legs        <- c(paste0(expression(m),"-type EVecchia"), paste0(expression(rho),"-type EVecchia"))
+# legs        <- c(paste0(expression(m),"-type EVecchia"), paste0(expression(rho),"-type EVecchia"))
+legs        <- c("EVecchia with size-based NN", "EVecchia with radius-based NN")
 cols        <- c("#E41A1C", "#377EB8")
 ftn         <- function(x) log(x)
 alpha       <- 0.7
@@ -69,7 +70,7 @@ p2 <- vdat2 %>% ggplot(aes(x = index, y = ftn(kldiv), col = approx, shape = appr
   # scale_y_continuous(trans='log10') +
   scale_color_manual(values = cols, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
-  xlab("index") + ylab("log(variance ratio)") + coord_cartesian(xlim = c(1, nrow(locs))) +
+  xlab("index") + ylab("log( variance ratio )") + coord_cartesian(xlim = c(1, nrow(locs))) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),
@@ -134,7 +135,8 @@ vdat3       <- vdat3 %>% tidyr::gather(key = "approx", value = "kldiv", -index)
 
 ###
 
-legs        <- c(paste0(expression(m),"-type EVecchia"), paste0(expression(rho),"-type EVecchia"))
+# legs        <- c(paste0(expression(m),"-type EVecchia"), paste0(expression(rho),"-type EVecchia"))
+legs        <- c("EVecchia with size-based NN", "EVecchia with radius-based NN")
 cols        <- c("#E41A1C", "#377EB8")
 ftn         <- function(x) log(x)
 alpha       <- 0.7
@@ -169,7 +171,7 @@ p2 <- vdat2 %>% ggplot(aes(x = index, y = ftn(kldiv), col = approx, shape = appr
   # scale_y_continuous(trans='log10') +
   scale_color_manual(values = cols, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 1, byrow = TRUE)) +
-  xlab("index") + ylab("log(variance ratio)") + coord_cartesian(xlim = c(1, nrow(locs))) +
+  xlab("index") + ylab("log( variance ratio )") + coord_cartesian(xlim = c(1, nrow(locs))) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),
         axis.title.y = element_text(size = size.lab),
