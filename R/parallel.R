@@ -1392,7 +1392,19 @@ parSim_sptm_posterior <- function(cand.m, target, ordfix, n, d, t, nuggets = 0, 
   ### body
   cl              <- parallel::makeCluster(no_cores)
 
-  if(ordfix) {
+  if( is.null(ordfix) ) {
+
+    doParallel::registerDoParallel(cl)
+    simout <- foreach::foreach(i = seq(nrow(candid)), .packages = c("correlationVecchia")) %dopar% posterior_ordfix_spacetime(target = target, approx = candid$approx[i], method.U = "simple", z = z, locs = locs, covparms = covparms, nugget = nuggets, m = candid$m[i], N = N, xlim = xlim, sdlog = sdlog, verbose = FALSE, tol.dec = tol.dec)
+
+    simout2 <- foreach::foreach(i = seq(nrow(candid)), .packages = c("correlationVecchia")) %dopar% posterior_ordfix_spacetime(target = target, approx = candid$approx[i], method.U = "ic0", z = z, locs = locs, covparms = covparms, nugget = nuggets, m = candid$m[i], N = N, xlim = xlim, sdlog = sdlog, verbose = FALSE, tol.dec = tol.dec)
+
+    simout3 <- foreach::foreach(i = seq(nrow(candid)), .packages = c("correlationVecchia")) %dopar% posterior_spacetime(target = target, approx = candid$approx[i], method.U = "simple", z = z, locs = locs, covparms = covparms, nugget = nuggets, m = candid$m[i], N = N, xlim = xlim, sdlog = sdlog, verbose = FALSE)
+
+    simout4 <- foreach::foreach(i = seq(nrow(candid)), .packages = c("correlationVecchia")) %dopar% posterior_spacetime(target = target, approx = candid$approx[i], method.U = "ic0", z = z, locs = locs, covparms = covparms, nugget = nuggets, m = candid$m[i], N = N, xlim = xlim, sdlog = sdlog, verbose = FALSE)
+    parallel::stopCluster(cl)
+
+  } else if( ordfix ) {
 
     doParallel::registerDoParallel(cl)
     simout <- foreach::foreach(i = seq(nrow(candid)), .packages = c("correlationVecchia")) %dopar% posterior_ordfix_spacetime(target = target, approx = candid$approx[i], method.U = "simple", z = z, locs = locs, covparms = covparms, nugget = nuggets, m = candid$m[i], N = N, xlim = xlim, sdlog = sdlog, verbose = FALSE, tol.dec = tol.dec)
@@ -1410,16 +1422,41 @@ parSim_sptm_posterior <- function(cand.m, target, ordfix, n, d, t, nuggets = 0, 
   }
 
   ### return
-  result          <- list()
-  result[[1]]     <- list(candid = candid, target = target, ordfix = ordfix, n = n, d = d, t = t, nuggets = nuggets, method.U = "simple", method.locs = method.locs, N = N, xlim = xlim, sdlog = sdlog, covparms = covparms, locs = locs, z = z)
-  result[[2]]     <- simout
+  if( is.null(ordfix) ) {
 
-  result[[3]]     <- list(candid = candid, target = target, ordfix = ordfix, n = n, d = d, t = t, nuggets = nuggets, method.U = "ic0", method.locs = method.locs, N = N, xlim = xlim, sdlog = sdlog, covparms = covparms, locs = locs, z = z)
-  result[[4]]     <- simout2
+    result          <- list()
+    result[[1]]     <- list(candid = candid, target = target, ordfix = TRUE, n = n, d = d, t = t, nuggets = nuggets, method.U = "simple", method.locs = method.locs, N = N, xlim = xlim, sdlog = sdlog, covparms = covparms, locs = locs, z = z)
+    result[[2]]     <- simout
 
-  time.tot        <- proc.time() - time.tot
-  result[[5]]     <- time.tot
+    result[[3]]     <- list(candid = candid, target = target, ordfix = TRUE, n = n, d = d, t = t, nuggets = nuggets, method.U = "ic0", method.locs = method.locs, N = N, xlim = xlim, sdlog = sdlog, covparms = covparms, locs = locs, z = z)
+    result[[4]]     <- simout2
 
-  names(result)   <- c("setting", "simout", "setting.ic0", "simout.ic0", "time.tot")
+    result[[5]]     <- list(candid = candid, target = target, ordfix = FALSE, n = n, d = d, t = t, nuggets = nuggets, method.U = "simple", method.locs = method.locs, N = N, xlim = xlim, sdlog = sdlog, covparms = covparms, locs = locs, z = z)
+    result[[6]]     <- simout3
+
+    result[[7]]     <- list(candid = candid, target = target, ordfix = FALSE, n = n, d = d, t = t, nuggets = nuggets, method.U = "ic0", method.locs = method.locs, N = N, xlim = xlim, sdlog = sdlog, covparms = covparms, locs = locs, z = z)
+    result[[8]]     <- simout4
+
+    time.tot        <- proc.time() - time.tot
+    result[[9]]     <- time.tot
+
+    names(result)   <- c("setting.ordfix", "simout.ordfix", "setting.ordfix.ic0", "simout.ordfix.ic0", "setting.notfix", "simout.notfix", "setting.notfix.ic0", "simout.notfix.ic0", "time.tot")
+
+  } else {
+
+    result          <- list()
+    result[[1]]     <- list(candid = candid, target = target, ordfix = ordfix, n = n, d = d, t = t, nuggets = nuggets, method.U = "simple", method.locs = method.locs, N = N, xlim = xlim, sdlog = sdlog, covparms = covparms, locs = locs, z = z)
+    result[[2]]     <- simout
+
+    result[[3]]     <- list(candid = candid, target = target, ordfix = ordfix, n = n, d = d, t = t, nuggets = nuggets, method.U = "ic0", method.locs = method.locs, N = N, xlim = xlim, sdlog = sdlog, covparms = covparms, locs = locs, z = z)
+    result[[4]]     <- simout2
+
+    time.tot        <- proc.time() - time.tot
+    result[[5]]     <- time.tot
+
+    names(result)   <- c("setting", "simout", "setting.ic0", "simout.ic0", "time.tot")
+
+  }
+
   return( result )
 }
