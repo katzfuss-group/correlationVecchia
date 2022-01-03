@@ -12,7 +12,7 @@ library(dplyr) ; library(ggplot2) ; library(gridExtra) ; library(grid)
 
 ####################################################################################
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/13_2021F/1_Research/10052021/simout_noneuc_10012021.RData")
+load("simout_noneuc_10012021.RData")
 
 xticks      <- ms
 

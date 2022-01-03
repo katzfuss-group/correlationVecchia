@@ -12,7 +12,7 @@ library(dplyr) ; library(ggplot2) ; library(gridExtra) ; library(grid)
 
 ####################################################################################
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/knownCovparms/simout_aniso_05242021.RData")
+load("simout_aniso_05242021.RData")
 
 out     <- output.aniso
 vdat1   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(a == 10) %>% select(-a)
@@ -23,7 +23,7 @@ xticks2 <- cand.a
 
 rm(out, output.aniso, cand.a, cand.m, nsim)
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/knownCovparms/simout_nonst_05242021.RData")
+load("simout_nonst_05242021.RData")
 
 out1    <- output.nonst1
 out2    <- output.nonst4

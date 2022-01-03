@@ -12,7 +12,7 @@ library(dplyr) ; library(ggplot2) ; library(gridExtra) ; library(grid)
 
 ####################################################################################
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/knownCovparms/simout_wave_05242021.RData")
+load("simout_wave_05242021.RData")
 
 out     <- output.wave.dc.d1
 vdat1   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(period == 0.25) %>% select(-period)
@@ -150,7 +150,7 @@ library(dplyr) ; library(ggplot2) ; library(gridExtra) ; library(grid)
 
 ####################################################################################
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/knownCovparms/simout_wave_05242021.RData")
+load("simout_wave_05242021.RData")
 
 out     <- output.wave.ds.d1
 vdat1   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(period == 0.25) %>% select(-period)
@@ -288,7 +288,7 @@ library(dplyr) ; library(ggplot2) ; library(gridExtra) ; library(grid)
 
 ####################################################################################
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/knownCovparms/simout_wave_05242021.RData")
+load("simout_wave_05242021.RData")
 
 out     <- output.wave.bj.d1
 vdat1   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(period == 0.25) %>% select(-period)

@@ -10,7 +10,7 @@
 
 # library(dplyr) ; library(tidyr) ; library(ggplot2) ; library(gridExtra) ; library(RColorBrewer)
 #
-# load("C:/Users/kmjst/Desktop/temp/simout_aniso_05242021.RData")
+# load("simout_aniso_05242021.RData")
 #
 # out     <- output.aniso
 # vdat1   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(a == 10) %>% select(-a)

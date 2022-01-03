@@ -12,19 +12,19 @@ library(dplyr) ; library(ggplot2) ; library(gridExtra) ; library(grid)
 
 ####################################################################################
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/fisher/simout_fisher_random_05242021.RData")
+load("simout_fisher_random_05242021.RData")
 
 xticks1 <- cand.m
 
 rm(cand.m, covparms, nsim)
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/fisher/simout_fisher_monitoring_05242021.RData")
+load("simout_fisher_monitoring_05242021.RData")
 
 xticks2 <- cand.m
 
 rm(cand.m, covparms, nsim)
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/fisher/simout_fisher_satellite_05242021.RData")
+load("simout_fisher_satellite_05242021.RData")
 
 xticks3 <- cand.m
 

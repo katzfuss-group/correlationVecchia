@@ -12,7 +12,7 @@ library(dplyr) ; library(ggplot2) ; library(gridExtra) ; library(grid)
 
 ####################################################################################
 
-load("C:/Users/kmjst/Dropbox/4_PhD_Personal/12_2021Su/1_Research/06292021/output/knownCovparms/simout_sptm_05242021.RData")
+load("simout_sptm_05242021.RData")
 
 xticks        <- cand.m
 
