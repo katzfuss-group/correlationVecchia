@@ -7,10 +7,17 @@ correlation-based Vecchia with MJ
 
 ## Installation
 
+This repository depends heavily on both R packages *GPvecchia* and
+*GpGp*.
+
     # install.packages("devtools")
     devtools::install_github("katzfuss-group/correlationVecchia")
 
 ## Example
+
+The following code chunk is to generate some toy data and compare
+approximation accuracy of different Vecchia approaches including not
+only EVecchia but CVecchia.
 
     locs    <- matrix(runif(400), 200, 2)
     m       <- 10
@@ -98,24 +105,28 @@ correlation-based Vecchia with MJ
                           "C-MM + E-NN", "C-MM + C-NN"),
             main = "Vecchia Approximations", ylab = "log10-scale KL divergence")
 
+For details on the functionality of `cvecchia_m_specify()`, enter the
+command `help("cvecchia_m_specify")`.
+
 ## Reproducing results
 
 These R files reproduce the figures and results from Kang and Katzfuss
-(2021): - Figure 1: simulation_visualization_ordering_and_conditioning.R
-- Figure 2: simulation_knownCovparms_05242021.R -\>
-simulation_visualization_anisononst.R - Figure 3:
+(2021): \* Figure 1:
+simulation_visualization_ordering_and_conditioning.R \* Figure 2:
 simulation_knownCovparms_05242021.R -\>
-simulation_visualization_multivariate.R - Figure 4:
-simulation_visualization_spacetime_scenarios.R - Figure 5:
+simulation_visualization_anisononst.R \* Figure 3:
 simulation_knownCovparms_05242021.R -\>
-simulation_visualization_spacetime.R - Figure 6:
-simulation_noneuc_09272021.R -\> simulation_visualization_noneuc.R -
+simulation_visualization_multivariate.R \* Figure 4:
+simulation_visualization_spacetime_scenarios.R \* Figure 5:
+simulation_knownCovparms_05242021.R -\>
+simulation_visualization_spacetime.R \* Figure 6:
+simulation_noneuc_09272021.R -\> simulation_visualization_noneuc.R \*
 Figure 7: simulation_fisherScoring_05242021.R -\>
-simulation_visualization_fisher.R - Figure 8:
+simulation_visualization_fisher.R \* Figure 8:
 simulation_prediction_05242021.R -\>
-simulation_visualization_prediction_2.R - Figure 9:
+simulation_visualization_prediction_2.R \* Figure 9:
 simulation_bayesianPosterior_nugget_05242021.R -\>
-simulation_visualization_noise.R - Figures 10 and 11 and Table 1:
+simulation_visualization_noise.R \* Figures 10 and 11 and Table 1:
 realdata_1\_processing_01012022.R -\> realdata_2\_estimation_01012022.R
 -\> realdata_3\_performance_01012022.R -\>
 realdata_4\_visualization_01012022.R
