@@ -1,6 +1,6 @@
 Package: correlationVecchia
 Title: Research Package for Correlation-based Vecchia Approximation
-Version: 0.0.2
+Version: 1.0.0
 Authors@R: c(person("Myeongjong", "Kang", role=c("aut"), email = "kmj.stat@gmail.com"),
 	         person("Matthias", "Katzfuss", role=c("aut", "cre"), email = "katzfuss@gmail.com"))
 Description: This is so far a private research R package for implementing the correlation-based Vecchia approximation.
