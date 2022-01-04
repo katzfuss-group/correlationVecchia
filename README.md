@@ -113,25 +113,37 @@ command `help("cvecchia_m_specify")`.
 ## Reproducing results
 
 These R files reproduce the figures and results from Kang and Katzfuss
-(2021): \* Figure 1:
-simulation_visualization_ordering_and_conditioning.R \* Figure 2:
-simulation_knownCovparms_05242021.R and
-simulation_visualization_anisononst.R \* Figure 3:
-simulation_knownCovparms_05242021.R and
-simulation_visualization_multivariate.R \* Figure 4:
-simulation_visualization_spacetime_scenarios.R \* Figure 5:
-simulation_knownCovparms_05242021.R and
-simulation_visualization_spacetime.R \* Figure 6:
-simulation_noneuc_09272021.R and simulation_visualization_noneuc.R \*
-Figure 7: simulation_fisherScoring_05242021.R and
-simulation_visualization_fisher.R \* Figure 8:
-simulation_prediction_05242021.R and
-simulation_visualization_prediction_2.R \* Figure 9:
-simulation_bayesianPosterior_nugget_05242021.R and
-simulation_visualization_noise.R \* Figures 10 and 11 and Table 1:
-realdata_1\_processing_01012022.R, realdata_2\_estimation_01012022.R,
-realdata_3\_performance_01012022.R, and
-realdata_4\_visualization_01012022.R
+(2021):
+
+-   Figure 1: simulation_visualization_ordering_and_conditioning.R
+
+-   Figure 2: simulation_knownCovparms_05242021.R and
+    simulation_visualization_anisononst.R
+
+-   Figure 3: simulation_knownCovparms_05242021.R and
+    simulation_visualization_multivariate.R
+
+-   Figure 4: simulation_visualization_spacetime_scenarios.R
+
+-   Figure 5: simulation_knownCovparms_05242021.R and
+    simulation_visualization_spacetime.R
+
+-   Figure 6: simulation_noneuc_09272021.R and
+    simulation_visualization_noneuc.R
+
+-   Figure 7: simulation_fisherScoring_05242021.R and
+    simulation_visualization_fisher.R
+
+-   Figure 8: simulation_prediction_05242021.R and
+    simulation_visualization_prediction_2.R
+
+-   Figure 9: simulation_bayesianPosterior_nugget_05242021.R and
+    simulation_visualization_noise.R
+
+-   Figures 10 and 11 and Table 1: realdata_1\_processing_01012022.R,
+    realdata_2\_estimation_01012022.R,
+    realdata_3\_performance_01012022.R, and
+    realdata_4\_visualization_01012022.R
 
 ## Reference
 
