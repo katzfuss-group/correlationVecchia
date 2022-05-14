@@ -226,6 +226,62 @@ arma::rowvec NNcheck_Rcpp(const arma::rowvec & I, const arma::rowvec & J, const 
   return(chk);
 }
 
+//' @name NNcheck_both_Rcpp
+//'
+//' @title creating both smaller and larger sparsity patterns (only for Florian's algorithm)
+//'
+//' @param I I
+//' @param J J
+//' @param P P
+//' @param distances distances
+//' @param x x
+//' @param rho rho
+//' @param distype distype
+//' @param fstr fstr
+//' @param covparms covparms
+//'
+//' @return list of rowvecs
+// [[Rcpp::export]]
+Rcpp::List NNcheck_both_Rcpp(const arma::rowvec & I, const arma::rowvec & J, const arma::rowvec & P, const arma::rowvec & distances, const arma::mat & x, const double rho, std::string distype, std::string fstr, const arma::rowvec & covparms) {
+
+  arma::rowvec chkSmaller = arma::ones<arma::rowvec>(arma::size(I));
+  arma::rowvec chkLarger = arma::ones<arma::rowvec>(arma::size(I));
+
+  covXptr ptr = putCovPtrInXptr(fstr);
+  covPtr cov = *ptr;
+
+  function<double(int, int)> dist2Func = [&, distype, covparms](int i, int j) {
+
+    if (distype == "euclidean") {
+
+      return(pow(norm(x.row(i) - x.row(j)), 2.0));
+
+    } else if (distype == "correlation") {
+
+      return(1 - cov(x.row(i), x.row(j), covparms) / sqrt( cov(x.row(i), x.row(i), covparms) ) / sqrt( cov(x.row(j), x.row(j), covparms) ) );
+
+    } else {
+
+      return(pow(norm(x.row(i) - x.row(j)), 2.0));
+    }
+  };
+
+  for (int k = 0; k < I.n_cols; k++) {
+
+    // smaller sparsity pattern
+    if ( sqrt(dist2Func(P[I[k]], P[J[k]])) > rho * std::min(distances[I[k]], distances[J[k]]) ) {
+      chkSmaller[k] = 0;
+    }
+
+    // larger sparsity pattern
+    if ( sqrt(dist2Func(P[I[k]], P[J[k]])) > rho * std::max(distances[I[k]], distances[J[k]]) ) {
+      chkLarger[k] = 0;
+    }
+  }
+
+  return Rcpp::List::create(Rcpp::Named("smaller") = chkSmaller, Rcpp::Named("larger") = chkLarger);
+}
+
 //' @name conditioning_rho_Rcpp
 //'
 //' @title conditioning based on Florian's algorithm (C++ version)

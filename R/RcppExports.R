@@ -265,6 +265,25 @@ NNcheck_Rcpp <- function(I, J, P, distances, x, rho, distype, fstr, covparms) {
     .Call(`_correlationVecchia_NNcheck_Rcpp`, I, J, P, distances, x, rho, distype, fstr, covparms)
 }
 
+#' @name NNcheck_both_Rcpp
+#'
+#' @title creating both smaller and larger sparsity patterns (only for Florian's algorithm)
+#'
+#' @param I I
+#' @param J J
+#' @param P P
+#' @param distances distances
+#' @param x x
+#' @param rho rho
+#' @param distype distype
+#' @param fstr fstr
+#' @param covparms covparms
+#'
+#' @return list of rowvecs
+NNcheck_both_Rcpp <- function(I, J, P, distances, x, rho, distype, fstr, covparms) {
+    .Call(`_correlationVecchia_NNcheck_both_Rcpp`, I, J, P, distances, x, rho, distype, fstr, covparms)
+}
+
 #' @name conditioning_rho_Rcpp
 #'
 #' @title conditioning based on Florian's algorithm (C++ version)
