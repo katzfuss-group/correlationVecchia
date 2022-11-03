@@ -11,6 +11,18 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// conditioning_b1_sptm_Rcpp
+Rcpp::NumericMatrix conditioning_b1_sptm_Rcpp(const unsigned int n, const unsigned int m);
+RcppExport SEXP _correlationVecchia_conditioning_b1_sptm_Rcpp(SEXP nSEXP, SEXP mSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const unsigned int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type m(mSEXP);
+    rcpp_result_gen = Rcpp::wrap(conditioning_b1_sptm_Rcpp(n, m));
+    return rcpp_result_gen;
+END_RCPP
+}
 // cov_expo_iso_cpp
 double cov_expo_iso_cpp(const arma::rowvec& x1, const arma::rowvec& x2, const arma::rowvec& covparms);
 RcppExport SEXP _correlationVecchia_cov_expo_iso_cpp(SEXP x1SEXP, SEXP x2SEXP, SEXP covparmsSEXP) {
@@ -326,6 +338,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_correlationVecchia_conditioning_b1_sptm_Rcpp", (DL_FUNC) &_correlationVecchia_conditioning_b1_sptm_Rcpp, 2},
     {"_correlationVecchia_cov_expo_iso_cpp", (DL_FUNC) &_correlationVecchia_cov_expo_iso_cpp, 3},
     {"_correlationVecchia_cov_expo_aniso_cpp", (DL_FUNC) &_correlationVecchia_cov_expo_aniso_cpp, 3},
     {"_correlationVecchia_cov_expo_spacetime_cpp", (DL_FUNC) &_correlationVecchia_cov_expo_spacetime_cpp, 3},
