@@ -37,7 +37,7 @@ mappingRaster <- function(rastername, tpoint, shapename, crsname = NULL, states 
 
   spdf        <- readOGR(dsn = getwd(), layer = shapename, verbose = TRUE) # ; names(spdf)
 
-  if(states %in% c("all", "USA", "us", "full", "every")) {
+  if( any(states %in% c("all", "USA", "us", "full", "every")) ) {
 
     # CAUTION: hard-coded !!!
     spdf        <- subset(spdf, NAME %in% spdf$NAME[-c(14, 28, 38, 39, 43, 45, 46)])
@@ -311,11 +311,13 @@ splitData <- function(df.joint, method, num.locs = 12, num.time = 31, size.blck 
 
 .find_ordered_TNN <- function(locsord, m)
 {
-  cond.sets   <- matrix(NA, nrow = nrow(locsord), ncol = m + 1)
-  for(i in 1:nrow(locsord)) {
-    ind                 <- seq(from = 1, to = min(i, m + 1), by = 1)
-    cond.sets[i, ind]   <- seq(from = i, by = -1, length.out = length(ind))
-  }
+  cond.sets   <- conditioning_b1_sptm_Rcpp(nrow(locsord), m) + 1
+
+  # cond.sets   <- matrix(NA, nrow = nrow(locsord), ncol = m + 1)
+  # for(i in 1:nrow(locsord)) {
+  #   ind                 <- seq(from = 1, to = min(i, m + 1), by = 1)
+  #   cond.sets[i, ind]   <- seq(from = i, by = -1, length.out = length(ind))
+  # }
 
   return(cond.sets)
 }
