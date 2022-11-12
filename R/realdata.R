@@ -518,6 +518,72 @@ fit_scaled_bs_mulv <- function(approx,
     m=ms[i.m]
     if(i.m<length(ms)){ tol=10^(-tol.dec-2) } else {tol=10^(-tol.dec)}
 
+    ### order and condition based on current params (modified)
+    if(approx == 1 | approx == "S-E-MM + D-E-NN") { # S-E-MM + D-E-NN
+
+      ord.both    <- .order_SEMM(inputs.lst)
+
+    } else if(approx == 2 | approx == "S-E-MM + J-E-NN") { # S-E-MM + J-E-NN
+
+      ord.both    <- .order_SEMM(inputs.lst)
+
+    } else if(approx == 3 | approx == "S-E-MM + S-E-NN") { # S-E-MM + S-E-NN
+
+      ord.both    <- .order_SEMM(inputs.lst)
+
+    } else if(approx == 4 | approx == "S-E-MM + C-NN") { # S-E-MM + C-NN
+
+      ord.both    <- .order_SEMM(inputs.lst)
+
+    } else if(approx == 5 | approx == "T-ord + T-NN") {
+
+      ord.both    <- .order_TIME(inputs.lst)
+
+    } else if(approx == 6 | approx == "T-ord + J-E-NN") {
+
+      ord.both    <- .order_TIME(inputs.lst)
+
+    } else if(approx == 7 | approx == "T-ord + C-NN") {
+
+      ord.both    <- .order_TIME(inputs.lst)
+
+    } else {
+
+      stop("The argument approx must be 1, 2, 3, 4, 5, 6, or 7.")
+    }
+
+    inputs.ord  <- inputs[ord.both$ord.all , , drop = FALSE]
+
+    for(i in seq(length(inputs.lst))) inputs.lst[[i]] <- inputs.lst[[i]][ord.both$ord[[i]], , drop = FALSE]
+
+    y.ord       <- y[ord.both$ord.all]
+    X.ord       <- X[ord.both$ord.all, , drop = FALSE]
+
+    if(approx == 1 | approx == "S-E-MM + D-E-NN") { # S-E-MM + D-E-NN
+
+      NNarray     <- .find_ordered_DENN(inputs.ord, m, unlist(lapply(inputs.lst, nrow)))
+
+    } else if(approx == 2 | approx == "S-E-MM + J-E-NN") { # S-E-MM + J-E-NN
+
+      NNarray     <- .find_ordered_JENN(inputs.ord, m)
+
+    } else if(approx == 3 | approx == "S-E-MM + S-E-NN") { # S-E-MM + S-E-NN
+
+      NNarray     <- .find_ordered_SENN(inputs.ord, m, unlist(lapply(inputs.lst, nrow)))
+
+    } else if(approx == 5 | approx == "T-ord + T-NN") {
+
+      NNarray     <- .find_ordered_TNN(inputs.ord, m)
+
+    } else if(approx == 6 | approx == "T-ord + J-E-NN") {
+
+      NNarray     <- .find_ordered_JENN(inputs.ord, m)
+
+    } else {
+
+      # stop("The argument approx must be 1, 2, 3, 4, 5, 6, or 7.")
+    }
+
     ### increase maxit until convergence
     conv=FALSE
     maxit=2
@@ -541,69 +607,9 @@ fit_scaled_bs_mulv <- function(approx,
       } else stop(paste0('invalid argument scale=',scale))
 
       ## order and condition based on current params (modified)
-      if(approx == 1 | approx == "S-E-MM + D-E-NN") { # S-E-MM + D-E-NN
-
-        ord.both    <- .order_SEMM(inputs.lst)
-
-      } else if(approx == 2 | approx == "S-E-MM + J-E-NN") { # S-E-MM + J-E-NN
-
-        ord.both    <- .order_SEMM(inputs.lst)
-
-      } else if(approx == 3 | approx == "S-E-MM + S-E-NN") { # S-E-MM + S-E-NN
-
-        ord.both    <- .order_SEMM(inputs.lst)
-
-      } else if(approx == 4 | approx == "S-E-MM + C-NN") { # S-E-MM + C-NN
-
-        ord.both    <- .order_SEMM(inputs.lst)
-
-      } else if(approx == 5 | approx == "T-ord + T-NN") {
-
-        ord.both    <- .order_TIME(inputs.lst)
-
-      } else if(approx == 6 | approx == "T-ord + J-E-NN") {
-
-        ord.both    <- .order_TIME(inputs.lst)
-
-      } else if(approx == 7 | approx == "T-ord + C-NN") {
-
-        ord.both    <- .order_TIME(inputs.lst)
-
-      } else {
-
-        stop("The argument approx must be 1, 2, 3, 4, 5, 6, or 7.")
-      }
-
-      inputs.ord  <- inputs[ord.both$ord.all , , drop = FALSE]
-
-      for(i in seq(length(inputs.lst))) inputs.lst[[i]] <- inputs.lst[[i]][ord.both$ord[[i]], , drop = FALSE]
-
-      y.ord       <- y[ord.both$ord.all]
-      X.ord       <- X[ord.both$ord.all, , drop = FALSE]
-
-      if(approx == 1 | approx == "S-E-MM + D-E-NN") { # S-E-MM + D-E-NN
-
-        NNarray     <- .find_ordered_DENN(inputs.ord, m, unlist(lapply(inputs.lst, nrow)))
-
-      } else if(approx == 2 | approx == "S-E-MM + J-E-NN") { # S-E-MM + J-E-NN
-
-        NNarray     <- .find_ordered_JENN(inputs.ord, m)
-
-      } else if(approx == 3 | approx == "S-E-MM + S-E-NN") { # S-E-MM + S-E-NN
-
-        NNarray     <- .find_ordered_SENN(inputs.ord, m, unlist(lapply(inputs.lst, nrow)))
-
-      } else if(approx == 4 | approx == "S-E-MM + C-NN") { # S-E-MM + C-NN
+      if(approx == 4 | approx == "S-E-MM + C-NN") { # S-E-MM + C-NN
 
         NNarray     <- GpGp::find_ordered_nn(t(t(inputs.ord)*scales), m)
-
-      } else if(approx == 5 | approx == "T-ord + T-NN") {
-
-        NNarray     <- .find_ordered_TNN(inputs.ord, m)
-
-      } else if(approx == 6 | approx == "T-ord + J-E-NN") {
-
-        NNarray     <- .find_ordered_JENN(inputs.ord, m)
 
       } else if(approx == 7 | approx == "T-ord + C-NN") {
 
@@ -611,7 +617,7 @@ fit_scaled_bs_mulv <- function(approx,
 
       } else {
 
-        stop("The argument approx must be 1, 2, 3, 4, 5, 6, or 7.")
+        # stop("The argument approx must be 1, 2, 3, 4, 5, 6, or 7.")
       }
 
       ## starting and fixed parameters
