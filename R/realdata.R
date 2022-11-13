@@ -424,6 +424,7 @@ splitData <- function(df.joint, method, num.locs = 12, num.time = 31, size.blck 
 #' @param max.it maximum number of iterations for inner loop
 #' @param tol.dec converged if dot product between the step and the gradient is less than \code{10^(-convtol)}
 #' @param n.est subsample size for estimation
+#' @param group TRUE/FALSE for whether to use the grouped version of the approximation (Guinness, 2018) or not
 #' @param find.vcf logical
 #' @param vcf.scorefun score function
 #'
@@ -436,7 +437,7 @@ splitData <- function(df.joint, method, num.locs = 12, num.time = 31, size.blck 
 fit_scaled_bs_mulv <- function(approx,
                                y,inputs,ms=c(30),trend='pre',X,nu=3.5,nug=0,scale='parms',
                                var.ini,ranges.ini,select=Inf,print.level=0,max.it=32,tol.dec=4,
-                               n.est=min(5e3,nrow(inputs)),find.vcf=FALSE,vcf.scorefun=lscore)
+                               n.est=min(5e3,nrow(inputs)),group=TRUE,find.vcf=FALSE,vcf.scorefun=lscore)
 {
   ## inputs? (added)
   if(!is.list(inputs)) {
@@ -539,6 +540,11 @@ fit_scaled_bs_mulv <- function(approx,
 
       ord.both    <- .order_TIME(inputs.lst)
 
+      if(isTRUE(group)) {
+        group       <- FALSE
+        message("Note: The grouped Vecchia is not recommended for T-ord + T-NN. The argument group is forced to be FALSE.")
+      }
+
     } else if(approx == 6 | approx == "T-ord + J-E-NN") {
 
       ord.both    <- .order_TIME(inputs.lst)
@@ -631,7 +637,7 @@ fit_scaled_bs_mulv <- function(approx,
                           NNarray=NNarray,m_seq=m,convtol=tol,
                           start_parms=cur.parms,max_iter=maxit,
                           covfun_name=covfun,silent=(print.level<2),
-                          reorder=FALSE,fixed_parms=fixed)
+                          reorder=FALSE,group=group,fixed_parms=fixed)
       cur.var=fit$covparms[1]
       cur.ranges[active]=fit$covparms[1+(1:sum(active))]
       cur.oth=fit$covparms[-(1:(1+sum(active)))]
@@ -685,6 +691,7 @@ fit_scaled_bs_mulv <- function(approx,
 #' @param max.it maximum number of iterations for inner loop
 #' @param tol.dec converged if dot product between the step and the gradient is less than \code{10^(-convtol)}
 #' @param n.est subsample size for estimation
+#' @param group TRUE/FALSE for whether to use the grouped version of the approximation (Guinness, 2018) or not
 #' @param find.vcf logical
 #' @param vcf.scorefun score function
 #'
@@ -696,7 +703,7 @@ fit_scaled_bs_mulv <- function(approx,
 #' 1 + 1
 fit_scaled_cv_mulv <- function(y,inputs,ms=c(30),trend='pre',X,nu=3.5,nug=0,scale='parms',
                                var.ini,ranges.ini,select=Inf,print.level=0,max.it=32,tol.dec=4,
-                               n.est=min(5e3,nrow(inputs)),find.vcf=FALSE,vcf.scorefun=lscore)
+                               n.est=min(5e3,nrow(inputs)),group = TRUE,find.vcf=FALSE,vcf.scorefun=lscore)
 {
   ## inputs? (added)
   if(!is.list(inputs)) {
@@ -818,7 +825,7 @@ fit_scaled_cv_mulv <- function(y,inputs,ms=c(30),trend='pre',X,nu=3.5,nug=0,scal
                           NNarray=NNarray,m_seq=m,convtol=tol,
                           start_parms=cur.parms,max_iter=maxit,
                           covfun_name=covfun,silent=(print.level<2),
-                          reorder=FALSE,fixed_parms=fixed)
+                          reorder=FALSE,group=group,fixed_parms=fixed)
       cur.var=fit$covparms[1]
       cur.ranges[active]=fit$covparms[1+(1:sum(active))]
       cur.oth=fit$covparms[-(1:(1+sum(active)))]

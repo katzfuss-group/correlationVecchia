@@ -38,7 +38,7 @@ m         <- 4
 covparms  <- c(1, 0.1, 1.0)
 
 # baseline 1 = time-based ordering + the m previous obs conditioning (T-ord + T-NN)
-# baseline 2 = time-based ordering + E-NN 
+# baseline 2 = time-based ordering + E-NN
 #              without distinction between time and space coordinates (T-ord + E-NN)
 # baseline 3 = time-based ordering + C-NN conditioning (T-ord + C-NN)
 

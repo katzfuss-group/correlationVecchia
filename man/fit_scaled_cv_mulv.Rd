@@ -20,6 +20,7 @@ fit_scaled_cv_mulv(
   max.it = 32,
   tol.dec = 4,
   n.est = min(5000, nrow(inputs)),
+  group = TRUE,
   find.vcf = FALSE,
   vcf.scorefun = lscore
 )
@@ -54,6 +55,8 @@ fit_scaled_cv_mulv(
 \item{tol.dec}{converged if dot product between the step and the gradient is less than \code{10^(-convtol)}}
 
 \item{n.est}{subsample size for estimation}
+
+\item{group}{TRUE/FALSE for whether to use the grouped version of the approximation (Guinness, 2018) or not}
 
 \item{find.vcf}{logical}
 
