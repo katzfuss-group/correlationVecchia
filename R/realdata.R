@@ -404,11 +404,35 @@ splitData <- function(df.joint, method, num.locs = 12, num.time = 31, size.blck 
   return(cond.sets)
 }
 
+.find_ordered_SCNN <- function(locsord, m, idx.group, scales)
+{
+  locsord     <- t(t(locsord) * scales)
+  locs.split  <- lapply(split(as.data.frame(locsord), idx.group), as.matrix)
+
+  cond.lst    <- list()
+  for(i in 1:length(locs.split)) cond.lst[[i]] <- GpGp::find_ordered_nn(locs = locs.split[[i]], m = m)
+
+  for(i in 1:length(locs.split)) {
+
+    n.each      <- nrow(locs.split[[i]])
+    idx.each    <- which(as.character(idx.group) == names(locs.split)[i])
+
+    condvec     <- as.vector(cond.lst[[i]])
+    condvec.new <- idx.each[match(condvec, seq(n.each))]
+
+    locs.split[[i]] <- matrix(condvec.new, nrow = n.each)
+  }
+
+  cond.sets   <- do.call(rbind, locs.split)
+  cond.sets   <- cond.sets[order(cond.sets[, 1]), , drop = FALSE]
+  return(cond.sets)
+}
+
 ###################################################################################
 
 #' @title Fitting parameters using baseline models for real-data analysis
 #'
-#' @param approx 1, 2, 3, 4, 5, 6, or 7
+#' @param approx 1, 2, 3, 4, 5, 6, 7 or 8
 #' @param y data vector of length n
 #' @param inputs nxd matrix of input coordinates
 #' @param ms vector of conditioning-set sizes
@@ -454,9 +478,12 @@ fit_scaled_bs_mulv <- function(approx,
   }
 
   ## dimensions (modified)
-  n=nrow(inputs)
-  d=ncol(inputs)
-  p=length(inputs.lst)
+  n           <- nrow(inputs)
+  d           <- ncol(inputs)
+  p           <- length(inputs.lst)
+
+  n.each      <- unlist(lapply(inputs.lst, nrow))
+  idx.group   <- rep(seq(p), times = n.each)
 
   ## specify trend covariates
   if(missing(X)) {
@@ -553,9 +580,13 @@ fit_scaled_bs_mulv <- function(approx,
 
       ord.both    <- .order_TIME(inputs.lst)
 
+    } else if(approx == 8 | approx == "T-ord + S-C-NN") {
+
+      ord.both    <- .order_TIME(inputs.lst)
+
     } else {
 
-      stop("The argument approx must be 1, 2, 3, 4, 5, 6, or 7.")
+      stop("The argument approx must be 1, 2, 3, 4, 5, 6, 7 or 8.")
     }
 
     inputs.ord  <- inputs[ord.both$ord.all , , drop = FALSE]
@@ -565,9 +596,11 @@ fit_scaled_bs_mulv <- function(approx,
     y.ord       <- y[ord.both$ord.all]
     X.ord       <- X[ord.both$ord.all, , drop = FALSE]
 
+    idx.group   <- idx.group[ord.both$ord.all]
+
     if(approx == 1 | approx == "S-E-MM + D-E-NN") { # S-E-MM + D-E-NN
 
-      NNarray     <- .find_ordered_DENN(inputs.ord, m, unlist(lapply(inputs.lst, nrow)))
+      NNarray     <- .find_ordered_DENN(inputs.ord, m, n.each)
 
     } else if(approx == 2 | approx == "S-E-MM + J-E-NN") { # S-E-MM + J-E-NN
 
@@ -575,7 +608,7 @@ fit_scaled_bs_mulv <- function(approx,
 
     } else if(approx == 3 | approx == "S-E-MM + S-E-NN") { # S-E-MM + S-E-NN
 
-      NNarray     <- .find_ordered_SENN(inputs.ord, m, unlist(lapply(inputs.lst, nrow)))
+      NNarray     <- .find_ordered_SENN(inputs.ord, m, n.each)
 
     } else if(approx == 5 | approx == "T-ord + T-NN") {
 
@@ -621,9 +654,13 @@ fit_scaled_bs_mulv <- function(approx,
 
         NNarray     <- GpGp::find_ordered_nn(t(t(inputs.ord)*scales), m)
 
+      } else if(approx == 8 | approx == "T-ord + S-C-NN") {
+
+        NNarray     <- .find_ordered_SCNN(inputs.ord, m, idx.group, scales)
+
       } else {
 
-        # stop("The argument approx must be 1, 2, 3, 4, 5, 6, or 7.")
+        # stop("The argument approx must be 1, 2, 3, 4, 5, 6, 7 or 8.")
       }
 
       ## starting and fixed parameters
@@ -1023,6 +1060,9 @@ predictions_bs_mulv <- function(approx, ns_obs, ns_pred,
       stop("The argument approx must be 1, 2, 3, 4, 5, 6, or 7.")
     }
 
+    # get nearest neighbor array
+    sm = if (n_pred<1e5) 2 else 1.5
+    NNarray_all=NNarray ; rm(NNarray)
     NNarray_pred=NNarray_all[-(1:n_obs),-1]
 
     means=numeric(length=n_pred)
