@@ -2,7 +2,7 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview:
+###   Overview: updated (04/27/2022) -> lines 94 and 109 -> from layer to latticeExtra::layer
 ###
 ####################################################################################
 
@@ -42,7 +42,7 @@ region      <- c("Texas", "Oklahoma", "Kansas", "Arkansas", "Louisiana", "Missis
 #########################################################################
 
 day.init    <- as.Date("2001-01-01 06:00:00")
-daytime     <- day.init + 181:211
+daytime     <- day.init + 151:242
 
 datnames    <- paste0("DATA/", vars, "/", vars, "_CRCM_ncep_", years[6], "010106.nc")
 
@@ -83,7 +83,7 @@ library(ggplot2)
 library(gridExtra)
 library(rasterVis)
 
-breaks    <- seq(247, 300, by = 1)
+breaks    <- seq(246, 312, by = 1)
 cols      <- hcl.colors(length(breaks)-1, "RdBu", rev = TRUE)
 
 ##
@@ -91,7 +91,7 @@ cols      <- hcl.colors(length(breaks)-1, "RdBu", rev = TRUE)
 tasmin.plots <- list()
 for(i in 1:length(daytime)) {
 
-  tasmin.plots[[i]] <- levelplot(tasmin.CRCM.ncep[[i]]$crop1, margin = FALSE, xlab = NULL, ylab = NULL, scales = list(draw = FALSE), at = breaks, col.regions = cols, main = list(label = as.character(format(daytime[i], "%m/%d/%Y")), cex = 2)) + layer(sp.polygons(tasmin.CRCM.ncep[[i]]$shape, lwd = 1))
+  tasmin.plots[[i]] <- levelplot(tasmin.CRCM.ncep[[i]]$crop1, margin = FALSE, xlab = NULL, ylab = NULL, scales = list(draw = FALSE), at = breaks, col.regions = cols, main = list(label = as.character(format(daytime[i], "%m/%d/%Y")), cex = 2)) + latticeExtra::layer(sp.polygons(tasmin.CRCM.ncep[[i]]$shape, lwd = 1))
 }
 
 leg       <- tasmin.plots[[1]]$legend$right$args$key
@@ -106,7 +106,7 @@ for(i in 1:length(daytime)) {
 tasmax.plots <- list()
 for(i in 1:length(daytime)) {
 
-  tasmax.plots[[i]] <- levelplot(tasmax.CRCM.ncep[[i]]$crop1, margin = FALSE, xlab = NULL, ylab = NULL, scales = list(draw = FALSE), at = breaks, col.regions = cols, main = list(label = as.character(format(daytime[i], "%m/%d/%Y")), cex = 2), colorkey = list(labels = list(cex = 1.75), height = 1.6, width = 3)) + layer(sp.polygons(tasmax.CRCM.ncep[[i]]$shape, lwd = 1))
+  tasmax.plots[[i]] <- levelplot(tasmax.CRCM.ncep[[i]]$crop1, margin = FALSE, xlab = NULL, ylab = NULL, scales = list(draw = FALSE), at = breaks, col.regions = cols, main = list(label = as.character(format(daytime[i], "%m/%d/%Y")), cex = 2), colorkey = list(labels = list(cex = 1.75), height = 1.6, width = 3)) + latticeExtra::layer(sp.polygons(tasmax.CRCM.ncep[[i]]$shape, lwd = 1))
 }
 
 leg       <- tasmax.plots[[1]]$legend$right$args$key
@@ -118,17 +118,8 @@ for(i in 1:length(daytime)) {
 
 ##
 
-# joint.p <- grid.arrange(arrangeGrob(tasmin.plots[[1]], tasmax.plots[[1]], tasmin.plots[[2]], tasmax.plots[[2]], tasmin.plots[[3]], tasmax.plots[[3]], tasmin.plots[[4]], tasmax.plots[[4]],
-#                                     tasmin.plots[[5]], tasmax.plots[[5]], tasmin.plots[[6]], tasmax.plots[[6]], tasmin.plots[[7]], tasmax.plots[[7]], tasmin.plots[[8]], tasmax.plots[[8]],
-#                                     tasmin.plots[[9]], tasmax.plots[[9]], tasmin.plots[[10]], tasmax.plots[[10]], tasmin.plots[[11]], tasmax.plots[[11]], tasmin.plots[[12]], tasmax.plots[[12]],
-#                                     tasmin.plots[[13]], tasmax.plots[[13]], tasmin.plots[[14]], tasmax.plots[[14]], tasmin.plots[[15]], tasmax.plots[[15]], tasmin.plots[[16]], tasmax.plots[[16]],
-#                                     tasmin.plots[[17]], tasmax.plots[[17]], tasmin.plots[[18]], tasmax.plots[[18]], tasmin.plots[[19]], tasmax.plots[[19]], tasmin.plots[[20]], tasmax.plots[[20]],
-#                                     tasmin.plots[[21]], tasmax.plots[[21]], tasmin.plots[[22]], tasmax.plots[[22]], tasmin.plots[[23]], tasmax.plots[[23]], tasmin.plots[[24]], tasmax.plots[[24]],
-#                                     tasmin.plots[[25]], tasmax.plots[[25]], tasmin.plots[[26]], tasmax.plots[[26]], tasmin.plots[[27]], tasmax.plots[[27]], tasmin.plots[[28]], tasmax.plots[[28]],
-#                                     tasmin.plots[[29]], tasmax.plots[[29]], tasmin.plots[[30]], tasmax.plots[[30]], tasmin.plots[[31]], tasmax.plots[[31]], ncol = 8), legGrob, ncol = 2, widths = c(10, 1))
-
-joint.p <- grid.arrange(arrangeGrob(tasmin.plots[[1]], tasmin.plots[[15]], tasmin.plots[[31]],
-                                    tasmax.plots[[1]], tasmax.plots[[15]], tasmax.plots[[31]], ncol = 3), legGrob, ncol = 2, widths = c(10, 1))
+joint.p <- grid.arrange(arrangeGrob(tasmin.plots[[1]], tasmin.plots[[31]], tasmin.plots[[62]],
+                                    tasmax.plots[[1]], tasmax.plots[[31]], tasmax.plots[[62]], ncol = 3), legGrob, ncol = 2, widths = c(10, 1))
 
 
 ggsave(file="weather_plot.pdf", joint.p, width = 15.2, height = 10)
