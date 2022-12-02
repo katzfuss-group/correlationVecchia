@@ -27,7 +27,7 @@ fit_scaled_bs_mulv(
 )
 }
 \arguments{
-\item{approx}{1, 2, 3, 4, 5, 6, or 7}
+\item{approx}{1, 2, 3, 4, 5, 6, 7 or 8}
 
 \item{y}{data vector of length n}
 
