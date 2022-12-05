@@ -2,7 +2,7 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview: This script is to compare performance of Vecchia-like approximation in various settings.
+###   Overview: This script generates Figure 4 (simulation_spacetime_scenarios.pdf).
 ###
 ####################################################################################
 

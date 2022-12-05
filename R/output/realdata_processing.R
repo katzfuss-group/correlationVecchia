@@ -2,7 +2,7 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview: updated (04/27/2022) -> lines 94 and 109 -> from layer to latticeExtra::layer
+###   Overview: This script is for data pre-processing. This script generates Figure 10 (weather_plot.pdf).
 ###
 ####################################################################################
 

@@ -2,7 +2,7 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview:
+###   Overview: This script is to compare performance of approximations when there are no inputs.
 ###
 ####################################################################################
 

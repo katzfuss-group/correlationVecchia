@@ -2,7 +2,7 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview:
+###   Overview: This script generates Figure 7 (simulation_spacetime_fisher_mon.pdf and simulation_spacetime_fisher_sat.pdf).
 ###
 ####################################################################################
 

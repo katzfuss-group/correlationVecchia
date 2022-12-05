@@ -2,7 +2,7 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview:
+###   Overview: This script is to evaluate performance of competing methods.
 ###
 ####################################################################################
 
@@ -45,7 +45,7 @@ table.runtime <- matrix(NA, nrow = length(fit.all), ncol = 6)
 
 for(i in 1:length(fit.all)) {
   for(j in 1:6) {
-    
+
     table.runtime[i, j] <- fit.all[[i]][[6 + j]][3]
   }
 }
@@ -78,7 +78,7 @@ rm(train.joint, test.joint)
 
 predictions_scaled_modified_for_b3 <- function(fit, locs_pred, m, joint, nsims, predvar, X_pred, scale, tol)
 {
-  
+
   y_obs = fit$y
   locs_obs = fit$locs
   X_obs = fit$X
@@ -88,11 +88,11 @@ predictions_scaled_modified_for_b3 <- function(fit, locs_pred, m, joint, nsims, 
   n_obs <- nrow(locs_obs)
   n_pred <- nrow(locs_pred)
   if(is.null(fit$vcf)) vcf=1 else vcf=fit$vcf
-  
+
   # ## add nugget for numerical stability
   # if(covparms[length(covparms)]==0)
   #   covparms[length(covparms)]=covparms[1]*1e-12
-  
+
   # specify trend if missing
   if(missing(X_pred)){
     if(fit$trend=='zero'){
@@ -103,51 +103,51 @@ predictions_scaled_modified_for_b3 <- function(fit, locs_pred, m, joint, nsims, 
       X_pred=cbind(rep(1,n_pred),locs_pred)
     } else stop('X_pred must be specified')
   }
-  
+
   # specify how to scale input dimensions
   if(scale=='parms'){ scales=1/covparms[1+(1:ncol(locs_obs))]
   } else if(scale=='ranges'){ scales=1/apply(locs_obs,2,function(x) diff(range(x)))
   } else stop(paste0('invalid argument scale=',scale))
-  
-  
+
+
   ###
   if(joint){  # joint predictions
-    
+
     # get orderings
     temp=order_maxmin_pred(locs_obs,locs_pred)
     ord1=temp$ord
     ord2=temp$ord_pred
-    
+
     # reorder stuff
     X_obs <- as.matrix(X_obs)
     X_pred <- as.matrix(X_pred)
     Xord_obs  <- X_obs[ord1,,drop=FALSE]
     Xord_pred <- X_pred[ord2,,drop=FALSE]
     y  <- y_obs[ord1] - Xord_obs %*% beta
-    
+
     # put all coordinates together
     locs_all <- rbind( locs_obs[ord1,,drop=FALSE], locs_pred[ord2,,drop=FALSE] )
-    
+
     # get nearest neighbor array
     sm = if (n_pred<1e5) 2 else 1.5
     NNarray_all <- find_ordered_nn_pred(locs_all,m,fix.first=n_obs,searchmult=sm)
     NNarray_pred=NNarray_all[-(1:n_obs),-1]
-    
+
     means=numeric(length=n_pred)
     if(nsims>0) samples=array(dim=c(n_pred,nsims))
-    
+
     # make predictions sequentially
     for(i in 1:n_pred){
-      
+
       # NN conditioning sets
       NN=sort(NNarray_pred[i,])
       NN_obs=NN[NN<=n_obs]
       NN_pred=NN[NN>n_obs]-n_obs
-      
+
       # (co-)variances (modified)
       K=get(covfun_name)(covparms, as.matrix(locs_all[c(NN,i+n_obs),]))
       cl=t(chol(K + tol * diag(nrow(K))))
-      
+
       # prediction
       y.NN=y[NN_obs]
       means[i]=cl[m+1,1:m]%*%forwardsolve(cl[1:m,1:m],c(y.NN,means[NN_pred]))
@@ -158,9 +158,9 @@ predictions_scaled_modified_for_b3 <- function(fit, locs_pred, m, joint, nsims, 
           samples[i,s]=stats::rnorm(1,pm,sqrt(pred.var))
         }
       }
-      
+
     }
-    
+
     # add (prior) mean and return to original ordering
     means[ord2] = means + c(Xord_pred %*% beta)
     if(nsims==0){
@@ -169,49 +169,49 @@ predictions_scaled_modified_for_b3 <- function(fit, locs_pred, m, joint, nsims, 
       samples[ord2,] = samples + c(Xord_pred %*% beta)
       preds=list(means=means,samples=samples)
     }
-    
+
   } else {  # separate predictions
-    
+
     if(nsims>0) stop('cannot produce joint samples when joint=FALSE')
-    
+
     y  = y_obs - X_obs %*% beta
-    
+
     # find the NNs
     m=min(m,nrow(locs_obs))
     NNarray=FNN::get.knnx(locs_obs,locs_pred,m)$nn.index
-    
-    
+
+
     means=vars=numeric(length=n_pred)
     for(i in 1:n_pred){
-      
+
       # NN conditioning sets
       NN=NNarray[i,]
-      
+
       # (co-)variances (modified)
       K=get(covfun_name)(covparms, as.matrix(rbind(locs_obs[NN,],locs_pred[i,])))
       cl=t(chol(K + tol * diag(nrow(K))))
-      
+
       # prediction
       means[i]=cl[m+1,1:m]%*%forwardsolve(cl[1:m,1:m],y[NN])
       vars[i]=cl[m+1,m+1]^2*vcf
-      
+
     }
     means=means+c(X_pred %*% beta)
-    
+
     if(predvar==FALSE){
       preds=means
     } else {
       preds=list(means=means,vars=vars)
     }
-    
+
   }
-  
+
   return(preds)
 }
 
 predictions_scaled_modified_for_b8 <- function(fit, locs_pred, m, joint, nsims, predvar, X_pred, scale, tol)
 {
-  
+
   y_obs = fit$y
   locs_obs = fit$locs
   X_obs = fit$X
@@ -221,11 +221,11 @@ predictions_scaled_modified_for_b8 <- function(fit, locs_pred, m, joint, nsims, 
   n_obs <- nrow(locs_obs)
   n_pred <- nrow(locs_pred)
   if(is.null(fit$vcf)) vcf=1 else vcf=fit$vcf
-  
+
   # ## add nugget for numerical stability
   # if(covparms[length(covparms)]==0)
   #   covparms[length(covparms)]=covparms[1]*1e-12
-  
+
   # specify trend if missing
   if(missing(X_pred)){
     if(fit$trend=='zero'){
@@ -236,51 +236,51 @@ predictions_scaled_modified_for_b8 <- function(fit, locs_pred, m, joint, nsims, 
       X_pred=cbind(rep(1,n_pred),locs_pred)
     } else stop('X_pred must be specified')
   }
-  
+
   # specify how to scale input dimensions
   if(scale=='parms'){ scales=1/covparms[1+(1:ncol(locs_obs))]
   } else if(scale=='ranges'){ scales=1/apply(locs_obs,2,function(x) diff(range(x)))
   } else stop(paste0('invalid argument scale=',scale))
-  
-  
+
+
   ###
   if(joint){  # joint predictions
-    
+
     # get orderings
     temp=list(ord = order_time(locs_obs), ord_pred = order_time(locs_pred))
     ord1=temp$ord
     ord2=temp$ord_pred
-    
+
     # reorder stuff
     X_obs <- as.matrix(X_obs)
     X_pred <- as.matrix(X_pred)
     Xord_obs  <- X_obs[ord1,,drop=FALSE]
     Xord_pred <- X_pred[ord2,,drop=FALSE]
     y  <- y_obs[ord1] - Xord_obs %*% beta
-    
+
     # put all coordinates together
     locs_all <- rbind( locs_obs[ord1,,drop=FALSE], locs_pred[ord2,,drop=FALSE] )
-    
+
     # get nearest neighbor array
     sm = if (n_pred<1e5) 2 else 1.5
     NNarray_all <- find_ordered_nn_pred(locs_all,m,fix.first=n_obs,searchmult=sm)
     NNarray_pred=NNarray_all[-(1:n_obs),-1]
-    
+
     means=numeric(length=n_pred)
     if(nsims>0) samples=array(dim=c(n_pred,nsims))
-    
+
     # make predictions sequentially
     for(i in 1:n_pred){
-      
+
       # NN conditioning sets
       NN=sort(NNarray_pred[i,])
       NN_obs=NN[NN<=n_obs]
       NN_pred=NN[NN>n_obs]-n_obs
-      
+
       # (co-)variances (modified)
       K=get(covfun_name)(covparms, as.matrix(locs_all[c(NN,i+n_obs),]))
       cl=t(chol(K + tol * diag(nrow(K))))
-      
+
       # prediction
       y.NN=y[NN_obs]
       means[i]=cl[m+1,1:m]%*%forwardsolve(cl[1:m,1:m],c(y.NN,means[NN_pred]))
@@ -291,9 +291,9 @@ predictions_scaled_modified_for_b8 <- function(fit, locs_pred, m, joint, nsims, 
           samples[i,s]=stats::rnorm(1,pm,sqrt(pred.var))
         }
       }
-      
+
     }
-    
+
     # add (prior) mean and return to original ordering
     means[ord2] = means + c(Xord_pred %*% beta)
     if(nsims==0){
@@ -302,44 +302,44 @@ predictions_scaled_modified_for_b8 <- function(fit, locs_pred, m, joint, nsims, 
       samples[ord2,] = samples + c(Xord_pred %*% beta)
       preds=list(means=means,samples=samples)
     }
-    
+
   } else {  # separate predictions
-    
+
     if(nsims>0) stop('cannot produce joint samples when joint=FALSE')
-    
+
     y  = y_obs - X_obs %*% beta
-    
+
     # find the NNs
     m=min(m,nrow(locs_obs))
     NNarray=FNN::get.knnx(t(t(locs_obs)*scales),
                           t(t(locs_pred)*scales),m)$nn.index
-    
-    
+
+
     means=vars=numeric(length=n_pred)
     for(i in 1:n_pred){
-      
+
       # NN conditioning sets
       NN=NNarray[i,]
-      
+
       # (co-)variances (modified)
       K=get(covfun_name)(covparms, as.matrix(rbind(locs_obs[NN,],locs_pred[i,])))
       cl=t(chol(K + tol * diag(nrow(K))))
-      
+
       # prediction
       means[i]=cl[m+1,1:m]%*%forwardsolve(cl[1:m,1:m],y[NN])
       vars[i]=cl[m+1,m+1]^2*vcf
-      
+
     }
     means=means+c(X_pred %*% beta)
-    
+
     if(predvar==FALSE){
       preds=means
     } else {
       preds=list(means=means,vars=vars)
     }
-    
+
   }
-  
+
   return(preds)
 }
 
@@ -351,103 +351,103 @@ spliting.fit <- function(fit)
   fit$logparms <- fit$logparms[-5]
   fit$grad <- fit$grad[-5]
   fit$info <- fit$info[-5, -5]
-  
+
   # fit$loglik <- fit$loglik
   # fit$no_decrease <- fit$no_decrease
   # fit$conv <- fit$conv
   # fit$covfun_name <- fit$covfun_name
   # fit$trend <- fit$trend
   # fit$vcf <- fit$vcf
-  
+
   ##
-  
+
   idx.d0 <- which(fit$locs[,4] == 0)
   idx.d1 <- which(fit$locs[,4] == 1)
-  
+
   fit.d0 <- fit
   fit.d1 <- fit
-  
+
   ##
-  
+
   fit.d0$betahat <- fit$betahat[1]
   fit.d0$sebeta <- NA
   fit.d0$tbeta <- NA
   fit.d0$betacov <- NA
   fit.d0$y <- fit.d0$y[idx.d0]
   fit.d0$locs <- fit.d0$locs[idx.d0, -4, drop = FALSE]
-  fit.d0$X <- fit.d0$X[idx.d0, 1, drop = FALSE] 
-  
+  fit.d0$X <- fit.d0$X[idx.d0, 1, drop = FALSE]
+
   ##
-  
+
   fit.d1$betahat <- fit$betahat[1] + fit$betahat[2]
   fit.d1$sebeta <- NA
   fit.d1$tbeta <- NA
   fit.d1$betacov <- NA
   fit.d1$y <- fit.d1$y[idx.d1]
   fit.d1$locs <- fit.d1$locs[idx.d1, -4, drop = FALSE]
-  fit.d1$X <- fit.d1$X[idx.d1, 1, drop = FALSE] 
-  
+  fit.d1$X <- fit.d1$X[idx.d1, 1, drop = FALSE]
+
   ##
-  
+
   return( list(d0 = fit.d0, d1 = fit.d1) )
 }
 
 predictions_split <- function(approx, fit, locs_pred, m, joint, nsims, predvar, X_pred, scale, tol)
 {
   ##
-  
+
   fit <- spliting.fit(fit)
   idx.d0 <- which(locs_pred[, 4] == 0)
   idx.d1 <- which(locs_pred[, 4] == 1)
-  
+
   locs_pred.d0 <- locs_pred[idx.d0, -4, drop = FALSE]
   locs_pred.d1 <- locs_pred[idx.d1, -4, drop = FALSE]
-  
+
   X_pred.d0 <- X_pred[idx.d0, 1, drop = FALSE]
   X_pred.d1 <- X_pred[idx.d1, 1, drop = FALSE]
-  
+
   ##
-  
+
   if(approx == 3) {
-    
+
     pre.d0 <- predictions_scaled_modified_for_b3(fit = fit$d0, locs_pred = locs_pred.d0, m = m, joint = joint, nsims = nsims, predvar = predvar, X_pred = X_pred.d0, scale = scale, tol = tol)
     pre.d1 <- predictions_scaled_modified_for_b3(fit = fit$d1, locs_pred = locs_pred.d1, m = m, joint = joint, nsims = nsims, predvar = predvar, X_pred = X_pred.d1, scale = scale, tol = tol)
-    
+
   } else if(approx == 8) {
-    
+
     pre.d0 <- predictions_scaled_modified_for_b8(fit = fit$d0, locs_pred = locs_pred.d0, m = m, joint = joint, nsims = nsims, predvar = predvar, X_pred = X_pred.d0, scale = scale, tol = tol)
     pre.d1 <- predictions_scaled_modified_for_b8(fit = fit$d1, locs_pred = locs_pred.d1, m = m, joint = joint, nsims = nsims, predvar = predvar, X_pred = X_pred.d1, scale = scale, tol = tol)
-    
+
   } else {
-    
+
     stop("This function is only for b3 and b8. Check the argument approx. It must be 3 or 8.")
   }
-  
+
   ##
-  
+
   if(predvar == FALSE){
-    
+
     means <- rep(NA, length(idx.d0) + length(idx.d1))
     means[idx.d0] <- pre.d0
     means[idx.d1] <- pre.d1
-    
+
     preds <- means
-    
+
   } else {
-    
+
     means <- rep(NA, length(idx.d0) + length(idx.d1))
     means[idx.d0] <- pre.d0$means
     means[idx.d1] <- pre.d1$means
-    
+
     vars <- rep(NA, length(idx.d0) + length(idx.d1))
     vars[idx.d0] <- pre.d0$vars
     vars[idx.d1] <- pre.d1$vars
-    
+
     preds <- list(means = means, vars = vars)
   }
-  
+
   ##
-  
+
   return( preds )
 }
 
@@ -456,18 +456,18 @@ predictions_split <- function(approx, fit, locs_pred, m, joint, nsims, predvar, 
 comparison <- function(m, joint = FALSE, idx = NULL)
 {
   ##
-  
+
   if(joint == TRUE) {
-    
-    predvar = FALSE 
-    
+
+    predvar = FALSE
+
   } else {
-    
+
     predvar = TRUE
   }
-  
+
   ##
-  
+
   if(is.null(idx)) idx <- which(ms == m)
 
   fit.b2  <- fit.all[[idx]][[1]]
@@ -476,16 +476,16 @@ comparison <- function(m, joint = FALSE, idx = NULL)
   fit.b7  <- fit.all[[idx]][[4]]
   fit.b8  <- fit.all[[idx]][[5]]
   fit.cc  <- fit.all[[idx]][[6]]
-  
+
   ##
-  
+
   # b2 = S-E-MM + J-E-NN
   # b3 = S-E-MM + S-E-NN
   # b5 = T-ord + T-NN
   # b7 = T-ord + J-C-NN
   # b8 = T-ord + S-C-NN
   # cc = C-MM + C-NN
-  
+
   pre.b2  <- predictions_bs_mulv(approx = 2, ns_obs, ns_pred, fit = fit.b2, locs_pred = locs.pred, m = m, joint = joint, nsims = 0, predvar = predvar, X_pred = X.pred, scale = 'parms', tol = 1e-8)
   pre.b3  <- predictions_split(  approx = 3,                  fit = fit.b3, locs_pred = locs.pred, m = m, joint = joint, nsims = 0, predvar = predvar, X_pred = X.pred, scale = 'parms', tol = 1e-8)
   pre.b5  <- predictions_bs_mulv(approx = 5, ns_obs, ns_pred, fit = fit.b5, locs_pred = locs.pred, m = m, joint = joint, nsims = 0, predvar = predvar, X_pred = X.pred, scale = 'parms', tol = 1e-8)
@@ -494,34 +494,34 @@ comparison <- function(m, joint = FALSE, idx = NULL)
   pre.cc  <- predictions_cv_mulv(            ns_obs, ns_pred, fit = fit.cc, locs_pred = locs.pred, m = m, joint = joint, nsims = 0, predvar = predvar, X_pred = X.pred, scale = 'parms', tol = 1e-8)
 
   ##
-  
+
   if(joint == TRUE) {
-    
+
     mspe.b2 <- mean( (pre.b2 - z.pred)^2 )
     mspe.b3 <- mean( (pre.b3 - z.pred)^2 )
     mspe.b5 <- mean( (pre.b5 - z.pred)^2 )
     mspe.b7 <- mean( (pre.b7 - z.pred)^2 )
     mspe.b8 <- mean( (pre.b8 - z.pred)^2 )
     mspe.cc <- mean( (pre.cc - z.pred)^2 )
-    
+
     return(list(mspe = c(mspe.b2, mspe.b3, mspe.b5, mspe.b7, mspe.b8, mspe.cc), mls = c(NA, NA, NA, NA, NA, NA)))
-    
+
   } else if(joint == FALSE) {
-   
+
     mspe.b2 <- mean( (pre.b2$means - z.pred)^2 )
     mspe.b3 <- mean( (pre.b3$means - z.pred)^2 )
     mspe.b5 <- mean( (pre.b5$means - z.pred)^2 )
     mspe.b7 <- mean( (pre.b7$means - z.pred)^2 )
     mspe.b8 <- mean( (pre.b8$means - z.pred)^2 )
     mspe.cc <- mean( (pre.cc$means - z.pred)^2 )
-    
+
     mls.b2  <- mean(correlationVecchia::logscore(pre.b2$means, pre.b2$vars, z.pred))
     mls.b3  <- mean(correlationVecchia::logscore(pre.b3$means, pre.b3$vars, z.pred))
     mls.b5  <- mean(correlationVecchia::logscore(pre.b5$means, pre.b5$vars, z.pred))
     mls.b7  <- mean(correlationVecchia::logscore(pre.b7$means, pre.b7$vars, z.pred))
     mls.b8  <- mean(correlationVecchia::logscore(pre.b8$means, pre.b8$vars, z.pred))
     mls.cc  <- mean(correlationVecchia::logscore(pre.cc$means, pre.cc$vars, z.pred))
-    
+
     return(list(mspe = c(mspe.b2, mspe.b3, mspe.b5, mspe.b7, mspe.b8, mspe.cc), mls = c(mls.b2, mls.b3, mls.b5, mls.b7, mls.b8, mls.cc)))
   }
 }
@@ -559,21 +559,21 @@ mspe.b2.marg <- c() ; mspe.b3.marg <- c() ; mspe.b5.marg <- c() ; mspe.b7.marg <
 mspe.b2.join <- c() ; mspe.b3.join <- c() ; mspe.b5.join <- c() ; mspe.b7.join <- c() ; mspe.b8.join <- c() ; mspe.cc.join <- c()
 mls.b2.marg <- c() ; mls.b3.marg <- c() ; mls.b5.marg <- c() ; mls.b7.marg <- c() ; mls.b8.marg <- c() ; mls.cc.marg <- c()
 for(i in 1:length(ms)) {
-  
+
   mspe.b2.marg[i]  <- output.marginal[[i]]$mspe[1]
   mspe.b3.marg[i]  <- output.marginal[[i]]$mspe[2]
   mspe.b5.marg[i]  <- output.marginal[[i]]$mspe[3]
   mspe.b7.marg[i]  <- output.marginal[[i]]$mspe[4]
   mspe.b8.marg[i]  <- output.marginal[[i]]$mspe[5]
   mspe.cc.marg[i]  <- output.marginal[[i]]$mspe[6]
-  
+
   mls.b2.marg[i]   <- output.marginal[[i]]$mls[1]
   mls.b3.marg[i]   <- output.marginal[[i]]$mls[2]
   mls.b5.marg[i]   <- output.marginal[[i]]$mls[3]
   mls.b7.marg[i]   <- output.marginal[[i]]$mls[4]
   mls.b8.marg[i]   <- output.marginal[[i]]$mls[5]
   mls.cc.marg[i]   <- output.marginal[[i]]$mls[6]
-  
+
   mspe.b2.join[i]  <- output.joint[[i]]$mspe[1]
   mspe.b3.join[i]  <- output.joint[[i]]$mspe[2]
   mspe.b5.join[i]  <- output.joint[[i]]$mspe[3]
@@ -582,7 +582,7 @@ for(i in 1:length(ms)) {
   mspe.cc.join[i]  <- output.joint[[i]]$mspe[6]
 }
 
-mspe.m.varying <- list(marginal = list(b2 = mspe.b2.marg, b3 = mspe.b3.marg, b5 = mspe.b5.marg, b7 = mspe.b7.marg, b8 = mspe.b8.marg, cc = mspe.cc.marg), 
+mspe.m.varying <- list(marginal = list(b2 = mspe.b2.marg, b3 = mspe.b3.marg, b5 = mspe.b5.marg, b7 = mspe.b7.marg, b8 = mspe.b8.marg, cc = mspe.cc.marg),
                        joint = list(b2 = mspe.b2.join, b3 = mspe.b3.join, b5 = mspe.b5.join, b7 = mspe.b7.join, b8 = mspe.b8.join, cc = mspe.cc.join))
 mls.m.varying <- list(marginal = list(b2 = mls.b2.marg, b3 = mls.b3.marg, b5 = mls.b5.marg, b7 = mls.b7.marg, b8 = mls.b8.marg, cc = mls.cc.marg), joint = NA)
 
@@ -622,21 +622,21 @@ mspe.b2.marg <- c() ; mspe.b3.marg <- c() ; mspe.b5.marg <- c() ; mspe.b7.marg <
 mspe.b2.join <- c() ; mspe.b3.join <- c() ; mspe.b5.join <- c() ; mspe.b7.join <- c() ; mspe.b8.join <- c() ; mspe.cc.join <- c()
 mls.b2.marg <- c() ; mls.b3.marg <- c() ; mls.b5.marg <- c() ; mls.b7.marg <- c() ; mls.b8.marg <- c() ; mls.cc.marg <- c()
 for(i in 1:length(ms)) {
-  
+
   mspe.b2.marg[i]  <- output.marginal[[i]]$mspe[1]
   mspe.b3.marg[i]  <- output.marginal[[i]]$mspe[2]
   mspe.b5.marg[i]  <- output.marginal[[i]]$mspe[3]
   mspe.b7.marg[i]  <- output.marginal[[i]]$mspe[4]
   mspe.b8.marg[i]  <- output.marginal[[i]]$mspe[5]
   mspe.cc.marg[i]  <- output.marginal[[i]]$mspe[6]
-  
+
   mls.b2.marg[i]   <- output.marginal[[i]]$mls[1]
   mls.b3.marg[i]   <- output.marginal[[i]]$mls[2]
   mls.b5.marg[i]   <- output.marginal[[i]]$mls[3]
   mls.b7.marg[i]   <- output.marginal[[i]]$mls[4]
   mls.b8.marg[i]   <- output.marginal[[i]]$mls[5]
   mls.cc.marg[i]   <- output.marginal[[i]]$mls[6]
-  
+
   mspe.b2.join[i]  <- output.joint[[i]]$mspe[1]
   mspe.b3.join[i]  <- output.joint[[i]]$mspe[2]
   mspe.b5.join[i]  <- output.joint[[i]]$mspe[3]
@@ -645,7 +645,7 @@ for(i in 1:length(ms)) {
   mspe.cc.join[i]  <- output.joint[[i]]$mspe[6]
 }
 
-mspe.m.fixed <- list(marginal = list(b2 = mspe.b2.marg, b3 = mspe.b3.marg, b5 = mspe.b5.marg, b7 = mspe.b7.marg, b8 = mspe.b8.marg, cc = mspe.cc.marg), 
+mspe.m.fixed <- list(marginal = list(b2 = mspe.b2.marg, b3 = mspe.b3.marg, b5 = mspe.b5.marg, b7 = mspe.b7.marg, b8 = mspe.b8.marg, cc = mspe.cc.marg),
                        joint = list(b2 = mspe.b2.join, b3 = mspe.b3.join, b5 = mspe.b5.join, b7 = mspe.b7.join, b8 = mspe.b8.join, cc = mspe.cc.join))
 mls.m.fixed <- list(marginal = list(b2 = mls.b2.marg, b3 = mls.b3.marg, b5 = mls.b5.marg, b7 = mls.b7.marg, b8 = mls.b8.marg, cc = mls.cc.marg), joint = NA)
 
@@ -681,6 +681,6 @@ par(mfrow = c(1, 1))
 #########################################################################
 
 save(locs, z, X.train, locs.pred, z.pred, X.pred, ns_obs, ns_pred,
-     ms, output.joint.m.varying, output.joint.m.fixed, output.marginal.m.varying, output.marginal.m.fixed, 
+     ms, output.joint.m.varying, output.joint.m.fixed, output.marginal.m.varying, output.marginal.m.fixed,
      mspe.m.varying, mls.m.varying, mspe.m.fixed, mls.m.fixed, table.runtime,
      file = "DATA/joint_CRCM_NCEP_10152021_prediction.RData")

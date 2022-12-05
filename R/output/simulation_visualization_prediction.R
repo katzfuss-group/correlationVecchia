@@ -2,7 +2,7 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview:
+###   Overview: Thsi script generates Figure 8 (simulation_spacetime_prediction.pdf).
 ###
 ####################################################################################
 
@@ -149,4 +149,4 @@ result    <- grid.arrange(mylegend, arrangeGrob(p1 + theme(legend.position="none
 
 ####################################################################################
 
-ggplot2::ggsave("simulation_spacetime_prediction_2.pdf", result, width = 15.2, height = 5.7)
+ggplot2::ggsave("simulation_spacetime_prediction.pdf", result, width = 15.2, height = 5.7)

@@ -2,7 +2,7 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview:
+###   Overview: This script is to perform Fisher scoring for real data analysis.
 ###
 ####################################################################################
 
@@ -72,57 +72,57 @@ fit_all <- function(m)
   # ptm.b1 <- proc.time()
   # fit.b1 <- fit_scaled_bs_mulv(approx = 1, y = z, inputs = inputs.lst, X = X, ms = c(m), trend = "X", var.ini = sd.z^2, ranges.ini = c(0.6, 0.5, 0.1, 2.0), nu = 0.75, nug = 1e-4, n.est = nrow(inputs), group = TRUE, find.vcf = FALSE, print.level = 2)
   # ptm.b1 <- proc.time() - ptm.b1
-  
+
   # Sys.time()
-  
+
   ptm.b2 <- proc.time()
   fit.b2 <- fit_scaled_bs_mulv(approx = 2, y = z, inputs = inputs.lst, X = X, ms = c(m), trend = "X", var.ini = sd.z^2, ranges.ini = c(0.6, 0.5, 0.1, 2.0), nu = 0.75, nug = 1e-4, n.est = nrow(inputs), group = TRUE, find.vcf = FALSE, print.level = 2)
   ptm.b2 <- proc.time() - ptm.b2
-  
+
   # Sys.time()
-  
+
   ptm.b3 <- proc.time()
   fit.b3 <- fit_scaled_bs_mulv(approx = 3, y = z, inputs = inputs.lst, X = X, ms = c(m), trend = "X", var.ini = sd.z^2, ranges.ini = c(0.6, 0.5, 0.1, 2.0), nu = 0.75, nug = 1e-4, n.est = nrow(inputs), group = TRUE, find.vcf = FALSE, print.level = 2)
   ptm.b3 <- proc.time() - ptm.b3
-  
+
   # Sys.time()
   #
   # ptm.b4 <- proc.time()
   # fit.b4 <- fit_scaled_bs_mulv(approx = 4, y = z, inputs = inputs.lst, X = X, ms = c(m), trend = "X", var.ini = sd.z^2, ranges.ini = c(0.6, 0.5, 0.1, 2.0), nu = 0.75, nug = 1e-4, n.est = nrow(inputs), group = TRUE, find.vcf = FALSE, print.level = 2)
   # ptm.b4 <- proc.time() - ptm.b4
-  
+
   # Sys.time()
-  
+
   ptm.b5 <- proc.time()
   fit.b5 <- fit_scaled_bs_mulv(approx = 5, y = z, inputs = inputs.lst, X = X, ms = c(m), trend = "X", var.ini = sd.z^2, ranges.ini = c(0.6, 0.5, 0.1, 2.0), nu = 0.75, nug = 1e-4, n.est = nrow(inputs), group = FALSE, find.vcf = FALSE, print.level = 2)
   ptm.b5 <- proc.time() - ptm.b5
-  
+
   # Sys.time()
   #
   # ptm.b6 <- proc.time()
   # fit.b6 <- fit_scaled_bs_mulv(approx = 6, y = z, inputs = inputs.lst, X = X, ms = c(m), trend = "X", var.ini = sd.z^2, ranges.ini = c(0.6, 0.5, 0.1, 2.0), nu = 0.75, nug = 1e-4, n.est = nrow(inputs), group = TRUE, find.vcf = FALSE, print.level = 2)
   # ptm.b6 <- proc.time() - ptm.b6
-  
+
   # Sys.time()
-  
+
   ptm.b7 <- proc.time()
   fit.b7 <- fit_scaled_bs_mulv(approx = 7, y = z, inputs = inputs.lst, X = X, ms = c(m), trend = "X", var.ini = sd.z^2, ranges.ini = c(0.6, 0.5, 0.1, 2.0), nu = 0.75, nug = 1e-4, n.est = nrow(inputs), group = TRUE, find.vcf = FALSE, print.level = 2)
   ptm.b7 <- proc.time() - ptm.b7
-  
+
   # Sys.time()
-  
+
   ptm.b8 <- proc.time()
   fit.b8 <- fit_scaled_bs_mulv(approx = 8, y = z, inputs = inputs.lst, X = X, ms = c(m), trend = "X", var.ini = sd.z^2, ranges.ini = c(0.6, 0.5, 0.1, 2.0), nu = 0.75, nug = 1e-4, n.est = nrow(inputs), group = TRUE, find.vcf = FALSE, print.level = 2)
   ptm.b8 <- proc.time() - ptm.b8
-  
+
   # Sys.time()
-  
+
   ptm.cc <- proc.time()
   fit.cc <- fit_scaled_cv_mulv(            y = z, inputs = inputs,     X = X, ms = c(m), trend = "X", var.ini = sd.z^2, ranges.ini = c(0.6, 0.5, 0.1, 2.0), nu = 0.75, nug = 1e-4, n.est = nrow(inputs), group = TRUE, find.vcf = FALSE, print.level = 2)
   ptm.cc <- proc.time() - ptm.cc
-  
+
   # Sys.time()
-  
+
   return( list(fit.b2, fit.b3, fit.b5, fit.b7, fit.b8, fit.cc, ptm.b2, ptm.b3, ptm.b5, ptm.b7, ptm.b8, ptm.cc) )
 }
 #########################################################################

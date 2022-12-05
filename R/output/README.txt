@@ -1,4 +1,4 @@
-Every figure and table can be directly reproduced from the R files included in this directory. Before reproducing Figures 10 and 11 and Table 1, please download the NARCCAP data (https://www.earthsystemgrid.org/dataset/narccap.crcm.ncep.table1/file.html) and the shapefile (https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html).
+Every figure can be directly reproduced using R scripts in this directory. Before reproducing Figures 10 and 11, please download the NARCCAP data (https://www.earthsystemgrid.org/dataset/narccap.crcm.ncep.table1/file.html) and the shapefile (https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html). Please contact the authors if you have trouble in downloading the data.
 
 	Figure 1: simulation_visualization_ordering_and_conditioning.R
 

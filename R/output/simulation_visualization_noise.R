@@ -2,7 +2,7 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview:
+###   Overview: This script generates Figure 9 (simulation_spacetime_noise_new.pdf).
 ###
 ####################################################################################
 

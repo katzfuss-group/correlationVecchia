@@ -2,7 +2,7 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview:
+###   Overview: This script generates Figure 11 (realdata_performance.pdf).
 ###
 ####################################################################################
 
@@ -79,7 +79,7 @@ plot1     <- vdat1 %>% ggplot(aes(x = m, y = ftn1(mspe), col = approx, shape = a
   scale_color_manual(values = cols, labels = legs, guide = guide_legend(nrow = 2, byrow = TRUE)) +
   scale_shape_manual(values = shps, labels = legs, guide = guide_legend(nrow = 2, byrow = TRUE)) +
   xlab(xlabs[1]) + ylab(ylabs[1]) + coord_cartesian(xlim = xlims[[1]], ylim = ylims[[1]]) +
-  scale_y_continuous(trans='log10', breaks = c(1, 2, 3, 4, 5, 6, 7)) + 
+  scale_y_continuous(trans='log10', breaks = c(1, 2, 3, 4, 5, 6, 7)) +
   scale_x_continuous(breaks = xticks1) +
   theme(axis.title.x = element_text(size = size.lab),
         axis.text.x = element_text(size = size.text),

@@ -2,7 +2,7 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview: This script is to compare performance of approximations in various settings.
+###   Overview: This script is to compare performance of approximations when parameters are known.
 ###
 ####################################################################################
 

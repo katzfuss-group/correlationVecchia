@@ -2,7 +2,7 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview:
+###   Overview: This script generates Figure 5 (simulation_spacetime.pdf).
 ###
 ####################################################################################
 

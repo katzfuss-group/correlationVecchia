@@ -1,3 +1,11 @@
+####################################################################################
+###
+###   Author: Myeongjong Kang (kmj.stat@gmail.com)
+###
+###   Overview: This script generates Figure 1 (visualization_MN.pdf).
+###
+####################################################################################
+
 library(correlationVecchia)
 library(dplyr)
 library(ggplot2)

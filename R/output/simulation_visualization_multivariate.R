@@ -2,7 +2,7 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview:
+###   Overview: This script generates Figure 3 (simulation_multivariate.pdf).
 ###
 ####################################################################################
 
