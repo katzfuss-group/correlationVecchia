@@ -26,38 +26,27 @@ We illustrate the CVecchia on the temperature fields data from the
 bivariate spatio-temporal dataset given by maximum and minimum daily
 surface air temperature (tasmax and tasmin) for June–August 2001 (92
 days) in the South region (Arkansas, Kansas, Louisiana, Mississippi,
-Oklahoma and Texas).
+Oklahoma and Texas). The figure below is Figure 10 which shows minimum
+(top row) and maximum (bottom row) surface air temperature fields (in
+Kelvin) in the South region from NARCCAP data.
 
 <center>
-
-<figure>
-<img src="fig/weather_plot.png" width="600"
-alt="Figure 10: Minimum (top row) and maximum (bottom row) surface air temperature fields (in Kelvin) in the South region from NARCCAP data" />
-<figcaption aria-hidden="true">Figure 10: Minimum (top row) and maximum
-(bottom row) surface air temperature fields (in Kelvin) in the South
-region from NARCCAP data</figcaption>
-</figure>
-
+<img src="fig/weather_plot.png" width="600" />
 </center>
 
-As shown in Figure 11, CVecchia (C-MM + C-NN) provided the lowest RMSPE
-for any values of hyperparameter *m* considered. Furthermore, CVecchia
-offers better trade-off between running time and prediction accuracy.
-The runtime analysis was performed on a 64-bit workstation with 16 GB
-RAM and an Intel Core i7-8700K CPU running at 3.70 GHz.
+The figure below is Figure 11 which presents comparison of predictive
+performance in a log scale on test inputs in terms of root mean squared
+error as functions of *m* (left) and of running time for Fisher scoring
+iterations which dominates overall computing time for inference and
+prediction (right). As shown in Figure 11, the CVecchia (C-MM + C-NN)
+provided the lowest RMSPE for any values of hyperparameter *m*
+considered. Furthermore, CVecchia offers better trade-off between
+running time and prediction accuracy. The runtime analysis was performed
+on a 64-bit workstation with 16 GB RAM and an Intel Core i7-8700K CPU
+running at 3.70 GHz.
 
 <center>
-
-<figure>
-<img src="fig/realdata_performance.png" width="600"
-alt="Figure 11: Comparison of predictive performance in a log scale on test inputs in terms of root mean squared error as functions of m (left) and of running time for Fisher scoring iterations which dominates overall computing time for inference and prediction (right)" />
-<figcaption aria-hidden="true">Figure 11: Comparison of predictive
-performance in a log scale on test inputs in terms of root mean squared
-error as functions of <span class="math inline"><em>m</em></span> (left)
-and of running time for Fisher scoring iterations which dominates
-overall computing time for inference and prediction (right)</figcaption>
-</figure>
-
+<img src="fig/realdata_performance.png" width="600" />
 </center>
 
 ## Reproducing figures of the paper
