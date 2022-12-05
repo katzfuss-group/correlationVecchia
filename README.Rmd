@@ -16,136 +16,57 @@ knitr::opts_chunk$set(
 
 # correlationVecchia
 
-This repository (or R package) includes multiple source code files for correlation-based Vecchia with MJ
+This package implements *correlation-based Vecchia approximation (CVecchia)* and
+its competing methods presented in [our paper](https://arxiv.org/abs/2112.14591), depending heavily on R packages
+[GPvecchia](https://github.com/katzfuss-group/GPvecchia) and
+[GpGp](https://github.com/cran/GpGp). Many supporting functions are also included for ensuring reproducibility of the paper's figures. Please feel free to contact one of the authors of this package if you have any questions.
 
 ## Installation
 
-This repository depends heavily on both R packages *GPvecchia* and *GpGp*.
+The latest version of correlationVecchia can be installed using:
 
 ```{}
 # install.packages("devtools")
 devtools::install_github("katzfuss-group/correlationVecchia")
 ```
 
-## Example
+## Key result
 
-The following code chunk is to generate some toy data and compare approximation accuracy of different Vecchia approaches including not only EVecchia but CVecchia. 
+We illustrate the CVecchia on the temperature fields data from the [North American Regional Climate Change Assessment Program (NARCCAP)](https://www.narccap.ucar.edu/). In particular, we studied a bivariate spatio-temporal dataset given by maximum and minimum daily surface air temperature (tasmax and tasmin) for June--August 2001 (92 days) in the South region (Arkansas, Kansas, Louisiana, Mississippi, Oklahoma and Texas).
 
-```{}
-library(correlationVecchia)
+<center>
+![Figure 10: Minimum (top row) and maximum (bottom row) surface air temperature fields (in Kelvin) in the South region from NARCCAP data](fig/weather_plot.png){width=600px}
+</center>
 
-locs    <- matrix(runif(400), 200, 2)
-m       <- 10
-cormat  <- cov_expo_iso(locs = locs, covparms = c(1, 0.1))
+As shown in Figure 11, CVecchia (C-MM + C-NN) provided the lowest RMSPE for any values of hyperparameter $m$ considered. Furthermore, CVecchia offers better trade-off between running time and prediction accuracy. The runtime analysis was performed on a 64-bit workstation with 16 GB RAM and an Intel Core i7-8700K CPU running at 3.70 GHz.
 
-ord     <- GPvecchia::order_maxmin_exact(locs)
-all.equal(ord, order_maxmin_euclidean(locs = locs, initial.pt = ord[1]))
-all.equal(ord, order_maxmin_correlation(locs = locs, d.inv = cormat, initial.pt = ord[1]))
+<center>
+![Figure 11: Comparison of predictive performance in a log scale on test inputs in terms of root mean squared error as functions of $m$ (left) and of running time for Fisher scoring iterations which dominates overall computing time for inference and prediction (right)](fig/realdata_performance.png){width=600px}
+</center>
 
-locsord <- locs[ord, , drop = FALSE]
-corord  <- cormat[ord, ord]
+## Reproducing figures of the paper
 
-all.equal(GpGp::find_ordered_nn_brute(locs = locsord, m = m),
-          conditioning_m_Rcpp(m = m, d = 1 - corord) + 1)
-all.equal(GpGp::find_ordered_nn(locs = locsord, m = m),
-          conditioning_m_Rcpp(m = m, d = 1 - corord) + 1)
-
-### Example
-
-n             <- 20^2
-m             <- 20
-locs          <- matrix(runif(n * 2, 0, 1), n, 2)
-covparms      <- c(1, 0.1, 10)
-
-# true cov matrix
-covmat <- cov_expo_aniso(locs, covparms)
-
-# Visualize the process
-y <- as.numeric(t(chol(covmat)) %*% rnorm(n))
-fields::quilt.plot(locs[,1], locs[,2], y)
-
-out01 <- cvecchia_m_specify(locs = locs, m = m, initial.pt = NULL,
-                            covmodel = covmat, covparms = covparms,
-                            abs.corr = FALSE, coordinate = c(1),
-                            ordering = "coord", ordering.method = "euc",
-                            conditioning = "NN", conditioning.method = "euc")
-
-out02 <- cvecchia_m_specify(locs = locs, m = m, initial.pt = NULL,
-                            covmodel = covmat, covparms = covparms,
-                            abs.corr = FALSE, coordinate = c(2),
-                            ordering = "coord", ordering.method = "euc",
-                            conditioning = "NN", conditioning.method = "euc")
-
-out03 <- cvecchia_m_specify(locs = locs, m = m, initial.pt = NULL,
-                            covmodel = covmat, covparms = covparms,
-                            abs.corr = FALSE, coordinate = NULL,
-                            ordering = "MM", ordering.method = "euc",
-                            conditioning = "NN", conditioning.method = "euc")
-
-out04 <- cvecchia_m_specify(locs = locs, m = m, initial.pt = NULL,
-                            covmodel = covmat, covparms = covparms,
-                            abs.corr = FALSE, coordinate = NULL,
-                            ordering = "MM", ordering.method = "euc",
-                            conditioning = "NN", conditioning.method = "cor")
-
-out05 <- cvecchia_m_specify(locs = locs, m = m, initial.pt = NULL,
-                            covmodel = covmat, covparms = covparms,
-                            abs.corr = FALSE, coordinate = NULL,
-                            ordering = "MM", ordering.method = "cor",
-                            conditioning = "NN", conditioning.method = "euc")
-
-out06 <- cvecchia_m_specify(locs = locs, m = m, initial.pt = NULL,
-                            covmodel = covmat, covparms = covparms,
-                            abs.corr = FALSE, coordinate = NULL,
-                            ordering = "MM", ordering.method = "cor",
-                            conditioning = "NN", conditioning.method = "cor")
-
-kls.coord.x    <- performance(vecchia.approx = out01, locs = locs,
-                              covmodel = cov_expo_aniso, covparms = covparms)
-kls.coord.y    <- performance(vecchia.approx = out02, locs = locs,
-                              covmodel = cov_expo_aniso, covparms = covparms)
-kls.euc.euc    <- performance(vecchia.approx = out03, locs = locs,
-                              covmodel = cov_expo_aniso, covparms = covparms)
-kls.euc.cor    <- performance(vecchia.approx = out04, locs = locs,
-                              covmodel = cov_expo_aniso, covparms = covparms)
-kls.cor.euc    <- performance(vecchia.approx = out05, locs = locs,
-                              covmodel = cov_expo_aniso, covparms = covparms)
-kls.cor.cor    <- performance(vecchia.approx = out06, locs = locs,
-                              covmodel = cov_expo_aniso, covparms = covparms)
-
-barplot(log10(c(kls.coord.x, kls.coord.y, kls.euc.euc,
-                kls.euc.cor, kls.cor.euc, kls.cor.cor)),
-        names.arg = c("X-ord + E-NN", "Y-ord + E-NN",
-                      "E-MM + E-NN", "E-MM + C-NN",
-                      "C-MM + E-NN", "C-MM + C-NN"),
-        main = "Vecchia Approximations", ylab = "log10-scale KL divergence")
-```
-
-For details on the functionality of `cvecchia_m_specify()`, enter the command `help("cvecchia_m_specify")`.
-
-## Reproducing results
-
-These R files reproduce the figures and results from Kang and Katzfuss (2021):
+Every figure in [our paper](https://arxiv.org/abs/2112.14591) can be directly reproduced using R scripts located [here](https://github.com/katzfuss-group/correlationVecchia/tree/master/R/output). Before reproducing Figures 10 and 11 and Table 1, please download the NARCCAP data (https://www.earthsystemgrid.org/dataset/narccap.crcm.ncep.table1/file.html) and the shapefile (https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html).
 
 * Figure 1: simulation_visualization_ordering_and_conditioning.R
 
-* Figure 2: simulation_knownCovparms_05242021.R and simulation_visualization_anisononst.R
+* Figure 2: simulation_knownCovparms.R &rarr; simulation_visualization_anisononst.R
 
-* Figure 3: simulation_knownCovparms_05242021.R and simulation_visualization_multivariate.R
+* Figure 3: simulation_knownCovparms.R &rarr; simulation_visualization_multivariate.R
 
 * Figure 4: simulation_visualization_spacetime_scenarios.R
 
-* Figure 5: simulation_knownCovparms_05242021.R and simulation_visualization_spacetime.R
+* Figure 5: simulation_knownCovparms.R &rarr; simulation_visualization_spacetime.R
 
-* Figure 6: simulation_noneuc_09272021.R and simulation_visualization_noneuc.R
+* Figure 6: simulation_noneuc.R &rarr; simulation_visualization_noneuc.R
 
-* Figure 7: simulation_fisherScoring_05242021.R and simulation_visualization_fisher.R
+* Figure 7: simulation_fisherScoring.R &rarr; simulation_visualization_fisher.R
 
-* Figure 8: simulation_prediction_05242021.R and simulation_visualization_prediction_2.R
+* Figure 8: simulation_prediction.R &rarr; simulation_visualization_prediction.R
 
-* Figure 9: simulation_bayesianPosterior_nugget_05242021.R and simulation_visualization_noise.R
+* Figure 9: simulation_bayesianPosterior.R &rarr; simulation_visualization_noise.R
 
-* Figures 10 and 11 and Table 1: realdata_1_processing_01012022.R, realdata_2_estimation_01012022.R, realdata_3_performance_01012022.R, and realdata_4_visualization_01012022.R
+* Figures 10 and 11 and Table 1: realdata_processing.R &rarr; realdata_estimation.R &rarr; realdata_performance.R &rarr; realdata_visualization.R
 
 ## Reference
 

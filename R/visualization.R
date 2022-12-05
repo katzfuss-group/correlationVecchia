@@ -5,29 +5,13 @@
 ###   Overview: This script includes several R functions to visualize simulation results.
 ###
 ###   Contents:
+###     vis_arrange_ena / vis_arrange_dio / vis_arrange_tria
+###     vis_arrange_tria_simple / vis_arrange_posterior
+###     vis_arrange_tetra / vis_arrange_posterior_ic0
+###
+###   Note: For generating figures in the manuscript, we used modified versions of these functions. Please take a look into the output folder.
 ###
 ####################################################################################
-
-# library(dplyr) ; library(tidyr) ; library(ggplot2) ; library(gridExtra) ; library(RColorBrewer)
-#
-# load("simout_aniso_05242021.RData")
-#
-# out     <- output.aniso
-# vdat1   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(a == 10) %>% select(-a)
-# vdat2   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(m == 20) %>% select(-m)
-# vdat3   <- out$vars %>% left_join(out$kldiv, by = "index") %>% filter(m == 40) %>% select(-m)
-#
-# vis     <- vis_arrange_ena(vdat1 = vdat1, ftn = log10, xlab = c("m"), ylab = "log10(KL)", xlim = NULL, ylim = NULL, legend = c("E-MM + E-NN", "E-MM + C-NN", "C-MM + E-NN", "C-MM + C-NN", "X-ord + E-NN", "Y-ord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
-#
-# ggplot2::ggsave("example_ena.pdf", vis, width = 15.2, height = 5.7)
-#
-# vis     <- vis_arrange_dio(vdat1 = vdat1, vdat2 = vdat2, ftn = log10, xlab = c("m", "a"), ylab = c("log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL), ylim = list(yl1 = NULL, yl2 = NULL), legend = c("E-MM + E-NN", "E-MM + C-NN", "C-MM + E-NN", "C-MM + C-NN", "X-ord + E-NN", "Y-ord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
-#
-# ggplot2::ggsave("example_dio.pdf", vis, width = 15.2, height = 5.7)
-#
-# vis     <- vis_arrange_tria(vdat1 = vdat1, vdat2 = vdat2, vdat3 = vdat3, ftn = log10, xlab = c("m", "a", "a"), ylab = c("log10(KL)", "log10(KL)", "log10(KL)"), xlim = list(xl1 = NULL, xl2 = NULL, xl3 = NULL), ylim = list(yl1 = NULL, yl2 = NULL, yl3 = NULL), legend = c("E-MM + E-NN", "E-MM + C-NN", "C-MM + E-NN", "C-MM + C-NN", "X-ord + E-NN", "Y-ord + E-NN"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "#FF7F00", "#FFFF33"), shape = c(18, 15, 17, 16, 8, 13))
-#
-# ggplot2::ggsave("example_tria.pdf", vis, width = 15.2, height = 5.7)
 
 #' @title Visualization
 #'
@@ -57,9 +41,6 @@
 #' @importFrom gridExtra grid.arrange
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 vis_arrange_ena <- function(vdat1, legend, color, shape, ftn = log10, xlim = NULL, ylim = NULL, xlab = "m", ylab = "log10(KL)", alpha = 0.7, size.point = 4, size.line = 1, size.legend = 14, size.lab = 14, size.text = 12, size.margin = c(5.5, 20, 5.5, 5.5))
 {
   ### Visualize the data table ###
@@ -131,9 +112,6 @@ vis_arrange_ena <- function(vdat1, legend, color, shape, ftn = log10, xlim = NUL
 #' @importFrom gridExtra grid.arrange
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 vis_arrange_dio <- function(vdat1, vdat2, legend, color, shape, ftn = log10, xlim = c("m", "m"), ylim = c("log10(KL)", "log10(KL)"), xlab = list(xl1 = NULL, xl2 = NULL), ylab = list(yl1 = NULL, yl2 = NULL), alpha = 0.7, size.point = 2, size.line = 1, size.legend = 14, size.lab = 14, size.text = 12, size.margin = c(5.5, 20, 5.5, 5.5))
 {
   ### Visualize the first data table ###
@@ -232,9 +210,6 @@ vis_arrange_dio <- function(vdat1, vdat2, legend, color, shape, ftn = log10, xli
 #' @importFrom gridExtra grid.arrange
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 vis_arrange_tria <- function(vdat1, vdat2, vdat3, legend, color, shape, ftn = log10, xlim = list(xl1 = NULL, xl2 = NULL, xl3 = NULL), ylim = list(yl1 = NULL, yl2 = NULL, yl3 = NULL), xlab = c("xl1", "xl2", "xl3"), ylab = c("yl1", "yl2", "yl3"), alpha = 0.7, size.point = 4, size.line = 1, size.legend = 14, size.lab = 14, size.text = 12, size.margin = c(5.5, 20, 5.5, 5.5))
 {
   size.margin.plot1 = size.margin + c(0, 100, 0, 100)
@@ -361,9 +336,6 @@ vis_arrange_tria <- function(vdat1, vdat2, vdat3, legend, color, shape, ftn = lo
 #' @importFrom gridExtra grid.arrange
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 vis_arrange_tria_simple <- function(vdat1, vdat2, vdat3, legend, color, shape, ftn = log10, xlim = list(xl1 = NULL, xl2 = NULL, xl3 = NULL), ylim = list(yl1 = NULL, yl2 = NULL, yl3 = NULL), xlab = c("xl1", "xl2", "xl3"), ylab = c("yl1", "yl2", "yl3"), alpha = 0.7, size.point = 4, size.line = 1, size.legend = 14, size.lab = 14, size.text = 12, size.margin = c(5.5, 20, 5.5, 5.5))
 {
   ### Visualize the first data table ###
@@ -477,9 +449,6 @@ vis_arrange_tria_simple <- function(vdat1, vdat2, vdat3, legend, color, shape, f
 #' @return plot
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 vis_arrange_posterior <- function(output, legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN", "True"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "black"), xlim = NULL, ylim = NULL, xlab = "x", ylab = "y", alpha = 0.7, size.line = 1, size.legend = 14, size.lab = 14, size.text = 12, size.margin = c(5.5, 20, 5.5, 5.5))
 {
   candids   <- output$setting$candid
@@ -564,9 +533,6 @@ vis_arrange_posterior <- function(output, legend = c("T-ord + T-NN", "T-ord + E-
 #' @return plot
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 vis_arrange_tetra <- function(vdat1, vdat2, vdat3, vdat4, legend, color, shape, ftn = log10, xlabs = c("m", "m", "m", "m"), ylabs = c("log10(KL)", "log10(KL)", "log10(KL)", "log10(KL)"), xlims = list(xl1 = NULL, xl2 = NULL, xl3 = NULL, xl4 = NULL), ylims = list(yl1 = NULL, yl2 = NULL, yl3 = NULL, yl4 = NULL), alpha = 0.7, size.point = 2, size.line = 1, size.legend = 14, size.lab = 14, size.text = 12, size.margin = c(5.5, 20, 5.5, 5.5))
 {
   ### Visualize the first data table ###
@@ -712,9 +678,6 @@ vis_arrange_tetra <- function(vdat1, vdat2, vdat3, vdat4, legend, color, shape, 
 #' @return plot
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 vis_arrange_posterior_ic0 <- function(output, legend = c("T-ord + T-NN", "T-ord + E-NN", "T-ord + C-NN", "C-MM + C-NN", "True"), color = c("#984EA3", "#4DAF4A", "#377EB8", "#E41A1C", "black"), xlim = NULL, ylim = NULL, xlab = "x", ylab = "y", alpha = 0.7, size.line = 1, size.legend = 14, size.lab = 14, size.text = 12, size.margin = c(5.5, 20, 5.5, 5.5))
 {
   candids   <- output$setting$candid

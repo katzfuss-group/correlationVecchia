@@ -12,6 +12,7 @@
 ###     cov_latentDim_biv / cov_latentDim_triv / cov_latentDim_mulv
 ###     cov_flexMatern_biv / cov_flexMatern_mulv / cov_GK_mulv_bruteforce / cov_GK_mulv
 ###     cov_matern_deriv / cor_matern_deriv / cov_sqexpo_deriv / cor_sqexpo_deriv
+###     GpGp_matern_spacetime
 ###
 ####################################################################################
 

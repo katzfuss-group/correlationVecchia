@@ -2,14 +2,15 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview: This script includes several R functions to obtain posterior densities.
+###   Overview: This script includes R functions to obtain posterior densities.
 ###
 ###   Contents:
-###     posterior_mulv / .posterior_mulv_range / .posterior_mulv_latentDim
-###     posterior_spacetime / .posterior_spacetime_srange / .posterior_spacetime_trange
-###     posterior_ordfix_mulv / .posterior_ordfix_mulv_range / .posterior_ordfix_mulv_latentDim
-###     posterior_ordfix_spacetime / .posterior_ordfix_spacetime_srange / .posterior_ordfix_spacetime_trange
+###     posterior_spacetime / posterior_ordfix_spacetime
 ###
+####################################################################################
+
+####################################################################################
+### Approximate posterior of the spatial and temporal range parameters for cov_matern_spacetime
 ####################################################################################
 
 # posterior_mulv <- function()
@@ -20,7 +21,6 @@
 #
 # .posterior_mulv_latentDim <- function()
 # {}
-
 
 #' @title Computing the approximate posterior of the spatial/temporal range parameter for cov_matern_spacetime
 #'
@@ -44,9 +44,6 @@
 #' @return list
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 posterior_spacetime <- function(target = "srange", approx = "cc", method.U = "simple", z, locs, covparms, nugget = 0, m = 30, N = 100, xlim = c(0.05, 0.15), sdlog = 0.6, verbose = TRUE)
 {
   if( target %in% c("srange", "spatial", "space", "s") ) {
@@ -342,6 +339,8 @@ posterior_spacetime <- function(target = "srange", approx = "cc", method.U = "si
 }
 
 ####################################################################################
+### Approximate posterior of the spatial and temporal range parameters for cov_matern_spacetime (ordering is fixed using Fisher scoring at the first step)
+####################################################################################
 
 # posterior_ordfix_mulv <- function()
 # {}
@@ -351,7 +350,6 @@ posterior_spacetime <- function(target = "srange", approx = "cc", method.U = "si
 #
 # .posterior_ordfix_mulv_latentDim <- function()
 # {}
-
 
 #' @title Computing the approximate posterior of the spatial/temporal range parameter for cov_matern_spacetime
 #'
@@ -376,9 +374,6 @@ posterior_spacetime <- function(target = "srange", approx = "cc", method.U = "si
 #' @return list
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 posterior_ordfix_spacetime <- function(target = "srange", approx = "cc", method.U = "simple", z, locs, covparms, nugget = 0, m = 30, N = 100, xlim = c(0.05, 0.15), sdlog = 0.6, verbose = TRUE, tol.dec = 4)
 {
   if( target %in% c("srange", "spatial", "space", "s") ) {

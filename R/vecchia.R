@@ -2,11 +2,11 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview: This script includes several R functions to implement vecchia approximations.
+###   Overview: This script includes R functions to implement vecchia approximations.
 ###
 ###   Contents:
-###     cvecchia_specify
-###     cvecchia_m_specify / order_coordinate / order_maxmin_euclidean / order_maxmin_correlation
+###     cvecchia_specify / cvecchia_m_specify
+###     order_coordinate / order_maxmin_euclidean / order_maxmin_correlation
 ###     cvecchia_rho_specify / rhoBased_sortSparse / rhoBased_sortSparse_rev
 ###
 ###   Note: These functions are heavily based on Rcpp functions in vecchia_cpp.cpp.

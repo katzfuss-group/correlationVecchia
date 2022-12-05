@@ -2,7 +2,7 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview: This script includes R functions to generate spatial/spatio-temporal locations and corresponding observations of gaussian processes.
+###   Overview: This script includes R functions to generate spatial/spatio-temporal locations and corresponding observations of Gaussian processes.
 ###
 ###   Contents:
 ###     generate_gp / generate_gp_space / generate_gp_spacetime

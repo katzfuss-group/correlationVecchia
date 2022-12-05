@@ -1,9 +1,9 @@
 Package: correlationVecchia
-Title: Research Package for Correlation-based Vecchia Approximation
-Version: 1.0.0
-Authors@R: c(person("Myeongjong", "Kang", role=c("aut"), email = "kmj.stat@gmail.com"),
-	         person("Matthias", "Katzfuss", role=c("aut", "cre"), email = "katzfuss@gmail.com"))
-Description: This is so far a private research R package for implementing the correlation-based Vecchia approximation.
+Title: Correlation-based Vecchia Approximation for Gaussian-process Inference
+Version: 0.1.0
+Authors@R: c(person("Myeongjong", "Kang", role=c("aut", "cre"), email = "kmj.stat@gmail.com"),
+	         person("Matthias", "Katzfuss", role=c("aut"), email = "katzfuss@gmail.com"))
+Description: Package implements correlation-based Vecchia approximation for Gaussian-process inference. Please see Kang and Katzfuss (2021) <arXiv:2112.14591> for details.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true

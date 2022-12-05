@@ -2,11 +2,17 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview:
+###   Overview: This script includes several R functions to implement vecchia approximations when inputs are not provided.
 ###
 ###   Contents:
 ###     cvecchia_specify_noneuc / order_maxmin_correlation_noneuc / find_ordered_cnn_noneuc
+###     lvecchia_specify_noneuc
+###     find_ordered_rn / rvecchia_specify_noneuc / rvecchias_specify_noneuc
 ###
+####################################################################################
+
+####################################################################################
+### Correlation Vecchia without inputs
 ####################################################################################
 
 #' @title Specify Correlation-based Vecchia approximation without locations
@@ -18,9 +24,6 @@
 #' @return An object that specifies the vecchia approximation for later use in likelihood evaluation or prediction.
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 cvecchia_specify_noneuc <- function(cormat, initial.pt = NULL, m)
 {
   ### setting
@@ -48,9 +51,6 @@ cvecchia_specify_noneuc <- function(cormat, initial.pt = NULL, m)
 #' @return A vector of indices giving the correlation-based maxmin ordering
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 order_maxmin_correlation_noneuc <- function(cormat, initial.pt)
 {
   n             <- nrow(cormat)
@@ -95,13 +95,14 @@ order_maxmin_correlation_noneuc <- function(cormat, initial.pt)
 #' @return Check \code{conditioning_m_Rcpp()}.
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 find_ordered_cnn_noneuc <- function(corord, m)
 {
   return( conditioning_m_Rcpp(m = m, d = 1 - corord) + 1 )
 }
+
+####################################################################################
+### Lexicographic Vecchia without inputs
+####################################################################################
 
 #' @title Specify Lexicographic Vecchia approximation without locations
 #'
@@ -111,9 +112,6 @@ find_ordered_cnn_noneuc <- function(corord, m)
 #' @return An object that specifies the vecchia approximation for later use in likelihood evaluation or prediction.
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 lvecchia_specify_noneuc <- function(cormat, m)
 {
   ### setting
@@ -132,6 +130,10 @@ lvecchia_specify_noneuc <- function(cormat, m)
   return(vecchia.approx)
 }
 
+####################################################################################
+### Random Vecchia without inputs
+####################################################################################
+
 #' @title Constructing conditioning sets randomly
 #'
 #' @param n Number of inputs
@@ -140,9 +142,6 @@ lvecchia_specify_noneuc <- function(cormat, m)
 #' @return Check \code{conditioning_m_Rcpp()}
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 find_ordered_rn <- function(n, m)
 {
   cond.sets <- matrix(NA, nrow = n, ncol = m + 1)
@@ -168,9 +167,6 @@ find_ordered_rn <- function(n, m)
 #' @return An object that specifies the vecchia approximation for later use in likelihood evaluation or prediction.
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 rvecchia_specify_noneuc <- function(cormat, m)
 {
   ### setting
@@ -197,9 +193,6 @@ rvecchia_specify_noneuc <- function(cormat, m)
 #' @return An list of objects that specify the vecchia approximation for later use in likelihood evaluation or prediction.
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 rvecchias_specify_noneuc <- function(cormat, ms)
 {
   ### setting

@@ -2,16 +2,12 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview: This script includes several R functions to use parallel computing for simulation.
+###   Overview: This script includes R functions to use parallel computing for simulation.
 ###
 ###   Contents:
 ###     parSim_aniso_knownCovparms / parSim_nonst_knownCovparms / parSim_wave_knownCovparms
-###     parSim_mulv_knownCovparms
-###     parSim_sptm_knownCovparms
-###     parSim_deriv_knownCovparms
-###     parSim_sptm_Fisher
-###     parSim_sptm_Bayes
-###     parSim_sptm_predict
+###     parSim_mulv_knownCovparms / parSim_sptm_knownCovparms / parSim_deriv_knownCovparms
+###     parSim_sptm_Fisher / parSim_sptm_Bayes / parSim_sptm_predict
 ###
 ####################################################################################
 

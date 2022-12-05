@@ -2,10 +2,17 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview: This script includes several R functions to perform real data analysis.
+###   Overview: This script includes R functions to perform real data analysis.
 ###
 ###   Contents:
+###     mappingRaster / rasterCleaning / splitData
+###     fit_scaled_bs_mulv / fit_scaled_cv_mulv
+###     predictions_bs_mulv / predictions_cv_mulv
 ###
+####################################################################################
+
+####################################################################################
+### Data processing
 ####################################################################################
 
 #' @title Project raster (rastername) to shape (shapename) using crs (crsname)
@@ -19,9 +26,6 @@
 #' @return list
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 mappingRaster <- function(rastername, tpoint, shapename, crsname = NULL, states = "all")
 {
   ### Raster ###
@@ -64,9 +68,6 @@ mappingRaster <- function(rastername, tpoint, shapename, crsname = NULL, states 
 #' @return list
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 rasterCleaning <- function(rasterfile)
 {
   rasterfile  <- rasterToPoints(rasterfile)
@@ -100,9 +101,6 @@ rasterCleaning <- function(rasterfile)
 #' @return list
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 splitData <- function(df.joint, method, num.locs = 12, num.time = 31, size.blck = 3^2)
 {
   if(method %in% c("spacewise")) {
@@ -272,6 +270,8 @@ splitData <- function(df.joint, method, num.locs = 12, num.time = 31, size.blck 
 }
 
 ###################################################################################
+### Ordering
+###################################################################################
 
 .order_TIME <- function(locs)
 {
@@ -429,6 +429,8 @@ splitData <- function(df.joint, method, num.locs = 12, num.time = 31, size.blck 
 }
 
 ###################################################################################
+### Fisher scoring
+###################################################################################
 
 #' @title Fitting parameters using baseline models for real-data analysis
 #'
@@ -455,9 +457,6 @@ splitData <- function(df.joint, method, num.locs = 12, num.time = 31, size.blck 
 #' @return output of fit_scaled()
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 fit_scaled_bs_mulv <- function(approx,
                                y,inputs,ms=c(30),trend='pre',X,nu=3.5,nug=0,scale='parms',
                                var.ini,ranges.ini,select=Inf,print.level=0,max.it=32,tol.dec=4,
@@ -735,9 +734,6 @@ fit_scaled_bs_mulv <- function(approx,
 #' @return output of fit_scaled()
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 fit_scaled_cv_mulv <- function(y,inputs,ms=c(30),trend='pre',X,nu=3.5,nug=0,scale='parms',
                                var.ini,ranges.ini,select=Inf,print.level=0,max.it=32,tol.dec=4,
                                n.est=min(5e3,nrow(inputs)),group = TRUE,find.vcf=FALSE,vcf.scorefun=lscore)
@@ -872,7 +868,6 @@ fit_scaled_cv_mulv <- function(y,inputs,ms=c(30),trend='pre',X,nu=3.5,nug=0,scal
     }
   }
 
-
   ### prepare fit object for subsequent prediction
   fit$covparms=c(cur.var,cur.ranges,cur.oth)
   fit$trend=trend
@@ -901,6 +896,8 @@ fit_scaled_cv_mulv <- function(y,inputs,ms=c(30),trend='pre',X,nu=3.5,nug=0,scal
 }
 
 ###################################################################################
+### Prediction
+###################################################################################
 
 #' @title prediction using baseline models, using output from fit_scaled_bs_mulv()
 #'
@@ -920,9 +917,6 @@ fit_scaled_cv_mulv <- function(y,inputs,ms=c(30),trend='pre',X,nu=3.5,nug=0,scal
 #' @return Vector of length n.p (\code{n.sims=0}, \code{predvar=FALSE}) or list with entries \code{means} and/or \code{vars} and/or \code{samples}
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 predictions_bs_mulv <- function(approx, ns_obs, ns_pred,
                                 fit,locs_pred,m=100,joint=TRUE,nsims=0,
                                 predvar=FALSE,X_pred,scale='parms',tol=1e-8)
@@ -1189,9 +1183,6 @@ predictions_bs_mulv <- function(approx, ns_obs, ns_pred,
 #' @return Vector of length n.p (\code{n.sims=0}, \code{predvar=FALSE}) or list with entries \code{means} and/or \code{vars} and/or \code{samples}
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 predictions_cv_mulv <- function(ns_obs, ns_pred,
                                 fit,locs_pred,m=100,joint=TRUE,nsims=0,
                                 predvar=FALSE,X_pred,scale='parms',tol=1e-8)

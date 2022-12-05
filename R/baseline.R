@@ -2,12 +2,16 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview: This script includes several R functions to implement baseline models
+###   Overview: This script includes R functions to implement baseline (competing) methods
 ###
 ###   Contents:
 ###     baseline_mulv_specify / baseline_1_mulv_specify / baseline_2_mulv_specify / baseline_3_mulv_specify / baseline_4_mulv_specify
-###     baseline_spacetime_specify / baseline_1_spacetime_specify / baseline_2_spacetime_specify / baseline_3_spacetime_specify
+###     baseline_spacetime_specify / baseline_1_spacetime_specify / baseline_2_spacetime_specify / baseline_3_spacetime_specify / order_time
 ###
+####################################################################################
+
+####################################################################################
+### Baseline methods for multivariate GPs
 ####################################################################################
 
 #' @title Baseline approximation for multivariate GPs
@@ -437,6 +441,8 @@ baseline_4_mulv_specify <- function(locs, m, abs.corr = FALSE, covmodel, ...)
   return(vecchia.approx)
 }
 
+####################################################################################
+### Baseline methods for spatio-temporal GPs
 ####################################################################################
 
 #' Baseline approximation for spatio-temporal GPs

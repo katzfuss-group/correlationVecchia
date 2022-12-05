@@ -2,11 +2,11 @@
 ###
 ###   Author: Myeongjong Kang (kmj.stat@gmail.com)
 ###
-###   Overview: This script includes several R functions to obtain prediction.
+###   Overview: This script includes R functions to obtain prediction using Vecchia approximation.
 ###
 ###   Contents:
-###     prediction_spacetime_baseline
-###     prediction_spacetime_cvecchia
+###     prediction_spacetime_baseline / prediction_spacetime_cvecchia / predictions_scaled
+###     order_maxmin_pred / find_ordered_nn_pred / fit_vcf
 ###
 ####################################################################################
 
@@ -29,8 +29,8 @@
 #'
 #' @export
 #'
-#' @examples
-#' 1 + 1
+#' @example
+#' # Check an example of predictions_scaled()
 prediction_spacetime_baseline <- function(approx, z, locs, locs.pred, m, coordinate = NULL, covmodel, covparms, nuggets, predcond.method = "general", var.exact, return.values = "all")
 {
   ### initialization
@@ -149,8 +149,8 @@ prediction_spacetime_baseline <- function(approx, z, locs, locs.pred, m, coordin
 #'
 #' @export
 #'
-#' @examples
-#' 1 + 1
+#' @example
+#' # Check an example of predictions_scaled()
 prediction_spacetime_cvecchia <- function(method, z, locs, locs.pred, m, initial.pt = NULL, covmodel, covparms, nuggets, predcond.method = "general", var.exact, return.values = "all")
 {
   ### initialization
@@ -430,7 +430,7 @@ predictions_scaled <- function(fit,locs_pred,m=100,joint=TRUE,nsims=0,
 #' @export
 #'
 #' @examples
-#' 1 + 1
+#' order_maxmin_pred(matrix(runif(8), 4, 2), matrix(runif(8), 4, 2))
 order_maxmin_pred <- function(locs, locs_pred, refine = FALSE){
 
   #######   obs.pred maxmin ordering   ########
@@ -491,7 +491,7 @@ order_maxmin_pred <- function(locs, locs_pred, refine = FALSE){
 #' @export
 #'
 #' @examples
-#' 1 + 1
+#' find_ordered_nn_pred(matrix(runif(20), 10, 2), 5, 10)
 find_ordered_nn_pred <- function(locs, m, fix.first = 0, searchmult = 2){
 
   #######   find NN for prediction locations   ########
@@ -559,9 +559,6 @@ find_ordered_nn_pred <- function(locs, m, fix.first = 0, searchmult = 2){
 #' @return output of optimize()
 #'
 #' @export
-#'
-#' @examples
-#' 1 + 1
 fit_vcf = function(fit, m.pred = 140, n.test = min(1e3, round(nrow(fit$locs)/5)), scale = 'parms', scorefun = lscore)
 {
   ##########   line search for variance correction factor   ###
@@ -584,24 +581,5 @@ fit_vcf = function(fit, m.pred = 140, n.test = min(1e3, round(nrow(fit$locs)/5))
   vcf=optimize(objfun,c(1e-6,1e6))$minimum
 
   return(vcf)
-}
-
-#' @title log score
-#'
-#' @param dat dat
-#' @param mu mu
-#' @param sig2 sig2
-#'
-#' @return log score
-#'
-#' @export
-#'
-#' @examples
-#' 1 + 1
-lscore = function(dat, mu, sig2)
-{
-  ### log score
-
-  return( -mean(dnorm(dat,mu,sqrt(sig2),log=TRUE)) )
 }
 
